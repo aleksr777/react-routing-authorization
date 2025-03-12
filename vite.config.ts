@@ -5,4 +5,5 @@ import react from '@vitejs/plugin-react-swc';
 export default defineConfig({
   plugins: [react()],
   base: '/',
-}); /* '/template-react-routing/' для gh-pages */
+  //base: '/template-react-routing', // для gh-pages
+});
