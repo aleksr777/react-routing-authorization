@@ -8,6 +8,7 @@ const rootElement = document.getElementById('root');
 
 createRoot(rootElement!).render(
   <StrictMode>
+    {/* <BrowserRouter basename="/template-react-routing"> for gh-pages */}
     <BrowserRouter>
       <App />
     </BrowserRouter>
