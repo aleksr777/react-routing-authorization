@@ -44,5 +44,9 @@
   },
   "overrides": {
     "eslint": "^9.15.0"
+  },
+  "allowScripts": {
+    "@swc/core@1.9.2": true,
+    "esbuild@0.21.5": true
   }
 }
