@@ -11,8 +11,18 @@ const Header = () => {
           </Link>
         </li>
         <li>
-          <Link className={styles.link} to="/about">
-            <p className={styles.linkText}>About Us</p>
+          <Link className={styles.link} to="/auth/login">
+            <p className={styles.linkText}>Login</p>
+          </Link>
+        </li>
+        <li>
+          <Link className={styles.link} to="/auth/logout">
+            <p className={styles.linkText}>Logout</p>
+          </Link>
+        </li>
+        <li>
+          <Link className={styles.link} to="/users/me">
+            <p className={styles.linkText}>My profile</p>
           </Link>
         </li>
       </ul>
