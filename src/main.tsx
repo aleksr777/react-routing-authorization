@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import AuthProvider from './features/auth/model/auth-provider';
 import './index.css';
 import App from './app.tsx';
 
@@ -10,7 +11,9 @@ createRoot(rootElement!).render(
   <StrictMode>
     {/* <BrowserRouter basename="/template-react-routing"> for gh-pages */}
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );

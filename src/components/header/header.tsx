@@ -1,30 +1,42 @@
-import styles from './header.module.css';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../features/auth/model/use-auth';
+import styles from './header.module.css';
 
 const Header = () => {
+  const { isAuth } = useAuth();
+
   return (
     <nav className={styles.nav}>
       <ul className={styles.ul}>
         <li className={styles.li}>
           <Link className={styles.link} to="/">
-            <p className={styles.linkText}>Home</p>
+            <span className={styles.linkText}>Home</span>
           </Link>
         </li>
-        <li>
-          <Link className={styles.link} to="/auth/login">
-            <p className={styles.linkText}>Login</p>
-          </Link>
-        </li>
-        <li>
-          <Link className={styles.link} to="/auth/logout">
-            <p className={styles.linkText}>Logout</p>
-          </Link>
-        </li>
-        <li>
-          <Link className={styles.link} to="/users/me">
-            <p className={styles.linkText}>My profile</p>
-          </Link>
-        </li>
+
+        {!isAuth && (
+          <li className={styles.li}>
+            <Link className={styles.link} to="/auth/login">
+              <span className={styles.linkText}>Login</span>
+            </Link>
+          </li>
+        )}
+
+        {isAuth && (
+          <>
+            <li className={styles.li}>
+              <Link className={styles.link} to="/users/me">
+                <span className={styles.linkText}>My profile</span>
+              </Link>
+            </li>
+
+            <li className={styles.li}>
+              <Link className={styles.link} to="/auth/logout">
+                <span className={styles.linkText}>Logout</span>
+              </Link>
+            </li>
+          </>
+        )}
       </ul>
     </nav>
   );
