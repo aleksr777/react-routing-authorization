@@ -1,1 +1,1 @@
-# Стартовый шаблон React-приложения с роутингом и авторизацией
+## A React app starter template with routing and authorization
