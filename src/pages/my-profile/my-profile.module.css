@@ -1,4 +1,31 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .title {
   text-align: center;
   font-size: 30px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.logoutButton {
+  align-self: flex-start;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #8ea6ff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.logoutButton:disabled {
+  cursor: default;
+  opacity: 0.6;
 }

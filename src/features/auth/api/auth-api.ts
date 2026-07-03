@@ -20,7 +20,7 @@ export const loginRequest = async (dto: LoginDto): Promise<AuthTokens> => {
 
 export const logoutRequest = async (): Promise<void> => {
   try {
-    await apiRequest<void>('/auth/logout', {
+    await apiRequest<unknown>('/auth/logout', {
       method: 'POST',
       auth: 'access',
       retry: false,

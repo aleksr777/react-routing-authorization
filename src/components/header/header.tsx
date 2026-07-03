@@ -29,12 +29,6 @@ const Header = () => {
                 <span className={styles.linkText}>My profile</span>
               </Link>
             </li>
-
-            <li className={styles.li}>
-              <Link className={styles.link} to="/auth/logout">
-                <span className={styles.linkText}>Logout</span>
-              </Link>
-            </li>
           </>
         )}
       </ul>

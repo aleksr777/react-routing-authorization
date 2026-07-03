@@ -1,22 +1,15 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { refreshAuthTokens } from '../../../shared/api/api-client';
-import { clearAuthTokens, hasAuthTokens } from '../../../shared/api/tokens';
+import { clearAuthTokens } from '../../../shared/api/tokens';
 import { loginRequest, logoutRequest } from '../api/auth-api';
 import { AuthContext, type AuthContextValue } from './auth-context';
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
-  const [isAuth, setIsAuth] = useState(hasAuthTokens);
+  const [isAuth, setIsAuth] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
     const initializeAuth = async () => {
-      if (!hasAuthTokens()) {
-        setIsAuth(false);
-        setIsInitializing(false);
-
-        return;
-      }
-
       try {
         await refreshAuthTokens();
         setIsAuth(true);

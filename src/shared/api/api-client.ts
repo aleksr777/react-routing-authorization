@@ -1,14 +1,8 @@
-import {
-  clearAuthTokens,
-  getAccessToken,
-  getRefreshToken,
-  setAuthTokens,
-  type AuthTokens,
-} from './tokens';
+import { clearAuthTokens, getAccessToken, setAuthTokens, type AuthTokens } from './tokens';
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:1603/api';
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5174/api';
 
-type AuthMode = 'access' | 'refresh' | 'none';
+type AuthMode = 'access' | 'none';
 
 type ApiRequestOptions = Omit<RequestInit, 'headers'> & {
   auth?: AuthMode;
@@ -27,15 +21,10 @@ export class ApiError extends Error {
   }
 }
 
-const getTokenByMode = (auth: AuthMode): string | null => {
-  if (auth === 'access') return getAccessToken();
-  if (auth === 'refresh') return getRefreshToken();
-
-  return null;
-};
-
 const parseResponseBody = async (response: Response): Promise<unknown> => {
-  if (response.status === 204) return null;
+  if (response.status === 204) {
+    return null;
+  }
 
   const contentType = response.headers.get('content-type');
 
@@ -52,26 +41,22 @@ const getErrorMessage = (payload: unknown): string => {
   if (typeof payload === 'object' && payload !== null && 'message' in payload) {
     const message = (payload as { message: unknown }).message;
 
-    if (typeof message === 'string') return message;
-    if (Array.isArray(message)) return message.join(', ');
+    if (typeof message === 'string') {
+      return message;
+    }
+
+    if (Array.isArray(message)) {
+      return message.join(', ');
+    }
   }
 
   return 'Request failed';
 };
 
 export const refreshAuthTokens = async (): Promise<AuthTokens> => {
-  const refreshToken = getRefreshToken();
-
-  if (!refreshToken) {
-    clearAuthTokens();
-    throw new ApiError(401, 'Refresh token is missing', null);
-  }
-
   const response = await fetch(`${API_URL}/auth/refresh-tokens`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${refreshToken}`,
-    },
+    credentials: 'include',
   });
 
   const payload = await parseResponseBody(response);
@@ -82,6 +67,7 @@ export const refreshAuthTokens = async (): Promise<AuthTokens> => {
   }
 
   const tokens = payload as AuthTokens;
+
   setAuthTokens(tokens);
 
   return tokens;
@@ -89,14 +75,15 @@ export const refreshAuthTokens = async (): Promise<AuthTokens> => {
 
 export const apiRequest = async <T>(path: string, options: ApiRequestOptions = {}): Promise<T> => {
   const { auth = 'access', retry = true, headers = {}, ...rest } = options;
-  const token = getTokenByMode(auth);
+  const accessToken = getAccessToken();
 
   const response = await fetch(`${API_URL}${path}`, {
     ...rest,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(auth === 'access' && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     },
   });
 

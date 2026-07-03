@@ -30,14 +30,12 @@
   padding: 10px;
   width: 100%;
   border: 1px solid #8ea6ff;
-  border-radius: 6px;
   font-size: 16px;
 }
 
 .button {
   padding: 10px;
   border: none;
-  border-radius: 6px;
   background-color: #8ea6ff;
   cursor: pointer;
   font-size: 16px;
@@ -50,6 +48,6 @@
 
 .error {
   margin: 0;
-  color: #b00020;
+  color: #b00000;
   font-size: 14px;
 }
