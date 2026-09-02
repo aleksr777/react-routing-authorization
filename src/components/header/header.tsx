@@ -3,7 +3,7 @@ import { useAuth } from '../../features/auth/model/use-auth';
 import styles from './header.module.css';
 
 const Header = () => {
-  const { isAuth } = useAuth();
+  const { isAuth, isInitializing } = useAuth();
 
   return (
     <nav className={styles.nav}>
@@ -14,7 +14,7 @@ const Header = () => {
           </Link>
         </li>
 
-        {!isAuth && (
+        {!isInitializing && !isAuth && (
           <>
             <li className={styles.li}>
               <Link className={styles.link} to="/auth/login">
@@ -29,7 +29,7 @@ const Header = () => {
           </>
         )}
 
-        {isAuth && (
+        {!isInitializing && isAuth && (
           <li className={styles.li}>
             <Link className={styles.link} to="/users/me">
               <span className={styles.linkText}>My profile</span>
