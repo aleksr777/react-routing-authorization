@@ -15,21 +15,26 @@ const Header = () => {
         </li>
 
         {!isAuth && (
-          <li className={styles.li}>
-            <Link className={styles.link} to="/auth/login">
-              <span className={styles.linkText}>Login</span>
-            </Link>
-          </li>
-        )}
-
-        {isAuth && (
           <>
             <li className={styles.li}>
-              <Link className={styles.link} to="/users/me">
-                <span className={styles.linkText}>My profile</span>
+              <Link className={styles.link} to="/auth/login">
+                <span className={styles.linkText}>Login</span>
+              </Link>
+            </li>
+            <li className={styles.li}>
+              <Link className={styles.link} to="/auth/registration">
+                <span className={styles.linkText}>Registration</span>
               </Link>
             </li>
           </>
+        )}
+
+        {isAuth && (
+          <li className={styles.li}>
+            <Link className={styles.link} to="/users/me">
+              <span className={styles.linkText}>My profile</span>
+            </Link>
+          </li>
         )}
       </ul>
     </nav>
