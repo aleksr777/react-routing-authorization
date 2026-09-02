@@ -53,7 +53,9 @@ const getErrorMessage = (payload: unknown): string => {
   return 'Request failed';
 };
 
-export const refreshAuthTokens = async (): Promise<AuthTokens> => {
+let refreshPromise: Promise<AuthTokens> | null = null;
+
+const performRefreshAuthTokens = async (): Promise<AuthTokens> => {
   const response = await fetch(`${API_URL}/auth/refresh-tokens`, {
     method: 'POST',
     credentials: 'include',
@@ -71,6 +73,16 @@ export const refreshAuthTokens = async (): Promise<AuthTokens> => {
   setAuthTokens(tokens);
 
   return tokens;
+};
+
+export const refreshAuthTokens = (): Promise<AuthTokens> => {
+  if (!refreshPromise) {
+    refreshPromise = performRefreshAuthTokens().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
 };
 
 export const apiRequest = async <T>(path: string, options: ApiRequestOptions = {}): Promise<T> => {
