@@ -88,7 +88,7 @@ const Registration = () => {
       <h1 className={styles.title}>Registration</h1>
 
       {!isCodeStep ? (
-        <form className={styles.form} onSubmit={handleRegistrationRequest}>
+        <form key="registration-request" className={styles.form} onSubmit={handleRegistrationRequest}>
           <label className={styles.label}>
             Email
             <input className={styles.input} name="email" type="email" autoComplete="email" required />
@@ -127,7 +127,7 @@ const Registration = () => {
           </button>
         </form>
       ) : (
-        <form className={styles.form} onSubmit={handleRegistrationConfirm}>
+        <form key="registration-confirm" className={styles.form} onSubmit={handleRegistrationConfirm}>
           {message && <p className={styles.message}>{message}</p>}
 
           <label className={styles.label}>
