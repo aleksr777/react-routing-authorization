@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { refreshAuthTokens } from '../../../shared/api/api-client';
 import { clearAuthTokens } from '../../../shared/api/tokens';
-import { loginRequest, logoutRequest } from '../api/auth-api';
+import {
+  loginRequest,
+  logoutRequest,
+  registrationConfirmRequest,
+  registrationRequest,
+} from '../api/auth-api';
 import { AuthContext, type AuthContextValue } from './auth-context';
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -29,6 +34,17 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     setIsAuth(true);
   }, []);
 
+  const requestRegistration = useCallback(async (email: string, password: string) => {
+    const response = await registrationRequest({ email, password });
+
+    return response.message;
+  }, []);
+
+  const confirmRegistration = useCallback(async (code: string) => {
+    await registrationConfirmRequest({ code });
+    setIsAuth(true);
+  }, []);
+
   const logout = useCallback(async () => {
     await logoutRequest();
     setIsAuth(false);
@@ -39,9 +55,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       isAuth,
       isInitializing,
       login,
+      requestRegistration,
+      confirmRegistration,
       logout,
     }),
-    [isAuth, isInitializing, login, logout],
+    [isAuth, isInitializing, login, requestRegistration, confirmRegistration, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
