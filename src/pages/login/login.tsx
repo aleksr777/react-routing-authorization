@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
 import styles from './login.module.css';
 
@@ -29,16 +29,13 @@ const Login = () => {
 
     if (!email || !password) {
       setError('Enter email and password');
-
       return;
     }
 
     try {
       setError(null);
       setIsSubmitting(true);
-
       await login(email, password);
-
       navigate(redirectTo, { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -74,6 +71,10 @@ const Login = () => {
           {isSubmitting ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
+
+      <Link className={styles.link} to="/auth/password-reset">
+        Forgot password?
+      </Link>
     </section>
   );
 };
