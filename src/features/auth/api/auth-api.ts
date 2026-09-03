@@ -15,6 +15,15 @@ type RegistrationConfirmDto = {
   code: string;
 };
 
+type PasswordResetRequestDto = {
+  email: string;
+};
+
+type PasswordResetConfirmDto = {
+  code: string;
+  new_password: string;
+};
+
 type MessageResponse = {
   message: string;
 };
@@ -27,7 +36,6 @@ export const loginRequest = async (dto: LoginDto): Promise<AuthTokens> => {
   });
 
   setAuthTokens(tokens);
-
   return tokens;
 };
 
@@ -51,7 +59,29 @@ export const registrationConfirmRequest = async (
   });
 
   setAuthTokens(tokens);
+  return tokens;
+};
 
+export const passwordResetRequest = async (
+  dto: PasswordResetRequestDto,
+): Promise<MessageResponse> => {
+  return apiRequest<MessageResponse>('/auth/password-reset/request', {
+    method: 'POST',
+    auth: 'none',
+    body: JSON.stringify(dto),
+  });
+};
+
+export const passwordResetConfirmRequest = async (
+  dto: PasswordResetConfirmDto,
+): Promise<AuthTokens> => {
+  const tokens = await apiRequest<AuthTokens>('/auth/password-reset/confirm', {
+    method: 'POST',
+    auth: 'none',
+    body: JSON.stringify(dto),
+  });
+
+  setAuthTokens(tokens);
   return tokens;
 };
 
