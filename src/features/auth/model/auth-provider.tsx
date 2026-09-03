@@ -4,6 +4,8 @@ import { clearAuthTokens } from '../../../shared/api/tokens';
 import {
   loginRequest,
   logoutRequest,
+  passwordResetConfirmRequest,
+  passwordResetRequest,
   registrationConfirmRequest,
   registrationRequest,
 } from '../api/auth-api';
@@ -36,12 +38,21 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const requestRegistration = useCallback(async (email: string, password: string) => {
     const response = await registrationRequest({ email, password });
-
     return response.message;
   }, []);
 
   const confirmRegistration = useCallback(async (code: string) => {
     await registrationConfirmRequest({ code });
+    setIsAuth(true);
+  }, []);
+
+  const requestPasswordReset = useCallback(async (email: string) => {
+    const response = await passwordResetRequest({ email });
+    return response.message;
+  }, []);
+
+  const confirmPasswordReset = useCallback(async (code: string, newPassword: string) => {
+    await passwordResetConfirmRequest({ code, new_password: newPassword });
     setIsAuth(true);
   }, []);
 
@@ -57,9 +68,20 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       login,
       requestRegistration,
       confirmRegistration,
+      requestPasswordReset,
+      confirmPasswordReset,
       logout,
     }),
-    [isAuth, isInitializing, login, requestRegistration, confirmRegistration, logout],
+    [
+      isAuth,
+      isInitializing,
+      login,
+      requestRegistration,
+      confirmRegistration,
+      requestPasswordReset,
+      confirmPasswordReset,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
