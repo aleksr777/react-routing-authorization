@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
 import RegistrationConfirmForm from './registration-confirm-form';
 import RegistrationRequestForm from './registration-request-form';
@@ -97,6 +97,10 @@ const Registration = () => {
           onSubmit={handleRegistrationRequest}
         />
       )}
+
+      <Link className={styles.link} to="/auth/password-reset">
+        Forgot password?
+      </Link>
     </section>
   );
 };
