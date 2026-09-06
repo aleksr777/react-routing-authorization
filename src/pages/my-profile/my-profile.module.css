@@ -15,6 +15,17 @@
   gap: 8px;
 }
 
+.settingsLink {
+  width: fit-content;
+  color: #0000ee;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.settingsLink:hover {
+  opacity: 0.7;
+}
+
 .logoutButton {
   align-self: flex-start;
   padding: 10px 16px;
