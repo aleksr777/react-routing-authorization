@@ -84,11 +84,25 @@ const ChangePassword = () => {
         <form className={styles.form} onSubmit={handleChangePassword}>
           <label className={styles.label}>
             New password
-            <input className={styles.input} name="newPassword" type="password" minLength={8} maxLength={100} required />
+            <input
+              className={styles.input}
+              name="newPassword"
+              type="password"
+              minLength={8}
+              maxLength={100}
+              required
+            />
           </label>
           <label className={styles.label}>
             Repeat new password
-            <input className={styles.input} name="newPasswordConfirm" type="password" minLength={8} maxLength={100} required />
+            <input
+              className={styles.input}
+              name="newPasswordConfirm"
+              type="password"
+              minLength={8}
+              maxLength={100}
+              required
+            />
           </label>
           {error && <p className={styles.error}>{error}</p>}
           <button className={styles.button} type="submit" disabled={isSubmitting}>
