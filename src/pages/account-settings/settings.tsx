@@ -13,6 +13,9 @@ const Settings = () => {
         <Link className={styles.link} to="/users/me/settings/email">
           Change email
         </Link>
+        <Link className={styles.link} to="/users/me">
+          Back to profile
+        </Link>
       </div>
     </section>
   );
