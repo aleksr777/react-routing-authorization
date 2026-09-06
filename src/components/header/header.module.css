@@ -37,11 +37,14 @@
 .linkText,
 .currentLink {
   user-select: none;
-  color: #000000;
   font-size: 18px;
 }
 
+.linkText {
+  color: #0000ee;
+}
+
 .currentLink {
-  text-decoration: underline;
+  color: #000000;
   cursor: default;
 }
