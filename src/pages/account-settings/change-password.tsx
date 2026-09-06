@@ -4,6 +4,8 @@ import {
   confirmPasswordChange,
   requestPasswordChange,
 } from '../../features/users/api/account-settings-api';
+import PasswordCurrentForm from './password-current-form';
+import PasswordNewForm from './password-new-form';
 import styles from './account-settings.module.css';
 
 const ChangePassword = () => {
@@ -61,54 +63,18 @@ const ChangePassword = () => {
     <section className={styles.wrapper}>
       <h1 className={styles.title}>Change password</h1>
 
-      {!code ? (
-        <form className={styles.form} onSubmit={handleVerifyOldPassword}>
-          <label className={styles.label}>
-            Current password
-            <input
-              className={styles.input}
-              name="oldPassword"
-              type="password"
-              autoComplete="current-password"
-              minLength={8}
-              maxLength={100}
-              required
-            />
-          </label>
-          {error && <p className={styles.error}>{error}</p>}
-          <button className={styles.button} type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Checking...' : 'Continue'}
-          </button>
-        </form>
+      {code ? (
+        <PasswordNewForm
+          error={error}
+          isSubmitting={isSubmitting}
+          onSubmit={handleChangePassword}
+        />
       ) : (
-        <form className={styles.form} onSubmit={handleChangePassword}>
-          <label className={styles.label}>
-            New password
-            <input
-              className={styles.input}
-              name="newPassword"
-              type="password"
-              minLength={8}
-              maxLength={100}
-              required
-            />
-          </label>
-          <label className={styles.label}>
-            Repeat new password
-            <input
-              className={styles.input}
-              name="newPasswordConfirm"
-              type="password"
-              minLength={8}
-              maxLength={100}
-              required
-            />
-          </label>
-          {error && <p className={styles.error}>{error}</p>}
-          <button className={styles.button} type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Change password'}
-          </button>
-        </form>
+        <PasswordCurrentForm
+          error={error}
+          isSubmitting={isSubmitting}
+          onSubmit={handleVerifyOldPassword}
+        />
       )}
     </section>
   );
