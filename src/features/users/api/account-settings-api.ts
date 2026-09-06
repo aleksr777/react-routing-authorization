@@ -13,11 +13,15 @@ export const requestPasswordChange = async (
     body: JSON.stringify({ old_password: oldPassword }),
   });
 
-export const confirmPasswordChange = async (code: string, newPassword: string): Promise<void> => {
+export const confirmPasswordChange = async (
+  code: string,
+  newPassword: string,
+): Promise<void> => {
   const result = await apiRequest<AuthTokens>('/users/me/password/change/confirm', {
     method: 'POST',
     body: JSON.stringify({ code, new_password: newPassword }),
   });
+
   setAuthTokens(result);
 };
 
@@ -33,5 +37,6 @@ export const confirmEmailChange = async (code: string): Promise<void> => {
     method: 'POST',
     body: JSON.stringify({ code }),
   });
+
   setAuthTokens(result);
 };
