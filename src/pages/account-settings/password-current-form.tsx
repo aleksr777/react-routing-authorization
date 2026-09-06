@@ -5,9 +5,15 @@ type PasswordCurrentFormProps = {
   error: string | null;
   isSubmitting: boolean;
   onSubmit: FormEventHandler<HTMLFormElement>;
+  onForgotPassword: () => void;
 };
 
-const PasswordCurrentForm = ({ error, isSubmitting, onSubmit }: PasswordCurrentFormProps) => (
+const PasswordCurrentForm = ({
+  error,
+  isSubmitting,
+  onSubmit,
+  onForgotPassword,
+}: PasswordCurrentFormProps) => (
   <form className={styles.form} onSubmit={onSubmit}>
     <label className={styles.label}>
       Current password
@@ -26,6 +32,15 @@ const PasswordCurrentForm = ({ error, isSubmitting, onSubmit }: PasswordCurrentF
 
     <button className={styles.button} type="submit" disabled={isSubmitting}>
       {isSubmitting ? 'Checking...' : 'Continue'}
+    </button>
+
+    <button
+      className={styles.secondaryButton}
+      type="button"
+      disabled={isSubmitting}
+      onClick={onForgotPassword}
+    >
+      Forgot current password?
     </button>
   </form>
 );
