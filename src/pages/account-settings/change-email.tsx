@@ -67,7 +67,13 @@ const ChangeEmail = () => {
         <form className={styles.form} onSubmit={handleRequest}>
           <label className={styles.label}>
             New email
-            <input className={styles.input} name="newEmail" type="email" autoComplete="email" required />
+            <input
+              className={styles.input}
+              name="newEmail"
+              type="email"
+              autoComplete="email"
+              required
+            />
           </label>
           {error && <p className={styles.error}>{error}</p>}
           <button className={styles.button} type="submit" disabled={isSubmitting}>
