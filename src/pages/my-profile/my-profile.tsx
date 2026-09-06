@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
 import { getCurrentUserRequest, type CurrentUser } from '../../features/users/api/users-api';
 import styles from './my-profile.module.css';
@@ -73,6 +73,10 @@ const MyProfile = () => {
         <p>Nickname: {user.nickname}</p>
         <p>Role: {user.role}</p>
       </div>
+
+      <Link className={styles.settingsLink} to="/users/me/settings">
+        Settings
+      </Link>
 
       <button
         className={styles.logoutButton}
