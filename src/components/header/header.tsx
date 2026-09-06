@@ -32,11 +32,7 @@ const Header = () => {
         {!isInitializing && !isAuth && (
           <>
             <NavigationItem to="/auth/login" label="Login" currentPath={pathname} />
-            <NavigationItem
-              to="/auth/registration"
-              label="Registration"
-              currentPath={pathname}
-            />
+            <NavigationItem to="/auth/registration" label="Registration" currentPath={pathname} />
           </>
         )}
 
