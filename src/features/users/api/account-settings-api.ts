@@ -25,6 +25,24 @@ export const confirmPasswordChange = async (
   setAuthTokens(result);
 };
 
+export const requestCurrentUserPasswordReset = async (): Promise<void> => {
+  await apiRequest('/users/me/password/reset/request', {
+    method: 'POST',
+  });
+};
+
+export const confirmCurrentUserPasswordReset = async (
+  code: string,
+  newPassword: string,
+): Promise<void> => {
+  const result = await apiRequest<AuthTokens>('/users/me/password/reset/confirm', {
+    method: 'POST',
+    body: JSON.stringify({ code, new_password: newPassword }),
+  });
+
+  setAuthTokens(result);
+};
+
 export const requestEmailChange = async (newEmail: string): Promise<void> => {
   await apiRequest('/users/me/email/update/request', {
     method: 'POST',
