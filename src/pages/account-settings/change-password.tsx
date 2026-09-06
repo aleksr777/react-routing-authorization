@@ -1,28 +1,50 @@
 import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  confirmCurrentUserPasswordReset,
   confirmPasswordChange,
+  requestCurrentUserPasswordReset,
   requestPasswordChange,
 } from '../../features/users/api/account-settings-api';
 import PasswordCurrentForm from './password-current-form';
 import PasswordNewForm from './password-new-form';
+import PasswordResetForm from './password-reset-form';
 import styles from './account-settings.module.css';
+
+const getNewPasswords = (form: HTMLFormElement) => {
+  const data = new FormData(form);
+  return {
+    newPassword: String(data.get('newPassword') ?? ''),
+    confirm: String(data.get('newPasswordConfirm') ?? ''),
+  };
+};
 
 const ChangePassword = () => {
   const navigate = useNavigate();
   const [code, setCode] = useState<string | null>(null);
+  const [isReset, setIsReset] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleVerifyOldPassword = async (event: FormEvent<HTMLFormElement>) => {
+  const validatePasswords = (password: string, confirm: string) => {
+    if (password.length < 8 || password.length > 100) {
+      setError('Password must contain from 8 to 100 characters');
+      return false;
+    }
+    if (password !== confirm) {
+      setError('Passwords do not match');
+      return false;
+    }
+    return true;
+  };
+
+  const handleVerify = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const oldPassword = String(new FormData(event.currentTarget).get('oldPassword') ?? '');
-
     try {
       setError(null);
       setIsSubmitting(true);
-      const response = await requestPasswordChange(oldPassword);
-      setCode(response.code);
+      setCode((await requestPasswordChange(oldPassword)).code);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to verify password');
     } finally {
@@ -30,23 +52,24 @@ const ChangePassword = () => {
     }
   };
 
-  const handleChangePassword = async (event: FormEvent<HTMLFormElement>) => {
+  const handleForgotPassword = async () => {
+    try {
+      setError(null);
+      setIsSubmitting(true);
+      await requestCurrentUserPasswordReset();
+      setIsReset(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to send confirmation code');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!code) return;
-
-    const formData = new FormData(event.currentTarget);
-    const newPassword = String(formData.get('newPassword') ?? '');
-    const newPasswordConfirm = String(formData.get('newPasswordConfirm') ?? '');
-
-    if (newPassword.length < 8 || newPassword.length > 100) {
-      setError('Password must contain from 8 to 100 characters');
-      return;
-    }
-    if (newPassword !== newPasswordConfirm) {
-      setError('Passwords do not match');
-      return;
-    }
-
+    const { newPassword, confirm } = getNewPasswords(event.currentTarget);
+    if (!validatePasswords(newPassword, confirm)) return;
     try {
       setError(null);
       setIsSubmitting(true);
@@ -59,21 +82,40 @@ const ChangePassword = () => {
     }
   };
 
+  const handleReset = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const resetCode = String(data.get('code') ?? '').trim();
+    const { newPassword, confirm } = getNewPasswords(event.currentTarget);
+    if (!/^\d{6}$/.test(resetCode) || !validatePasswords(newPassword, confirm)) {
+      if (!/^\d{6}$/.test(resetCode)) setError('Enter the 6-digit code');
+      return;
+    }
+    try {
+      setError(null);
+      setIsSubmitting(true);
+      await confirmCurrentUserPasswordReset(resetCode, newPassword);
+      navigate('/users/me/settings', { replace: true });
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Password reset failed');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className={styles.wrapper}>
       <h1 className={styles.title}>Change password</h1>
-
-      {code ? (
-        <PasswordNewForm
-          error={error}
-          isSubmitting={isSubmitting}
-          onSubmit={handleChangePassword}
-        />
+      {isReset ? (
+        <PasswordResetForm error={error} isSubmitting={isSubmitting} onSubmit={handleReset} />
+      ) : code ? (
+        <PasswordNewForm error={error} isSubmitting={isSubmitting} onSubmit={handleChange} />
       ) : (
         <PasswordCurrentForm
           error={error}
           isSubmitting={isSubmitting}
-          onSubmit={handleVerifyOldPassword}
+          onSubmit={handleVerify}
+          onForgotPassword={handleForgotPassword}
         />
       )}
     </section>
