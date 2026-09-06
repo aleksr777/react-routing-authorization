@@ -24,6 +24,14 @@ export const getAccessTokenExpires = (): number | null => {
   return accessTokenExpires;
 };
 
+export const isAccessTokenExpiringSoon = (thresholdSeconds = 30): boolean => {
+  if (!accessToken || accessTokenExpires === null) {
+    return true;
+  }
+
+  return accessTokenExpires <= Math.floor(Date.now() / 1000) + thresholdSeconds;
+};
+
 export const hasAccessToken = (): boolean => {
   return Boolean(accessToken);
 };
