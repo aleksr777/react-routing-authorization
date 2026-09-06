@@ -9,15 +9,8 @@ import {
 import PasswordCurrentForm from './password-current-form';
 import PasswordNewForm from './password-new-form';
 import PasswordResetForm from './password-reset-form';
+import { getNewPasswords, getPasswordValidationError } from './password-form-utils';
 import styles from './account-settings.module.css';
-
-const getNewPasswords = (form: HTMLFormElement) => {
-  const data = new FormData(form);
-  return {
-    newPassword: String(data.get('newPassword') ?? ''),
-    confirm: String(data.get('newPasswordConfirm') ?? ''),
-  };
-};
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -27,15 +20,9 @@ const ChangePassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validatePasswords = (password: string, confirm: string) => {
-    if (password.length < 8 || password.length > 100) {
-      setError('Password must contain from 8 to 100 characters');
-      return false;
-    }
-    if (password !== confirm) {
-      setError('Passwords do not match');
-      return false;
-    }
-    return true;
+    const validationError = getPasswordValidationError(password, confirm);
+    setError(validationError);
+    return validationError === null;
   };
 
   const handleVerify = async (event: FormEvent<HTMLFormElement>) => {
