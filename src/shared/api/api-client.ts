@@ -1,4 +1,10 @@
-import { clearAuthTokens, getAccessToken, setAuthTokens, type AuthTokens } from './tokens';
+import {
+  clearAuthTokens,
+  getAccessToken,
+  isAccessTokenExpiringSoon,
+  setAuthTokens,
+  type AuthTokens,
+} from './tokens';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5174/api';
 
@@ -22,32 +28,20 @@ export class ApiError extends Error {
 }
 
 const parseResponseBody = async (response: Response): Promise<unknown> => {
-  if (response.status === 204) {
-    return null;
-  }
+  if (response.status === 204) return null;
 
   const contentType = response.headers.get('content-type');
-
-  if (contentType?.includes('application/json')) {
-    return response.json();
-  }
+  if (contentType?.includes('application/json')) return response.json();
 
   const text = await response.text();
-
   return text || null;
 };
 
 const getErrorMessage = (payload: unknown): string => {
   if (typeof payload === 'object' && payload !== null && 'message' in payload) {
     const message = (payload as { message: unknown }).message;
-
-    if (typeof message === 'string') {
-      return message;
-    }
-
-    if (Array.isArray(message)) {
-      return message.join(', ');
-    }
+    if (typeof message === 'string') return message;
+    if (Array.isArray(message)) return message.join(', ');
   }
 
   return 'Request failed';
@@ -60,7 +54,6 @@ const performRefreshAuthTokens = async (): Promise<AuthTokens> => {
     method: 'POST',
     credentials: 'include',
   });
-
   const payload = await parseResponseBody(response);
 
   if (!response.ok) {
@@ -69,9 +62,7 @@ const performRefreshAuthTokens = async (): Promise<AuthTokens> => {
   }
 
   const tokens = payload as AuthTokens;
-
   setAuthTokens(tokens);
-
   return tokens;
 };
 
@@ -87,8 +78,12 @@ export const refreshAuthTokens = (): Promise<AuthTokens> => {
 
 export const apiRequest = async <T>(path: string, options: ApiRequestOptions = {}): Promise<T> => {
   const { auth = 'access', retry = true, headers = {}, ...rest } = options;
-  const accessToken = getAccessToken();
 
+  if (auth === 'access' && isAccessTokenExpiringSoon()) {
+    await refreshAuthTokens();
+  }
+
+  const accessToken = getAccessToken();
   const response = await fetch(`${API_URL}${path}`, {
     ...rest,
     credentials: 'include',
@@ -98,16 +93,11 @@ export const apiRequest = async <T>(path: string, options: ApiRequestOptions = {
       ...(auth === 'access' && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     },
   });
-
   const payload = await parseResponseBody(response);
 
   if (response.status === 401 && auth === 'access' && retry) {
     await refreshAuthTokens();
-
-    return apiRequest<T>(path, {
-      ...options,
-      retry: false,
-    });
+    return apiRequest<T>(path, { ...options, retry: false });
   }
 
   if (!response.ok) {
