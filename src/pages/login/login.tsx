@@ -9,8 +9,6 @@ type LocationState = {
   };
 };
 
-const PROFILE_DELETE_PATH = '/users/me/settings/delete';
-
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -20,8 +18,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const state = location.state as LocationState | null;
-  const fromPath = state?.from?.pathname;
-  const redirectTo = !fromPath || fromPath === PROFILE_DELETE_PATH ? '/users/me' : fromPath;
+  const redirectTo = state?.from?.pathname ?? '/users/me';
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
