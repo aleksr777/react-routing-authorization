@@ -12,7 +12,7 @@ const Settings = () => {
     const loadRole = async () => {
       try {
         const user = await getCurrentUserRequest();
-        if (isMounted) setIsAdmin(user.role === 'ADMIN');
+        if (isMounted) setIsAdmin(user.role === 'admin');
       } catch {
         if (isMounted) setIsAdmin(null);
       }
