@@ -61,7 +61,7 @@ const Registration = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmRegistration(code);
-      navigate('/users/me', { replace: true });
+      navigate('/', { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration confirmation failed');
     } finally {
@@ -76,7 +76,7 @@ const Registration = () => {
   };
 
   if (isInitializing) return <p>Loading...</p>;
-  if (isAuth) return <Navigate to="/users/me" replace />;
+  if (isAuth) return <Navigate to="/" replace />;
 
   return (
     <section className={styles.wrapper}>
