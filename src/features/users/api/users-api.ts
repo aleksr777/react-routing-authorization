@@ -12,3 +12,10 @@ export type CurrentUser = {
 export const getCurrentUserRequest = async (): Promise<CurrentUser> => {
   return apiRequest<CurrentUser>('/users/me');
 };
+
+export const deleteCurrentUserRequest = async (password: string): Promise<void> => {
+  await apiRequest('/users/me/delete', {
+    method: 'DELETE',
+    body: JSON.stringify({ password }),
+  });
+};
