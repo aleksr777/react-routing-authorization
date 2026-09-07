@@ -44,8 +44,8 @@ const DeleteProfile = () => {
       setSubmitError(null);
       setIsSubmitting(true);
       await deleteCurrentUserRequest(password);
-      clearSession();
       navigate('/', { replace: true });
+      clearSession();
     } catch (err: unknown) {
       setSubmitError(err instanceof Error ? err.message : 'Profile deletion failed');
     } finally {
