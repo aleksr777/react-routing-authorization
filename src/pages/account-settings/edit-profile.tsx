@@ -6,6 +6,7 @@ import {
   type CurrentUser,
   type UpdateCurrentUserData,
 } from '../../features/users/api/users-api';
+import EditProfileForm from './edit-profile-form';
 import styles from './account-settings.module.css';
 
 const EditProfile = () => {
@@ -18,29 +19,28 @@ const EditProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const applyUser = (currentUser: CurrentUser) => {
+    setUser(currentUser);
+    setNickname(currentUser.nickname ?? '');
+    setName(currentUser.name ?? '');
+    setAge(currentUser.age === null ? '' : String(currentUser.age));
+  };
+
   useEffect(() => {
     let isMounted = true;
 
     const loadProfile = async () => {
       try {
         const currentUser = await getCurrentUserRequest();
-        if (!isMounted) return;
-
-        setUser(currentUser);
-        setNickname(currentUser.nickname ?? '');
-        setName(currentUser.name ?? '');
-        setAge(currentUser.age === null ? '' : String(currentUser.age));
+        if (isMounted) applyUser(currentUser);
       } catch (err: unknown) {
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load profile');
-        }
+        if (isMounted) setError(err instanceof Error ? err.message : 'Failed to load profile');
       } finally {
         if (isMounted) setIsLoading(false);
       }
     };
 
     void loadProfile();
-
     return () => {
       isMounted = false;
     };
@@ -56,30 +56,18 @@ const EditProfile = () => {
     const patch: UpdateCurrentUserData = {};
 
     if (nextNickname !== (user.nickname ?? '')) {
-      if (!nextNickname) {
-        setError('Nickname cannot be empty');
-        return;
-      }
+      if (!nextNickname) return setError('Nickname cannot be empty');
       patch.nickname = nextNickname;
     }
-
     if (nextName !== (user.name ?? '')) {
-      if (!nextName) {
-        setError('Name cannot be empty');
-        return;
-      }
+      if (!nextName) return setError('Name cannot be empty');
       patch.name = nextName;
     }
-
     if (nextAge !== (user.age === null ? '' : String(user.age))) {
-      if (!nextAge) {
-        setError('Age cannot be empty');
-        return;
-      }
+      if (!nextAge) return setError('Age cannot be empty');
       const parsedAge = Number(nextAge);
       if (!Number.isInteger(parsedAge) || parsedAge < 0 || parsedAge > 200) {
-        setError('Age must be an integer from 0 to 200');
-        return;
+        return setError('Age must be an integer from 0 to 200');
       }
       patch.age = parsedAge;
     }
@@ -94,11 +82,7 @@ const EditProfile = () => {
       setError(null);
       setMessage(null);
       setIsSubmitting(true);
-      const updatedUser = await updateCurrentUserRequest(patch);
-      setUser(updatedUser);
-      setNickname(updatedUser.nickname ?? '');
-      setName(updatedUser.name ?? '');
-      setAge(updatedUser.age === null ? '' : String(updatedUser.age));
+      applyUser(await updateCurrentUserRequest(patch));
       setMessage('Profile updated');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Profile update failed');
@@ -113,51 +97,18 @@ const EditProfile = () => {
   return (
     <section className={styles.wrapper}>
       <h1 className={styles.title}>Edit profile</h1>
-
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <label className={styles.label}>
-          Nickname
-          <input
-            className={styles.input}
-            value={nickname}
-            onChange={(event) => setNickname(event.target.value)}
-            minLength={2}
-            maxLength={50}
-          />
-        </label>
-
-        <label className={styles.label}>
-          Name
-          <input
-            className={styles.input}
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            minLength={2}
-            maxLength={200}
-          />
-        </label>
-
-        <label className={styles.label}>
-          Age
-          <input
-            className={styles.input}
-            value={age}
-            onChange={(event) => setAge(event.target.value)}
-            type="number"
-            min={0}
-            max={200}
-            step={1}
-          />
-        </label>
-
-        {error && <p className={styles.error}>{error}</p>}
-        {message && <p className={styles.message}>{message}</p>}
-
-        <button className={styles.button} type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save changes'}
-        </button>
-      </form>
-
+      <EditProfileForm
+        nickname={nickname}
+        name={name}
+        age={age}
+        error={error}
+        message={message}
+        isSubmitting={isSubmitting}
+        onNicknameChange={setNickname}
+        onNameChange={setName}
+        onAgeChange={setAge}
+        onSubmit={handleSubmit}
+      />
       <Link className={styles.link} to="/users/me/settings">
         Back to settings
       </Link>
