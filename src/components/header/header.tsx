@@ -28,6 +28,7 @@ const Header = () => {
     <nav className={styles.nav}>
       <ul className={styles.ul}>
         <NavigationItem to="/" label="Home" currentPath={pathname} />
+        <NavigationItem to="/protected-page" label="Protected page" currentPath={pathname} />
 
         {!isInitializing && !isAuth && (
           <>
@@ -37,10 +38,7 @@ const Header = () => {
         )}
 
         {!isInitializing && isAuth && (
-          <>
-            <NavigationItem to="/protected-page" label="Protected page" currentPath={pathname} />
-            <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
-          </>
+          <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
         )}
       </ul>
     </nav>
