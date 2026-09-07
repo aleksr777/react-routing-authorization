@@ -21,14 +21,23 @@
   max-width: 360px;
 }
 
-.link {
+.link,
+.dangerLink {
   width: fit-content;
-  color: #0000ee;
   text-decoration: none;
   font-size: 18px;
 }
 
-.link:hover {
+.link {
+  color: #0000ee;
+}
+
+.dangerLink {
+  color: #b00000;
+}
+
+.link:hover,
+.dangerLink:hover {
   opacity: 0.7;
 }
 
@@ -48,7 +57,8 @@
 }
 
 .button,
-.secondaryButton {
+.secondaryButton,
+.dangerButton {
   padding: 10px;
   border: none;
   cursor: pointer;
@@ -64,18 +74,26 @@
   background-color: transparent;
 }
 
+.dangerButton {
+  background-color: #b00000;
+  color: #ffffff;
+}
+
 .button:disabled,
-.secondaryButton:disabled {
+.secondaryButton:disabled,
+.dangerButton:disabled {
   cursor: default;
   opacity: 0.6;
 }
 
 .error,
-.message {
+.message,
+.warning {
   margin: 0;
   font-size: 14px;
 }
 
-.error {
+.error,
+.warning {
   color: #b00000;
 }
