@@ -30,6 +30,9 @@ const Settings = () => {
       <h1 className={styles.title}>Settings</h1>
 
       <div className={styles.links}>
+        <Link className={styles.link} to="/users/me/settings/profile">
+          Edit profile
+        </Link>
         <Link className={styles.link} to="/users/me/settings/password">
           Change password
         </Link>
