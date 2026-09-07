@@ -56,6 +56,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     setIsAuth(true);
   }, []);
 
+  const clearSession = useCallback(() => {
+    clearAuthTokens();
+    setIsAuth(false);
+  }, []);
+
   const logout = useCallback(async () => {
     await logoutRequest();
     setIsAuth(false);
@@ -71,6 +76,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       requestPasswordReset,
       confirmPasswordReset,
       logout,
+      clearSession,
     }),
     [
       isAuth,
@@ -81,6 +87,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       requestPasswordReset,
       confirmPasswordReset,
       logout,
+      clearSession,
     ],
   );
 
