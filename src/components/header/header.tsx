@@ -38,7 +38,7 @@ const Header = () => {
 
         {!isInitializing && isAuth && (
           <>
-            <NavigationItem to="/dashboard" label="Dashboard" currentPath={pathname} />
+            <NavigationItem to="/protected-page" label="Protected page" currentPath={pathname} />
             <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
           </>
         )}
