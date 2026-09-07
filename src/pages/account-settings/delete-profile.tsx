@@ -20,7 +20,7 @@ const DeleteProfile = () => {
     const loadRole = async () => {
       try {
         const user = await getCurrentUserRequest();
-        if (isMounted) setIsAdmin(user.role === 'ADMIN');
+        if (isMounted) setIsAdmin(user.role === 'admin');
       } catch (err: unknown) {
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Failed to load user');
