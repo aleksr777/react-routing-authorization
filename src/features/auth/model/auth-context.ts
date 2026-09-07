@@ -9,6 +9,7 @@ export type AuthContextValue = {
   requestPasswordReset: (email: string) => Promise<string>;
   confirmPasswordReset: (code: string, newPassword: string) => Promise<void>;
   logout: () => Promise<void>;
+  clearSession: () => void;
 };
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
