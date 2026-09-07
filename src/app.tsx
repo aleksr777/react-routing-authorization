@@ -8,6 +8,7 @@ import Registration from './pages/registration/registration';
 import ProtectedPage from './pages/protected-page/protected-page';
 import MyProfile from './pages/my-profile/my-profile';
 import Settings from './pages/account-settings/settings';
+import EditProfile from './pages/account-settings/edit-profile';
 import ChangePassword from './pages/account-settings/change-password';
 import ChangeEmail from './pages/account-settings/change-email';
 import DeleteProfile from './pages/account-settings/delete-profile';
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="protected-page" element={<ProtectedPage />} />
           <Route path="users/me" element={<MyProfile />} />
           <Route path="users/me/settings" element={<Settings />} />
+          <Route path="users/me/settings/profile" element={<EditProfile />} />
           <Route path="users/me/settings/password" element={<ChangePassword />} />
           <Route path="users/me/settings/email" element={<ChangeEmail />} />
           <Route path="users/me/settings/delete" element={<DeleteProfile />} />
