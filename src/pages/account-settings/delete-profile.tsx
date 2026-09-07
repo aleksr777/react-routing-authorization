@@ -11,7 +11,8 @@ const DeleteProfile = () => {
   const navigate = useNavigate();
   const { clearSession } = useAuth();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ const DeleteProfile = () => {
         if (isMounted) setIsAdmin(user.role === 'admin');
       } catch (err: unknown) {
         if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load user');
+          setLoadError(err instanceof Error ? err.message : 'Failed to load user');
         }
       }
     };
@@ -40,19 +41,19 @@ const DeleteProfile = () => {
     const password = String(new FormData(event.currentTarget).get('password') ?? '');
 
     try {
-      setError(null);
+      setSubmitError(null);
       setIsSubmitting(true);
       await deleteCurrentUserRequest(password);
       clearSession();
       navigate('/', { replace: true });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Profile deletion failed');
+      setSubmitError(err instanceof Error ? err.message : 'Profile deletion failed');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (isAdmin === null && !error) {
+  if (isAdmin === null && !loadError) {
     return <p>Loading profile...</p>;
   }
 
@@ -62,8 +63,8 @@ const DeleteProfile = () => {
 
       {isAdmin ? (
         <p className={styles.warning}>Administrator profile cannot be deleted.</p>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
+      ) : loadError ? (
+        <p className={styles.error}>{loadError}</p>
       ) : (
         <>
           <p className={styles.warning}>This action is permanent and cannot be undone.</p>
@@ -81,7 +82,7 @@ const DeleteProfile = () => {
               />
             </label>
 
-            {error && <p className={styles.error}>{error}</p>}
+            {submitError && <p className={styles.error}>{submitError}</p>}
 
             <button className={styles.dangerButton} type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Deleting...' : 'Delete profile'}
