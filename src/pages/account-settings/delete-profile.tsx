@@ -1,6 +1,5 @@
 import { type FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../features/auth/model/use-auth';
+import { Link } from 'react-router-dom';
 import {
   deleteCurrentUserRequest,
   getCurrentUserRequest,
@@ -8,8 +7,6 @@ import {
 import styles from './account-settings.module.css';
 
 const DeleteProfile = () => {
-  const navigate = useNavigate();
-  const { clearSession } = useAuth();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -44,8 +41,7 @@ const DeleteProfile = () => {
       setSubmitError(null);
       setIsSubmitting(true);
       await deleteCurrentUserRequest(password);
-      navigate('/', { replace: true });
-      clearSession();
+      window.location.replace('/');
     } catch (err: unknown) {
       setSubmitError(err instanceof Error ? err.message : 'Profile deletion failed');
     } finally {
