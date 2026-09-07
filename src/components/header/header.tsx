@@ -37,7 +37,10 @@ const Header = () => {
         )}
 
         {!isInitializing && isAuth && (
-          <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
+          <>
+            <NavigationItem to="/dashboard" label="Dashboard" currentPath={pathname} />
+            <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
+          </>
         )}
       </ul>
     </nav>
