@@ -18,7 +18,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const state = location.state as LocationState | null;
-  const redirectTo = state?.from?.pathname ?? '/users/me';
+  const redirectTo = state?.from?.pathname ?? '/';
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
