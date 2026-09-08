@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../features/auth/model/use-auth';
+import { useAuth } from '../../features/auth/model/use-auth';
 import PasswordResetConfirmForm from './password-reset-confirm-form';
 import PasswordResetRequestForm from './password-reset-request-form';
 import styles from './password-reset.module.css';

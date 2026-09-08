@@ -48,3 +48,8 @@
   color: #000000;
   cursor: default;
 }
+
+.title {
+  text-align: center;
+  font-size: 30px;
+}

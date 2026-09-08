@@ -52,28 +52,31 @@ const Header = () => {
   }, [isAuth, isInitializing]);
 
   return (
-    <nav className={styles.nav}>
-      <ul className={styles.ul}>
-        <NavigationItem to="/" label="Home" currentPath={pathname} />
-        <NavigationItem to="/protected-page" label="Protected page" currentPath={pathname} />
+    <>
+      <h1 className={styles.title}>Website name</h1>
+      <nav className={styles.nav}>
+        <ul className={styles.ul}>
+          <NavigationItem to="/" label="Home" currentPath={pathname} />
+          <NavigationItem to="/protected-page" label="Protected page" currentPath={pathname} />
 
-        {!isInitializing && !isAuth && (
-          <>
-            <NavigationItem to="/auth/login" label="Login" currentPath={pathname} />
-            <NavigationItem to="/auth/registration" label="Registration" currentPath={pathname} />
-          </>
-        )}
+          {!isInitializing && !isAuth && (
+            <>
+              <NavigationItem to="/auth/login" label="Login" currentPath={pathname} />
+              <NavigationItem to="/auth/registration" label="Registration" currentPath={pathname} />
+            </>
+          )}
 
-        {!isInitializing && isAuth && (
-          <>
-            {isAdmin && (
-              <NavigationItem to="/admin/users" label="User management" currentPath={pathname} />
-            )}
-            <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
-          </>
-        )}
-      </ul>
-    </nav>
+          {!isInitializing && isAuth && (
+            <>
+              {isAdmin && (
+                <NavigationItem to="/admin/users" label="User management" currentPath={pathname} />
+              )}
+              <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
+            </>
+          )}
+        </ul>
+      </nav>
+    </>
   );
 };
 
