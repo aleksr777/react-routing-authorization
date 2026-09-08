@@ -1,0 +1,83 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 760px;
+}
+
+.wrapper h1,
+.wrapper p {
+  margin: 0;
+}
+
+.searchForm {
+  display: flex;
+  gap: 8px;
+}
+
+.searchForm input,
+.reasonField input {
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #8ea6ff;
+  font-size: 16px;
+}
+
+.searchForm input {
+  flex: 1;
+}
+
+.searchForm button,
+.actions button {
+  padding: 10px;
+  border: none;
+  background-color: #8ea6ff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.searchForm button:disabled,
+.actions button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.reasonField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 420px;
+}
+
+.userList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.userCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #d0d0d0;
+}
+
+.userData {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.error {
+  color: #b00000;
+}
