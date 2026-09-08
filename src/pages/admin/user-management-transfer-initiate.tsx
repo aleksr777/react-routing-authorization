@@ -13,10 +13,21 @@ const UserManagementTransferInitiate = ({
   onCancel,
 }: UserManagementTransferInitiateProps) => {
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = async () => {
-    await onConfirm(password);
-    setPassword('');
+    try {
+      setError(null);
+      await onConfirm(password);
+      setPassword('');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Administrator rights transfer failed');
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    setError(null);
   };
 
   return (
@@ -33,14 +44,14 @@ const UserManagementTransferInitiate = ({
           autoComplete="current-password"
           minLength={8}
           maxLength={100}
-          onChange={(event) => setPassword(event.target.value)}
+          onChange={(event) => handlePasswordChange(event.target.value)}
         />
       </label>
       <div className={styles.actions}>
         <button
           type="button"
           disabled={isBusy || password.length < 8 || password.length > 100}
-          onClick={() => void handleConfirm().catch(() => undefined)}
+          onClick={() => void handleConfirm()}
         >
           Send invitation
         </button>
@@ -48,6 +59,7 @@ const UserManagementTransferInitiate = ({
           Cancel
         </button>
       </div>
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 };
