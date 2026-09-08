@@ -75,6 +75,9 @@ const Login = () => {
       <Link className={styles.link} to="/auth/password-reset">
         Forgot password?
       </Link>
+      <Link className={styles.link} to="/auth/registration">
+        Registration
+      </Link>
     </section>
   );
 };
