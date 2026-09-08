@@ -49,7 +49,7 @@ const Header = () => {
     return () => {
       isMounted = false;
     };
-  }, [isAuth, isInitializing]);
+  }, [isAuth, isInitializing, pathname]);
 
   return (
     <>
