@@ -10,17 +10,23 @@ const AdminTransferConfirm = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const code = String(new FormData(event.currentTarget).get('code') ?? '').trim();
+    const formData = new FormData(event.currentTarget);
+    const code = String(formData.get('code') ?? '').trim();
+    const password = String(formData.get('password') ?? '');
 
     if (!/^\d{6}$/.test(code)) {
       setError('Enter the 6-digit code');
+      return;
+    }
+    if (password.length < 8 || password.length > 100) {
+      setError('Enter your current password');
       return;
     }
 
     try {
       setError(null);
       setIsSubmitting(true);
-      await confirmAdminTransferRequest(code);
+      await confirmAdminTransferRequest(code, password);
       navigate('/admin/users', { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Administrator rights transfer failed');
@@ -32,7 +38,7 @@ const AdminTransferConfirm = () => {
   return (
     <section className={styles.wrapper}>
       <h2 className={styles.title}>Administrator rights transfer</h2>
-      <p>Enter the 6-digit code from the administrator rights invitation email.</p>
+      <p>Enter the 6-digit code from the invitation email and your current password.</p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <label className={styles.label}>
@@ -43,6 +49,19 @@ const AdminTransferConfirm = () => {
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={6}
+            required
+          />
+        </label>
+
+        <label className={styles.label}>
+          Current password
+          <input
+            className={styles.input}
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            minLength={8}
+            maxLength={100}
             required
           />
         </label>
