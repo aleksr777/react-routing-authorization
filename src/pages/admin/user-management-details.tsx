@@ -4,10 +4,12 @@ import {
   blockAdminUserRequest,
   deleteAdminUserRequest,
   getAdminUserRequest,
+  initiateAdminTransferRequest,
   type AdminUser,
   unblockAdminUserRequest,
 } from '../../features/admin/api/admin-api';
 import UserManagementActions from './user-management-actions';
+import UserManagementTransfer from './user-management-transfer';
 import UserManagementUserData from './user-management-user-data';
 import styles from './user-management.module.css';
 
@@ -67,6 +69,15 @@ const UserManagementDetails = () => {
     await runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
   };
 
+  const handleTransfer = async () => {
+    await runAction(
+      async () => {
+        await initiateAdminTransferRequest(userId);
+      },
+      'Administrator rights invitation sent.',
+    );
+  };
+
   const handleDelete = async () => {
     try {
       setError(null);
@@ -105,6 +116,7 @@ const UserManagementDetails = () => {
             onUnblock={handleUnblock}
             onDelete={handleDelete}
           />
+          <UserManagementTransfer user={user} isBusy={isBusy} onTransfer={handleTransfer} />
         </>
       ) : null}
 
