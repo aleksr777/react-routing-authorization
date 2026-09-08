@@ -101,6 +101,9 @@ const Registration = () => {
       <Link className={styles.link} to="/auth/password-reset">
         Forgot password?
       </Link>
+      <Link className={styles.link} to="/auth/login">
+        Login
+      </Link>
     </section>
   );
 };
