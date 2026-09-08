@@ -35,8 +35,8 @@ const Login = () => {
     try {
       setError(null);
       setIsSubmitting(true);
-      await login(email, password);
-      navigate(redirectTo, { replace: true });
+      const status = await login(email, password);
+      navigate(status === 'blocked' ? '/blocked' : redirectTo, { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
