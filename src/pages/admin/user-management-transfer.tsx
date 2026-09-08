@@ -10,6 +10,7 @@ type UserManagementTransferProps = {
   isBusy: boolean;
   transferStatus: AdminTransferStatus;
   onTransfer: () => Promise<void>;
+  onCancel: () => Promise<void>;
 };
 
 const UserManagementTransfer = ({
@@ -17,20 +18,49 @@ const UserManagementTransfer = ({
   isBusy,
   transferStatus,
   onTransfer,
+  onCancel,
 }: UserManagementTransferProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
+  const [isCancelConfirming, setIsCancelConfirming] = useState(false);
 
   const handleConfirm = async () => {
     await onTransfer();
     setIsConfirming(false);
   };
 
+  const handleCancel = async () => {
+    await onCancel();
+    setIsCancelConfirming(false);
+  };
+
   if (transferStatus.pending) {
     const isCurrentTarget = transferStatus.target_user_id === user.id;
+
+    if (isCancelConfirming) {
+      return (
+        <div className={styles.confirmPanel}>
+          <p>Cancel the pending administrator rights transfer?</p>
+          <p>The invitation code will become invalid immediately.</p>
+          <div className={styles.actions}>
+            <button
+              type="button"
+              disabled={isBusy}
+              onClick={() => void handleCancel().catch(() => undefined)}
+            >
+              Confirm cancellation
+            </button>
+            <button type="button" disabled={isBusy} onClick={() => setIsCancelConfirming(false)}>
+              Keep transfer
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={styles.actionSection}>
-        <button type="button" disabled>
-          Transfer administrator rights
+        <button type="button" disabled={isBusy} onClick={() => setIsCancelConfirming(true)}>
+          Cancel administrator rights transfer
         </button>
         <p>
           {isCurrentTarget
