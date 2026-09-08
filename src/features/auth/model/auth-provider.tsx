@@ -10,29 +10,16 @@ import {
   registrationConfirmRequest,
   registrationRequest,
 } from '../api/auth-api';
-import { AuthContext, type AuthContextValue, type LoginStatus } from './auth-context';
-import {
-  clearBlockedAccountInfo,
-  readBlockedAccountInfo,
-  saveBlockedAccountInfo,
-} from './blocked-session';
+import { AuthContext, type AuthContextValue, type LoginOutcome } from './auth-context';
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [isAuth, setIsAuth] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [blockedInfo, setBlockedInfo] = useState(readBlockedAccountInfo);
-
-  const clearBlockedState = useCallback(() => {
-    clearBlockedAccountInfo();
-    setBlockedInfo(null);
-  }, []);
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         await refreshAuthTokens();
-        clearBlockedAccountInfo();
-        setBlockedInfo(null);
         setIsAuth(true);
       } catch {
         clearAuthTokens();
@@ -45,67 +32,51 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     void initializeAuth();
   }, []);
 
-  const login = useCallback(
-    async (email: string, password: string): Promise<LoginStatus> => {
-      const result = await loginRequest({ email, password });
-      if (isBlockedAccountInfo(result)) {
-        clearAuthTokens();
-        saveBlockedAccountInfo(result);
-        setBlockedInfo(result);
-        setIsAuth(false);
-        return 'blocked';
-      }
-      clearBlockedState();
-      setIsAuth(true);
-      return 'authenticated';
-    },
-    [clearBlockedState],
-  );
+  const login = useCallback(async (email: string, password: string): Promise<LoginOutcome> => {
+    const result = await loginRequest({ email, password });
+    if (isBlockedAccountInfo(result)) {
+      clearAuthTokens();
+      setIsAuth(false);
+      return { status: 'blocked', info: result };
+    }
+
+    setIsAuth(true);
+    return { status: 'authenticated' };
+  }, []);
 
   const requestRegistration = useCallback(async (email: string, password: string) => {
     const response = await registrationRequest({ email, password });
     return response.message;
   }, []);
 
-  const confirmRegistration = useCallback(
-    async (code: string) => {
-      await registrationConfirmRequest({ code });
-      clearBlockedState();
-      setIsAuth(true);
-    },
-    [clearBlockedState],
-  );
+  const confirmRegistration = useCallback(async (code: string) => {
+    await registrationConfirmRequest({ code });
+    setIsAuth(true);
+  }, []);
 
   const requestPasswordReset = useCallback(async (email: string) => {
     const response = await passwordResetRequest({ email });
     return response.message;
   }, []);
 
-  const confirmPasswordReset = useCallback(
-    async (code: string, newPassword: string) => {
-      await passwordResetConfirmRequest({ code, new_password: newPassword });
-      clearBlockedState();
-      setIsAuth(true);
-    },
-    [clearBlockedState],
-  );
+  const confirmPasswordReset = useCallback(async (code: string, newPassword: string) => {
+    await passwordResetConfirmRequest({ code, new_password: newPassword });
+    setIsAuth(true);
+  }, []);
 
   const clearSession = useCallback(() => {
     clearAuthTokens();
-    clearBlockedState();
     setIsAuth(false);
-  }, [clearBlockedState]);
+  }, []);
 
   const logout = useCallback(async () => {
     await logoutRequest();
-    clearBlockedState();
     setIsAuth(false);
-  }, [clearBlockedState]);
+  }, []);
 
   const value: AuthContextValue = {
     isAuth,
     isInitializing,
-    blockedInfo,
     login,
     requestRegistration,
     confirmRegistration,
