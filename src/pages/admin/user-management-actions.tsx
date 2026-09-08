@@ -54,7 +54,11 @@ const UserManagementActions = ({
           </label>
           <p>Confirm blocking this user?</p>
           <div className={styles.actions}>
-            <button type="button" disabled={isBusy} onClick={() => void handleConfirmBlock()}>
+            <button
+              type="button"
+              disabled={isBusy}
+              onClick={() => void handleConfirmBlock().catch(() => undefined)}
+            >
               Confirm block
             </button>
             <button type="button" disabled={isBusy} onClick={() => setIsBlockConfirming(false)}>
@@ -72,7 +76,11 @@ const UserManagementActions = ({
         <div className={styles.confirmPanel}>
           <p>Delete this user permanently?</p>
           <div className={styles.actions}>
-            <button type="button" disabled={isBusy} onClick={() => void handleConfirmDelete()}>
+            <button
+              type="button"
+              disabled={isBusy}
+              onClick={() => void handleConfirmDelete().catch(() => undefined)}
+            >
               Confirm delete
             </button>
             <button type="button" disabled={isBusy} onClick={() => setIsDeleteConfirming(false)}>
