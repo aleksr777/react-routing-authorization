@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+import { useCallback, useEffect, useState, type PropsWithChildren } from 'react';
 import { refreshAuthTokens } from '../../../shared/api/api-client';
 import { clearAuthTokens } from '../../../shared/api/tokens';
 import {
@@ -48,7 +48,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const login = useCallback(
     async (email: string, password: string): Promise<LoginStatus> => {
       const result = await loginRequest({ email, password });
-
       if (isBlockedAccountInfo(result)) {
         clearAuthTokens();
         saveBlockedAccountInfo(result);
@@ -56,7 +55,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         setIsAuth(false);
         return 'blocked';
       }
-
       clearBlockedState();
       setIsAuth(true);
       return 'authenticated';
@@ -104,32 +102,18 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     setIsAuth(false);
   }, [clearBlockedState]);
 
-  const value = useMemo<AuthContextValue>(
-    () => ({
-      isAuth,
-      isInitializing,
-      blockedInfo,
-      login,
-      requestRegistration,
-      confirmRegistration,
-      requestPasswordReset,
-      confirmPasswordReset,
-      logout,
-      clearSession,
-    }),
-    [
-      isAuth,
-      isInitializing,
-      blockedInfo,
-      login,
-      requestRegistration,
-      confirmRegistration,
-      requestPasswordReset,
-      confirmPasswordReset,
-      logout,
-      clearSession,
-    ],
-  );
+  const value: AuthContextValue = {
+    isAuth,
+    isInitializing,
+    blockedInfo,
+    login,
+    requestRegistration,
+    confirmRegistration,
+    requestPasswordReset,
+    confirmPasswordReset,
+    logout,
+    clearSession,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
