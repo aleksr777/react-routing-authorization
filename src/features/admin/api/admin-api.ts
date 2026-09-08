@@ -12,6 +12,11 @@ export type AdminUser = {
   blocked_reason: string | null;
 };
 
+export type AdminTransferStatus = {
+  pending: boolean;
+  target_user_id: number | null;
+};
+
 type AdminUsersResponse = {
   users: AdminUser[];
   total: number;
@@ -58,6 +63,10 @@ export const deleteAdminUserRequest = async (id: number): Promise<void> => {
   await apiRequest(`/admin/users/delete/${id}`, {
     method: 'DELETE',
   });
+};
+
+export const getAdminTransferStatusRequest = async (): Promise<AdminTransferStatus> => {
+  return apiRequest<AdminTransferStatus>('/admin/transfer/status');
 };
 
 export const initiateAdminTransferRequest = async (id: number): Promise<string> => {
