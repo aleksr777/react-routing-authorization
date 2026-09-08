@@ -28,15 +28,30 @@ type MessageResponse = {
   message: string;
 };
 
-export const loginRequest = async (dto: LoginDto): Promise<AuthTokens> => {
-  const tokens = await apiRequest<AuthTokens>('/auth/login', {
+export type BlockedAccountInfo = {
+  blocked: true;
+  blocked_reason: string | null;
+  contact_email: string;
+};
+
+export type LoginResult = AuthTokens | BlockedAccountInfo;
+
+export const isBlockedAccountInfo = (value: LoginResult): value is BlockedAccountInfo => {
+  return 'blocked' in value && value.blocked === true;
+};
+
+export const loginRequest = async (dto: LoginDto): Promise<LoginResult> => {
+  const result = await apiRequest<LoginResult>('/auth/login', {
     method: 'POST',
     auth: 'none',
     body: JSON.stringify(dto),
   });
 
-  setAuthTokens(tokens);
-  return tokens;
+  if (!isBlockedAccountInfo(result)) {
+    setAuthTokens(result);
+  }
+
+  return result;
 };
 
 export const registrationRequest = async (
