@@ -1,20 +1,45 @@
 import { useState } from 'react';
-import type { AdminUser } from '../../features/admin/api/admin-api';
+import type {
+  AdminTransferStatus,
+  AdminUser,
+} from '../../features/admin/api/admin-api';
 import styles from './user-management.module.css';
 
 type UserManagementTransferProps = {
   user: AdminUser;
   isBusy: boolean;
+  transferStatus: AdminTransferStatus;
   onTransfer: () => Promise<void>;
 };
 
-const UserManagementTransfer = ({ user, isBusy, onTransfer }: UserManagementTransferProps) => {
+const UserManagementTransfer = ({
+  user,
+  isBusy,
+  transferStatus,
+  onTransfer,
+}: UserManagementTransferProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
 
   const handleConfirm = async () => {
     await onTransfer();
     setIsConfirming(false);
   };
+
+  if (transferStatus.pending) {
+    const isCurrentTarget = transferStatus.target_user_id === user.id;
+    return (
+      <div className={styles.actionSection}>
+        <button type="button" disabled>
+          Transfer administrator rights
+        </button>
+        <p>
+          {isCurrentTarget
+            ? 'Administrator rights invitation is awaiting this user’s confirmation.'
+            : 'Another administrator rights transfer is awaiting confirmation.'}
+        </p>
+      </div>
+    );
+  }
 
   if (isConfirming) {
     return (
