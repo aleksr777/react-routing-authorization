@@ -24,6 +24,10 @@ export const getAdminUsersRequest = async (search: string): Promise<AdminUser[]>
   return apiRequest<AdminUser[]>(`/admin/users/find?${params.toString()}`);
 };
 
+export const getAdminUserRequest = async (id: number): Promise<AdminUser> => {
+  return apiRequest<AdminUser>(`/admin/users/${id}`);
+};
+
 export const blockAdminUserRequest = async (id: number, blockedReason: string): Promise<void> => {
   await apiRequest(`/admin/users/block/${id}`, {
     method: 'PATCH',
