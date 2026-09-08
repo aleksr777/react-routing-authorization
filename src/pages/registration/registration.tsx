@@ -80,7 +80,7 @@ const Registration = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1 className={styles.title}>Registration</h1>
+      <h2 className={styles.title}>Registration</h2>
 
       {isCodeStep ? (
         <RegistrationConfirmForm

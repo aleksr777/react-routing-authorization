@@ -65,7 +65,7 @@ const MyProfile = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1 className={styles.title}>My profile</h1>
+      <h2 className={styles.title}>My profile</h2>
 
       <div className={styles.info}>
         <p>ID: {user.id}</p>

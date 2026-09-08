@@ -61,7 +61,7 @@ const ChangeEmail = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1 className={styles.title}>Change email</h1>
+      <h2 className={styles.title}>Change email</h2>
 
       {!newEmail ? (
         <form className={styles.form} onSubmit={handleRequest}>

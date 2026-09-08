@@ -85,7 +85,7 @@ const UserManagementDetails = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1>User management</h1>
+      <h2>User management</h2>
 
       {error && !user ? (
         <p className={styles.error}>{error}</p>

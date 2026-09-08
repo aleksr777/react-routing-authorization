@@ -92,7 +92,7 @@ const ChangePassword = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1 className={styles.title}>Change password</h1>
+      <h2 className={styles.title}>Change password</h2>
       {isReset ? (
         <PasswordResetForm error={error} isSubmitting={isSubmitting} onSubmit={handleReset} />
       ) : code ? (

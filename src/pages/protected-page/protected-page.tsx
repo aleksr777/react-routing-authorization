@@ -1,5 +1,7 @@
+import styles from './protected-page.module.css';
+
 const ProtectedPage = () => {
-  return <p>Protected page</p>;
+  return <h2 className={styles.title}>Protected Page</h2>;
 };
 
 export default ProtectedPage;

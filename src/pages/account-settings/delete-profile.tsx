@@ -55,7 +55,7 @@ const DeleteProfile = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1 className={styles.title}>Delete profile</h1>
+      <h2 className={styles.title}>Delete profile</h2>
 
       {isAdmin ? (
         <p className={styles.warning}>Administrator profile cannot be deleted.</p>

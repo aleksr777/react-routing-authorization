@@ -51,7 +51,7 @@ const UserManagement = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1>User management</h1>
+      <h2 className={styles.title}>User management</h2>
 
       <form className={styles.searchForm} onSubmit={handleSearch}>
         <input

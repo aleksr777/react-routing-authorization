@@ -6,9 +6,14 @@
   max-width: 760px;
 }
 
-.wrapper h1,
+.wrapper h2,
 .wrapper p {
   margin: 0;
+}
+
+.title {
+  text-align: center;
+  font-size: 30px;
 }
 
 .searchForm {

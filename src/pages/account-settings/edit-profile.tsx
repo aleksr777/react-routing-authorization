@@ -96,7 +96,7 @@ const EditProfile = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1 className={styles.title}>Edit profile</h1>
+      <h2 className={styles.title}>Edit profile</h2>
       <EditProfileForm
         nickname={nickname}
         name={name}

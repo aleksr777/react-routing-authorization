@@ -27,7 +27,7 @@ const Settings = () => {
 
   return (
     <section className={styles.wrapper}>
-      <h1 className={styles.title}>Settings</h1>
+      <h2 className={styles.title}>Settings</h2>
 
       <div className={styles.links}>
         <Link className={styles.link} to="/users/me/settings/profile">
