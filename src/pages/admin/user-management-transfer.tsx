@@ -8,11 +8,7 @@ type UserManagementTransferProps = {
   onTransfer: () => Promise<void>;
 };
 
-const UserManagementTransfer = ({
-  user,
-  isBusy,
-  onTransfer,
-}: UserManagementTransferProps) => {
+const UserManagementTransfer = ({ user, isBusy, onTransfer }: UserManagementTransferProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
 
   const handleConfirm = async () => {
