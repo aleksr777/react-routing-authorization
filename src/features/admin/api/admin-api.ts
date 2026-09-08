@@ -69,10 +69,13 @@ export const getAdminTransferStatusRequest = async (): Promise<AdminTransferStat
   return apiRequest<AdminTransferStatus>('/admin/transfer/status');
 };
 
-export const initiateAdminTransferRequest = async (id: number): Promise<string> => {
+export const initiateAdminTransferRequest = async (
+  id: number,
+  password: string,
+): Promise<string> => {
   const response = await apiRequest<MessageResponse>('/admin/transfer/initiate', {
     method: 'POST',
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id, password }),
   });
   return response.message;
 };
