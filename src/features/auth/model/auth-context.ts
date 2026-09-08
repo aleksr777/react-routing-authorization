@@ -1,9 +1,13 @@
 import { createContext } from 'react';
+import type { BlockedAccountInfo } from '../api/auth-api';
+
+export type LoginStatus = 'authenticated' | 'blocked';
 
 export type AuthContextValue = {
   isAuth: boolean;
   isInitializing: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  blockedInfo: BlockedAccountInfo | null;
+  login: (email: string, password: string) => Promise<LoginStatus>;
   requestRegistration: (email: string, password: string) => Promise<string>;
   confirmRegistration: (code: string) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<string>;
