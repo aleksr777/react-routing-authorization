@@ -18,6 +18,7 @@ const UserManagementActions = ({
   onDelete,
 }: UserManagementActionsProps) => {
   const [isBlockConfirming, setIsBlockConfirming] = useState(false);
+  const [isUnblockConfirming, setIsUnblockConfirming] = useState(false);
   const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
   const [blockReason, setBlockReason] = useState('');
 
@@ -31,6 +32,11 @@ const UserManagementActions = ({
     setIsBlockConfirming(false);
   };
 
+  const handleConfirmUnblock = async () => {
+    await onUnblock();
+    setIsUnblockConfirming(false);
+  };
+
   const handleConfirmDelete = async () => {
     await onDelete();
     setIsDeleteConfirming(false);
@@ -39,13 +45,31 @@ const UserManagementActions = ({
   return (
     <div className={styles.actionSection}>
       {user.is_blocked ? (
-        <button
-          type="button"
-          disabled={isBusy || isDeleteConfirming}
-          onClick={() => void onUnblock().catch(() => undefined)}
-        >
-          Unblock user
-        </button>
+        isUnblockConfirming ? (
+          <div className={styles.confirmPanel}>
+            <p>Confirm unblocking this user?</p>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                disabled={isBusy}
+                onClick={() => void handleConfirmUnblock().catch(() => undefined)}
+              >
+                Confirm unblock
+              </button>
+              <button type="button" disabled={isBusy} onClick={() => setIsUnblockConfirming(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            disabled={isBusy || isDeleteConfirming}
+            onClick={() => setIsUnblockConfirming(true)}
+          >
+            Unblock user
+          </button>
+        )
       ) : isBlockConfirming ? (
         <div className={styles.confirmPanel}>
           <label className={styles.reasonField}>
@@ -99,7 +123,7 @@ const UserManagementActions = ({
       ) : (
         <button
           type="button"
-          disabled={isBusy || isBlockConfirming}
+          disabled={isBusy || isBlockConfirming || isUnblockConfirming}
           onClick={() => setIsDeleteConfirming(true)}
         >
           Delete user
