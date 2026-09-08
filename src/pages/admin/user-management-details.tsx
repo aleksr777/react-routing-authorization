@@ -45,7 +45,7 @@ const UserManagementDetails = () => {
     void loadUser();
   }, [loadUser]);
 
-  const runAction = async (action: () => Promise<void>, successMessage: string) => {
+  const runAction = async (action: () => Promise<unknown>, successMessage: string) => {
     try {
       setError(null);
       setMessage(null);
@@ -61,22 +61,15 @@ const UserManagementDetails = () => {
     }
   };
 
-  const handleBlock = async (reason: string) => {
-    await runAction(() => blockAdminUserRequest(userId, reason), 'User blocked');
-  };
-
-  const handleUnblock = async () => {
-    await runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
-  };
-
-  const handleTransfer = async () => {
-    await runAction(
-      async () => {
-        await initiateAdminTransferRequest(userId);
-      },
+  const handleBlock = (reason: string) =>
+    runAction(() => blockAdminUserRequest(userId, reason), 'User blocked');
+  const handleUnblock = () =>
+    runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
+  const handleTransfer = () =>
+    runAction(
+      () => initiateAdminTransferRequest(userId),
       'Administrator rights invitation sent.',
     );
-  };
 
   const handleDelete = async () => {
     try {
