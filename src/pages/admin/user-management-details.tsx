@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   blockAdminUserRequest,
+  cancelAdminTransferRequest,
   deleteAdminUserRequest,
   getAdminUserRequest,
   initiateAdminTransferRequest,
@@ -18,7 +19,11 @@ const UserManagementDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const userId = Number(id);
-  const { status: transferStatus, markPending } = useAdminTransferStatus();
+  const {
+    status: transferStatus,
+    refresh: refreshTransferStatus,
+    markPending,
+  } = useAdminTransferStatus();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -73,6 +78,10 @@ const UserManagementDetails = () => {
     );
     markPending(userId);
   };
+  const handleCancelTransfer = async () => {
+    await runAction(cancelAdminTransferRequest, 'Administrator rights transfer cancelled.');
+    await refreshTransferStatus();
+  };
 
   const handleDelete = async () => {
     try {
@@ -117,6 +126,7 @@ const UserManagementDetails = () => {
             isBusy={isBusy}
             transferStatus={transferStatus}
             onTransfer={handleTransfer}
+            onCancel={handleCancelTransfer}
           />
         </>
       ) : null}
