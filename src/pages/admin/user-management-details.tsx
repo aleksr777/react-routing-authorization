@@ -63,13 +63,9 @@ const UserManagementDetails = () => {
 
   const handleBlock = (reason: string) =>
     runAction(() => blockAdminUserRequest(userId, reason), 'User blocked');
-  const handleUnblock = () =>
-    runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
+  const handleUnblock = () => runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
   const handleTransfer = () =>
-    runAction(
-      () => initiateAdminTransferRequest(userId),
-      'Administrator rights invitation sent.',
-    );
+    runAction(() => initiateAdminTransferRequest(userId), 'Administrator rights invitation sent.');
 
   const handleDelete = async () => {
     try {
