@@ -72,11 +72,16 @@ const UserManagementDetails = () => {
     runAction(() => blockAdminUserRequest(userId, reason), 'User blocked');
   const handleUnblock = () => runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
   const handleTransfer = async (password: string) => {
-    await runAction(
-      () => initiateAdminTransferRequest(userId, password),
-      'Administrator rights invitation sent.',
-    );
-    markPending(userId);
+    try {
+      setError(null);
+      setMessage(null);
+      setIsBusy(true);
+      await initiateAdminTransferRequest(userId, password);
+      setMessage('Administrator rights invitation sent.');
+      markPending(userId);
+    } finally {
+      setIsBusy(false);
+    }
   };
   const handleCancelTransfer = async () => {
     await runAction(cancelAdminTransferRequest, 'Administrator rights transfer cancelled.');
