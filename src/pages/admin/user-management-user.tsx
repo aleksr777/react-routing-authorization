@@ -12,7 +12,7 @@ const UserManagementUser = ({ user }: UserManagementUserProps) => {
     <li className={styles.userCard}>
       <UserManagementUserData user={user} />
 
-      <Link className={styles.actionLink} to={`/admin/users/${user.id}`}>
+      <Link className={styles.actionButton} to={`/admin/users/${user.id}`}>
         Manage user
       </Link>
     </li>
