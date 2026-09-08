@@ -1,12 +1,14 @@
 import { apiRequest } from '../../../shared/api/api-client';
 
+export type UserRole = 'user' | 'admin';
+
 export type CurrentUser = {
   id: number;
   email: string;
   nickname: string | null;
   name: string | null;
   age: number | null;
-  role: string;
+  role: UserRole;
   is_blocked?: boolean;
   blocked_reason?: string | null;
 };
