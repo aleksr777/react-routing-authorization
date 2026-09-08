@@ -22,17 +22,13 @@ export const useAdminTransferStatus = () => {
 
   useEffect(() => {
     void refresh().catch(() => undefined);
-  }, [refresh]);
-
-  useEffect(() => {
-    if (!status.pending) return;
 
     const intervalId = window.setInterval(() => {
       void refresh().catch(() => undefined);
     }, 5000);
 
     return () => window.clearInterval(intervalId);
-  }, [refresh, status.pending]);
+  }, [refresh]);
 
   return { status, refresh, markPending };
 };
