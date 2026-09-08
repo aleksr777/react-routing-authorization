@@ -17,6 +17,10 @@ type AdminUsersResponse = {
   total: number;
 };
 
+type MessageResponse = {
+  message: string;
+};
+
 export const getAdminUsersRequest = async (
   search: string,
   limit: number,
@@ -54,4 +58,20 @@ export const deleteAdminUserRequest = async (id: number): Promise<void> => {
   await apiRequest(`/admin/users/delete/${id}`, {
     method: 'DELETE',
   });
+};
+
+export const initiateAdminTransferRequest = async (id: number): Promise<string> => {
+  const response = await apiRequest<MessageResponse>('/admin/transfer/initiate', {
+    method: 'POST',
+    body: JSON.stringify({ id }),
+  });
+  return response.message;
+};
+
+export const confirmAdminTransferRequest = async (code: string): Promise<string> => {
+  const response = await apiRequest<MessageResponse>('/admin/transfer/confirm', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+  return response.message;
 };
