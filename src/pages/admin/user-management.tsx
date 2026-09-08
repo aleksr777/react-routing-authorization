@@ -3,17 +3,28 @@ import { getAdminUsersRequest, type AdminUser } from '../../features/admin/api/a
 import UserManagementUser from './user-management-user';
 import styles from './user-management.module.css';
 
+const PAGE_SIZE = 10;
+
 const UserManagement = () => {
   const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(0);
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadUsers = useCallback(async (query: string) => {
+  const loadUsers = useCallback(async (currentQuery: string, currentPage: number) => {
     try {
       setError(null);
       setIsLoading(true);
-      setUsers(await getAdminUsersRequest(query));
+      const response = await getAdminUsersRequest(
+        currentQuery,
+        PAGE_SIZE,
+        currentPage * PAGE_SIZE,
+      );
+      setUsers(response.users);
+      setTotal(response.total);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to load users');
     } finally {
@@ -22,13 +33,25 @@ const UserManagement = () => {
   }, []);
 
   useEffect(() => {
-    void loadUsers('');
-  }, [loadUsers]);
+    void loadUsers(query, page);
+  }, [loadUsers, page, query]);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    void loadUsers(search);
+    const nextQuery = search.trim();
+
+    if (nextQuery === query && page === 0) {
+      void loadUsers(nextQuery, 0);
+      return;
+    }
+
+    setQuery(nextQuery);
+    setPage(0);
   };
+
+  const firstResult = total === 0 ? 0 : page * PAGE_SIZE + 1;
+  const lastResult = Math.min((page + 1) * PAGE_SIZE, total);
+  const hasNextPage = (page + 1) * PAGE_SIZE < total;
 
   return (
     <section className={styles.wrapper}>
@@ -54,6 +77,20 @@ const UserManagement = () => {
           <UserManagementUser key={user.id} user={user} />
         ))}
       </ul>
+
+      {!isLoading && total > 0 && (
+        <div className={styles.pagination}>
+          <button type="button" disabled={page === 0} onClick={() => setPage(page - 1)}>
+            Previous
+          </button>
+          <span>
+            {firstResult}-{lastResult} of {total}
+          </span>
+          <button type="button" disabled={!hasNextPage} onClick={() => setPage(page + 1)}>
+            Next
+          </button>
+        </div>
+      )}
     </section>
   );
 };
