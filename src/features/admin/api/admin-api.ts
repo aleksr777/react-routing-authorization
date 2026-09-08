@@ -84,10 +84,13 @@ export const cancelAdminTransferRequest = async (): Promise<string> => {
   return response.message;
 };
 
-export const confirmAdminTransferRequest = async (code: string): Promise<string> => {
+export const confirmAdminTransferRequest = async (
+  code: string,
+  password: string,
+): Promise<string> => {
   const response = await apiRequest<MessageResponse>('/admin/transfer/confirm', {
     method: 'POST',
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({ code, password }),
   });
   return response.message;
 };
