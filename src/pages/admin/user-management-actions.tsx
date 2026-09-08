@@ -41,7 +41,7 @@ const UserManagementActions = ({
       {user.is_blocked ? (
         <button
           type="button"
-          disabled={isBusy}
+          disabled={isBusy || isDeleteConfirming}
           onClick={() => void onUnblock().catch(() => undefined)}
         >
           Unblock user
@@ -71,7 +71,11 @@ const UserManagementActions = ({
           </div>
         </div>
       ) : (
-        <button type="button" disabled={isBusy} onClick={() => setIsBlockConfirming(true)}>
+        <button
+          type="button"
+          disabled={isBusy || isDeleteConfirming}
+          onClick={() => setIsBlockConfirming(true)}
+        >
           Block user
         </button>
       )}
@@ -93,7 +97,11 @@ const UserManagementActions = ({
           </div>
         </div>
       ) : (
-        <button type="button" disabled={isBusy} onClick={() => setIsDeleteConfirming(true)}>
+        <button
+          type="button"
+          disabled={isBusy || isBlockConfirming}
+          onClick={() => setIsDeleteConfirming(true)}
+        >
           Delete user
         </button>
       )}
