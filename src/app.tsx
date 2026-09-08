@@ -8,6 +8,7 @@ import PasswordReset from './pages/password-reset/password-reset';
 import Registration from './pages/registration/registration';
 import ProtectedPage from './pages/protected-page/protected-page';
 import UserManagement from './pages/admin/user-management';
+import UserManagementDetails from './pages/admin/user-management-details';
 import MyProfile from './pages/my-profile/my-profile';
 import Settings from './pages/account-settings/settings';
 import EditProfile from './pages/account-settings/edit-profile';
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="users/me/settings/delete" element={<DeleteProfile />} />
           <Route element={<AdminRoute />}>
             <Route path="admin/users" element={<UserManagement />} />
+            <Route path="admin/users/:id" element={<UserManagementDetails />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
