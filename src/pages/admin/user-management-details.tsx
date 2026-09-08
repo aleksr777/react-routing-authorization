@@ -8,6 +8,7 @@ import {
   type AdminUser,
   unblockAdminUserRequest,
 } from '../../features/admin/api/admin-api';
+import { useAdminTransferStatus } from '../../features/admin/model/use-admin-transfer-status';
 import UserManagementActions from './user-management-actions';
 import UserManagementTransfer from './user-management-transfer';
 import UserManagementUserData from './user-management-user-data';
@@ -17,6 +18,7 @@ const UserManagementDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const userId = Number(id);
+  const { status: transferStatus, markPending } = useAdminTransferStatus();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -64,8 +66,13 @@ const UserManagementDetails = () => {
   const handleBlock = (reason: string) =>
     runAction(() => blockAdminUserRequest(userId, reason), 'User blocked');
   const handleUnblock = () => runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
-  const handleTransfer = () =>
-    runAction(() => initiateAdminTransferRequest(userId), 'Administrator rights invitation sent.');
+  const handleTransfer = async () => {
+    await runAction(
+      () => initiateAdminTransferRequest(userId),
+      'Administrator rights invitation sent.',
+    );
+    markPending(userId);
+  };
 
   const handleDelete = async () => {
     try {
@@ -105,7 +112,12 @@ const UserManagementDetails = () => {
             onUnblock={handleUnblock}
             onDelete={handleDelete}
           />
-          <UserManagementTransfer user={user} isBusy={isBusy} onTransfer={handleTransfer} />
+          <UserManagementTransfer
+            user={user}
+            isBusy={isBusy}
+            transferStatus={transferStatus}
+            onTransfer={handleTransfer}
+          />
         </>
       ) : null}
 
