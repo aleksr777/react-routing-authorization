@@ -60,11 +60,7 @@ const UserManagement = () => {
   };
 
   const handleBlock = (userId: number) => {
-    void runUserAction(
-      userId,
-      () => blockAdminUserRequest(userId, blockReason),
-      'User blocked',
-    );
+    void runUserAction(userId, () => blockAdminUserRequest(userId, blockReason), 'User blocked');
   };
 
   const handleUnblock = (userId: number) => {
