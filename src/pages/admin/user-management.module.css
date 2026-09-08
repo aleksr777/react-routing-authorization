@@ -68,14 +68,25 @@
   gap: 4px;
 }
 
-.actionLink {
+.actionLink,
+.actionButton {
   width: fit-content;
-  color: #0000ee;
   text-decoration: none;
   font-size: 16px;
 }
 
-.actionLink:hover {
+.actionLink {
+  color: #0000ee;
+}
+
+.actionButton {
+  padding: 10px;
+  background-color: #8ea6ff;
+  color: #000000;
+}
+
+.actionLink:hover,
+.actionButton:hover {
   opacity: 0.7;
 }
 
