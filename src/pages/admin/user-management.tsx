@@ -18,11 +18,7 @@ const UserManagement = () => {
     try {
       setError(null);
       setIsLoading(true);
-      const response = await getAdminUsersRequest(
-        currentQuery,
-        PAGE_SIZE,
-        currentPage * PAGE_SIZE,
-      );
+      const response = await getAdminUsersRequest(currentQuery, PAGE_SIZE, currentPage * PAGE_SIZE);
       setUsers(response.users);
       setTotal(response.total);
     } catch (err: unknown) {
