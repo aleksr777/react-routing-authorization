@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  getAdminTransferStatusRequest,
-  type AdminTransferStatus,
-} from '../api/admin-api';
+import { getAdminTransferStatusRequest, type AdminTransferStatus } from '../api/admin-api';
 
 const EMPTY_STATUS: AdminTransferStatus = {
   pending: false,

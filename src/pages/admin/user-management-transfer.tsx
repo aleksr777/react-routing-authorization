@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import type {
-  AdminTransferStatus,
-  AdminUser,
-} from '../../features/admin/api/admin-api';
+import type { AdminTransferStatus, AdminUser } from '../../features/admin/api/admin-api';
 import styles from './user-management.module.css';
 
 type UserManagementTransferProps = {
