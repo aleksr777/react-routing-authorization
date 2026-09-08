@@ -36,6 +36,17 @@ const UserManagementTransfer = ({
   if (transferStatus.pending) {
     const isCurrentTarget = transferStatus.target_user_id === user.id;
 
+    if (!isCurrentTarget) {
+      return (
+        <div className={styles.actionSection}>
+          <button type="button" disabled>
+            Transfer administrator rights
+          </button>
+          <p>Another administrator rights transfer is awaiting confirmation.</p>
+        </div>
+      );
+    }
+
     if (isCancelConfirming) {
       return (
         <div className={styles.confirmPanel}>
@@ -62,11 +73,7 @@ const UserManagementTransfer = ({
         <button type="button" disabled={isBusy} onClick={() => setIsCancelConfirming(true)}>
           Cancel administrator rights transfer
         </button>
-        <p>
-          {isCurrentTarget
-            ? 'Administrator rights invitation is awaiting this user’s confirmation.'
-            : 'Another administrator rights transfer is awaiting confirmation.'}
-        </p>
+        <p>Administrator rights invitation is awaiting this user’s confirmation.</p>
       </div>
     );
   }
