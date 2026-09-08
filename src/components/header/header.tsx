@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
+import { getCurrentUserRequest } from '../../features/users/api/users-api';
 import styles from './header.module.css';
 
 type NavigationItemProps = {
@@ -23,6 +25,31 @@ const NavigationItem = ({ to, label, currentPath }: NavigationItemProps) => (
 const Header = () => {
   const { isAuth, isInitializing } = useAuth();
   const { pathname } = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (isInitializing || !isAuth) {
+      setIsAdmin(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadRole = async () => {
+      try {
+        const user = await getCurrentUserRequest();
+        if (isMounted) setIsAdmin(user.role === 'admin');
+      } catch {
+        if (isMounted) setIsAdmin(false);
+      }
+    };
+
+    void loadRole();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuth, isInitializing]);
 
   return (
     <nav className={styles.nav}>
@@ -38,7 +65,12 @@ const Header = () => {
         )}
 
         {!isInitializing && isAuth && (
-          <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
+          <>
+            {isAdmin && (
+              <NavigationItem to="/admin/users" label="User management" currentPath={pathname} />
+            )}
+            <NavigationItem to="/users/me" label="My profile" currentPath={pathname} />
+          </>
         )}
       </ul>
     </nav>
