@@ -39,7 +39,11 @@ const UserManagementActions = ({
   return (
     <div className={styles.actionSection}>
       {user.is_blocked ? (
-        <button type="button" disabled={isBusy} onClick={() => void onUnblock()}>
+        <button
+          type="button"
+          disabled={isBusy}
+          onClick={() => void onUnblock().catch(() => undefined)}
+        >
           Unblock user
         </button>
       ) : isBlockConfirming ? (
