@@ -12,16 +12,25 @@ export type AdminUser = {
   blocked_reason: string | null;
 };
 
-export const getAdminUsersRequest = async (search: string): Promise<AdminUser[]> => {
+type AdminUsersResponse = {
+  users: AdminUser[];
+  total: number;
+};
+
+export const getAdminUsersRequest = async (
+  search: string,
+  limit: number,
+  offset: number,
+): Promise<AdminUsersResponse> => {
   const params = new URLSearchParams({
-    limit: '20',
-    offset: '0',
+    limit: String(limit),
+    offset: String(offset),
   });
 
   const query = search.trim();
   if (query) params.set('search', query);
 
-  return apiRequest<AdminUser[]>(`/admin/users/find?${params.toString()}`);
+  return apiRequest<AdminUsersResponse>(`/admin/users/find?${params.toString()}`);
 };
 
 export const getAdminUserRequest = async (id: number): Promise<AdminUser> => {
