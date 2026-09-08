@@ -1,9 +1,27 @@
-import { Link, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import type { BlockedAccountInfo } from '../../features/auth/api/auth-api';
 import { useAuth } from '../../features/auth/model/use-auth';
 import styles from './blocked-account.module.css';
 
+type BlockedLocationState = {
+  blockedInfo?: BlockedAccountInfo;
+};
+
 const BlockedAccount = () => {
-  const { blockedInfo, isAuth, isInitializing } = useAuth();
+  const { isAuth, isInitializing } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [blockedInfo] = useState<BlockedAccountInfo | null>(() => {
+    const state = location.state as BlockedLocationState | null;
+    return state?.blockedInfo ?? null;
+  });
+
+  useEffect(() => {
+    if (blockedInfo) {
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [blockedInfo, location.pathname, navigate]);
 
   if (isInitializing) return <p>Loading...</p>;
   if (isAuth) return <Navigate to="/" replace />;
