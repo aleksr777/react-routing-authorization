@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
 import PasswordResetConfirmForm from './password-reset-confirm-form';
 import PasswordResetRequestForm from './password-reset-request-form';
@@ -97,6 +97,11 @@ const PasswordReset = () => {
           onSubmit={handleRequest}
         />
       )}
+
+      <div className={styles.authLinks}>
+        <Link to="/auth/login">Login</Link>
+        <Link to="/auth/registration">Registration</Link>
+      </div>
     </section>
   );
 };
