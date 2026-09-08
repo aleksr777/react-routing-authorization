@@ -1,23 +1,12 @@
+import { Link } from 'react-router-dom';
 import type { AdminUser } from '../../features/admin/api/admin-api';
 import styles from './user-management.module.css';
 
 type UserManagementUserProps = {
   user: AdminUser;
-  isBusy: boolean;
-  onBlock: (id: number) => void;
-  onUnblock: (id: number) => void;
-  onDelete: (id: number) => void;
 };
 
-const UserManagementUser = ({
-  user,
-  isBusy,
-  onBlock,
-  onUnblock,
-  onDelete,
-}: UserManagementUserProps) => {
-  const isAdministrator = user.role === 'admin';
-
+const UserManagementUser = ({ user }: UserManagementUserProps) => {
   return (
     <li className={styles.userCard}>
       <div className={styles.userData}>
@@ -31,24 +20,9 @@ const UserManagementUser = ({
         {user.blocked_reason && <span>Block reason: {user.blocked_reason}</span>}
       </div>
 
-      {isAdministrator ? (
-        <span>Administrator account</span>
-      ) : (
-        <div className={styles.actions}>
-          {user.is_blocked ? (
-            <button type="button" disabled={isBusy} onClick={() => onUnblock(user.id)}>
-              Unblock
-            </button>
-          ) : (
-            <button type="button" disabled={isBusy} onClick={() => onBlock(user.id)}>
-              Block
-            </button>
-          )}
-          <button type="button" disabled={isBusy} onClick={() => onDelete(user.id)}>
-            Delete
-          </button>
-        </div>
-      )}
+      <Link className={styles.actionLink} to={`/admin/users/${user.id}`}>
+        Manage user
+      </Link>
     </li>
   );
 };
