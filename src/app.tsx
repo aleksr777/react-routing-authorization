@@ -6,6 +6,7 @@ import Home from './pages/home/home';
 import Login from './pages/login/login';
 import PasswordReset from './pages/password-reset/password-reset';
 import Registration from './pages/registration/registration';
+import BlockedAccount from './pages/blocked-account/blocked-account';
 import ProtectedPage from './pages/protected-page/protected-page';
 import UserManagement from './pages/admin/user-management';
 import UserManagementDetails from './pages/admin/user-management-details';
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="auth/login" element={<Login />} />
         <Route path="auth/registration" element={<Registration />} />
         <Route path="auth/password-reset" element={<PasswordReset />} />
+        <Route path="blocked" element={<BlockedAccount />} />
         <Route path="forbidden" element={<Forbidden />} />
         <Route element={<ProtectedRoute />}>
           <Route path="protected-page" element={<ProtectedPage />} />
