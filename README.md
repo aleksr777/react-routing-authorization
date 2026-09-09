@@ -6,6 +6,34 @@ Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/n
 
 The application is designed to work with the NestJS backend from `nestjs-routing-authorization`.
 
+## Feature overview
+
+The frontend provides:
+
+- registration, login, logout, and password recovery screens;
+- automatic access-token refresh through the backend refresh cookie;
+- protected and administrator-only routing;
+- current-user profile and account settings;
+- profile editing, email change, password change/reset, and self-account deletion flows;
+- one-time blocked-account notification with reason and administrator contact email;
+- administrator user search, pagination, viewing, blocking, unblocking, and deletion;
+- administrator-rights transfer with current administrator password confirmation;
+- pending-transfer synchronization across administrator pages;
+- transfer cancellation only on the target user's management page;
+- disabled transfer actions for all other users while a transfer is pending;
+- transfer acceptance with a six-digit code and the recipient's current password.
+
+## Tech stack
+
+- React 18
+- TypeScript
+- Vite
+- React Router
+- ESLint
+- Prettier
+- Stylelint
+- gh-pages deployment tooling
+
 ## Environment
 
 Copy `.env.example` to `.env`:
@@ -51,6 +79,31 @@ npm run preview
 - The API client refreshes authentication when necessary and retries protected requests after refresh.
 - Protected routes redirect unauthenticated users to `/auth/login` and preserve the requested path for return after login.
 - Administrator routes are additionally protected by `AdminRoute`; backend role guards remain the actual authorization boundary.
+
+### Authentication flow
+
+```text
+login / registration / password reset
+        ↓
+backend returns access token
+backend sets refresh token as HttpOnly cookie
+        ↓
+access token stored in frontend memory
+        ↓
+API request with Bearer access token + credentials
+        ↓
+access token expires or approaches expiry
+        ↓
+frontend calls POST /api/auth/refresh-tokens
+        ↓
+refresh cookie is sent automatically by the browser
+        ↓
+new access token stored in memory
+        ↓
+original protected request can be retried
+```
+
+Reloading the page clears the in-memory access token, so the application relies on the refresh-cookie flow to restore authentication state when possible.
 
 ## Blocked accounts
 
@@ -193,6 +246,32 @@ The frontend supports:
 - self-account deletion after password verification.
 
 Authentication state is refreshed after flows that issue new tokens.
+
+## Security properties
+
+- The frontend never stores the refresh token in JavaScript-accessible storage; it is handled by the browser as an HttpOnly cookie set by the backend.
+- Access tokens are kept in memory rather than localStorage/sessionStorage.
+- Protected routes and `AdminRoute` are UX controls only; backend authorization remains mandatory.
+- Blocked-account state is intentionally not persisted after the one-time notification.
+- Administrator transfer initiation requires the current administrator's password.
+- Transfer acceptance requires the recipient's six-digit code and current password.
+- Pending administrator-transfer state is read from the backend instead of being trusted as frontend-only state.
+- Transfer cancellation is shown only on the management page of the user who received the active invitation.
+
+## Deployment notes
+
+For production, `VITE_API_URL` must point to the deployed backend API rather than the local `http://localhost:5174/api` value.
+
+Because authentication uses an HttpOnly refresh cookie and credentialed requests, frontend and backend deployment settings must remain compatible:
+
+- serve the application over HTTPS;
+- configure the backend CORS origin for the real frontend origin;
+- ensure credentialed requests are allowed only for trusted origins;
+- align the backend refresh-cookie `Secure` and `SameSite` settings with whether frontend and backend are same-site or cross-site;
+- do not move the refresh token into localStorage or other JavaScript-accessible storage as a deployment workaround;
+- configure the correct SPA fallback / routing behavior on the hosting platform so direct navigation to routes such as `/users/me` and `/admin/transfer/confirm` works.
+
+The current repository includes `gh-pages` deployment tooling, but production routing and backend connectivity still depend on the final hosting topology.
 
 ## Backend dependency
 
