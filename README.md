@@ -2,6 +2,8 @@
 
 React + Vite frontend for the routing and authorization template.
 
+Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/nestjs-routing-authorization)
+
 The application is designed to work with the NestJS backend from `nestjs-routing-authorization`.
 
 ## Environment
@@ -194,7 +196,7 @@ Authentication state is refreshed after flows that issue new tokens.
 
 ## Backend dependency
 
-This frontend expects the companion NestJS backend to provide the `/api/auth`, `/api/users`, and `/api/admin` routes described in its README.
+This frontend expects the companion [NestJS backend](https://github.com/aleksr777/nestjs-routing-authorization) to provide the `/api/auth`, `/api/users`, and `/api/admin` routes described in its README.
 
 For local development, keep these values aligned:
 
