@@ -81,7 +81,11 @@ const PasswordResetConfirmForm = ({
 
       {error && <p className={styles.error}>{error}</p>}
 
-      <button className={styles.button} type="submit" disabled={isSubmitting}>
+      <button
+        className={styles.button}
+        type="submit"
+        disabled={isSubmitting || attemptsRemaining === 0}
+      >
         {isSubmitting ? 'Resetting password...' : 'Reset password'}
       </button>
 
