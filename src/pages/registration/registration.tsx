@@ -1,49 +1,50 @@
 import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
+import { useVerificationRequestState } from '../../shared/model/verification-request';
 import RegistrationConfirmForm from './registration-confirm-form';
 import RegistrationRequestForm from './registration-request-form';
 import styles from './registration.module.css';
 
 const Registration = () => {
-  const { isAuth, isInitializing, requestRegistration, confirmRegistration } = useAuth();
+  const {
+    isAuth,
+    isInitializing,
+    requestRegistration,
+    resendRegistration,
+    confirmRegistration,
+  } = useAuth();
   const navigate = useNavigate();
-
+  const verification = useVerificationRequestState();
   const [isCodeStep, setIsCodeStep] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
-  const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegistrationRequest = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get('email') ?? '').trim().toLowerCase();
     const password = String(formData.get('password') ?? '');
     const passwordConfirm = String(formData.get('passwordConfirm') ?? '');
 
-    if (!email || !password || !passwordConfirm) {
-      setError('Fill in all fields');
-      return;
-    }
+    if (!email || !password || !passwordConfirm) return setError('Fill in all fields');
     if (password.length < 8 || password.length > 100) {
-      setError('Password must contain from 8 to 100 characters');
-      return;
+      return setError('Password must contain from 8 to 100 characters');
     }
-    if (password !== passwordConfirm) {
-      setError('Passwords do not match');
-      return;
-    }
+    if (password !== passwordConfirm) return setError('Passwords do not match');
 
     try {
       setError(null);
-      setMessage(null);
       setIsSubmitting(true);
-      setMessage(await requestRegistration(email, password));
+      verification.applyResult(await requestRegistration(email, password));
       setPendingEmail(email);
       setIsCodeStep(true);
     } catch (err: unknown) {
+      if (verification.applyRetryError(err)) {
+        setPendingEmail(email);
+        setIsCodeStep(true);
+      }
       setError(err instanceof Error ? err.message : 'Registration request failed');
     } finally {
       setIsSubmitting(false);
@@ -52,12 +53,8 @@ const Registration = () => {
 
   const handleRegistrationConfirm = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const code = String(new FormData(event.currentTarget).get('code') ?? '').trim();
-    if (!/^\d{6}$/.test(code)) {
-      setError('Enter the 6-digit code');
-      return;
-    }
+    if (!/^\d{6}$/.test(code)) return setError('Enter the 6-digit code');
     if (!pendingEmail) {
       setError('Request a new registration code');
       setIsCodeStep(false);
@@ -76,10 +73,24 @@ const Registration = () => {
     }
   };
 
+  const handleResend = async () => {
+    if (!pendingEmail) return;
+    try {
+      setError(null);
+      setIsSubmitting(true);
+      verification.applyResult(await resendRegistration(pendingEmail));
+    } catch (err: unknown) {
+      verification.applyRetryError(err);
+      setError(err instanceof Error ? err.message : 'Failed to resend registration code');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleUseAnotherEmail = () => {
     setError(null);
-    setMessage(null);
     setPendingEmail('');
+    verification.reset();
     setIsCodeStep(false);
   };
 
@@ -89,13 +100,15 @@ const Registration = () => {
   return (
     <section className={styles.wrapper}>
       <h2 className={styles.title}>Registration</h2>
-
       {isCodeStep ? (
         <RegistrationConfirmForm
-          message={message}
+          message={verification.message}
           error={error}
           isSubmitting={isSubmitting}
+          resendSeconds={verification.resendSeconds}
+          maxAttempts={verification.maxAttempts}
           onSubmit={handleRegistrationConfirm}
+          onResend={() => void handleResend()}
           onUseAnotherEmail={handleUseAnotherEmail}
         />
       ) : (
@@ -105,7 +118,6 @@ const Registration = () => {
           onSubmit={handleRegistrationRequest}
         />
       )}
-
       <Link className={styles.link} to="/auth/password-reset">
         Forgot password?
       </Link>
