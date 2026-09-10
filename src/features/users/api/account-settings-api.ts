@@ -5,6 +5,13 @@ type PasswordChangeRequestResponse = {
   code: string;
 };
 
+export type EmailChangeStatus = {
+  locked: boolean;
+  retry_after: number;
+  max_attempts: number;
+  attempts_remaining: number;
+};
+
 export const requestPasswordChange = async (
   oldPassword: string,
 ): Promise<PasswordChangeRequestResponse> =>
@@ -38,6 +45,10 @@ export const confirmCurrentUserPasswordReset = async (
   });
 
   setAuthTokens(result);
+};
+
+export const getEmailChangeStatus = async (): Promise<EmailChangeStatus> => {
+  return apiRequest<EmailChangeStatus>('/users/me/email/update/status');
 };
 
 export const requestEmailChange = async (newEmail: string): Promise<void> => {
