@@ -98,6 +98,7 @@ export const confirmAdminTransferRequest = async (
 ): Promise<string> => {
   const response = await apiRequest<MessageResponse>('/admin/transfer/confirm', {
     method: 'POST',
+    retry: false,
     body: JSON.stringify({ code, password }),
   });
   return response.message;
