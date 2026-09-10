@@ -23,6 +23,7 @@ export const requestPasswordChange = async (
 export const confirmPasswordChange = async (code: string, newPassword: string): Promise<void> => {
   const result = await apiRequest<AuthTokens>('/users/me/password/change/confirm', {
     method: 'POST',
+    retry: false,
     body: JSON.stringify({ code, new_password: newPassword }),
   });
 
@@ -41,6 +42,7 @@ export const confirmCurrentUserPasswordReset = async (
 ): Promise<void> => {
   const result = await apiRequest<AuthTokens>('/users/me/password/reset/confirm', {
     method: 'POST',
+    retry: false,
     body: JSON.stringify({ code, new_password: newPassword }),
   });
 
@@ -61,6 +63,7 @@ export const requestEmailChange = async (newEmail: string): Promise<void> => {
 export const confirmEmailChange = async (code: string): Promise<void> => {
   const result = await apiRequest<AuthTokens>('/users/me/email/update/confirm', {
     method: 'POST',
+    retry: false,
     body: JSON.stringify({ code }),
   });
 
