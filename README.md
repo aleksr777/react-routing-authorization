@@ -17,6 +17,7 @@ The frontend provides:
 - profile editing, email change, password change/reset, and self-account deletion flows;
 - one-time blocked-account notification with reason and administrator contact email;
 - administrator user search, pagination, viewing, blocking, unblocking, and deletion;
+- current-administrator password confirmation before blocking or deleting another user;
 - administrator-rights transfer with current administrator password confirmation;
 - pending-transfer synchronization across administrator pages;
 - transfer cancellation only on the target user's management page;
@@ -156,10 +157,12 @@ The administrator can:
 
 - search and paginate users;
 - open a dedicated user-details page;
-- block a user with a reason;
+- block a user with an optional reason after entering the administrator's current password;
 - unblock a user after an explicit confirmation step;
-- delete a user after an explicit confirmation step;
+- delete a user permanently after entering the administrator's current password;
 - initiate transfer of administrator rights.
+
+The password confirmation for block/delete is not only a frontend check: the password is sent to the backend and verified there before the target account is modified. Incorrect-password errors are displayed inside the corresponding confirmation panel below its action buttons.
 
 Conflicting destructive actions are disabled while another confirmation flow is active.
 
@@ -253,6 +256,7 @@ Authentication state is refreshed after flows that issue new tokens.
 - Access tokens are kept in memory rather than localStorage/sessionStorage.
 - Protected routes and `AdminRoute` are UX controls only; backend authorization remains mandatory.
 - Blocked-account state is intentionally not persisted after the one-time notification.
+- Administrator user blocking and deletion require current-administrator password re-entry and backend verification.
 - Administrator transfer initiation requires the current administrator's password.
 - Transfer acceptance requires the recipient's six-digit code and current password.
 - Pending administrator-transfer state is read from the backend instead of being trusted as frontend-only state.
