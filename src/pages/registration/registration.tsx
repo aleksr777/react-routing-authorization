@@ -10,6 +10,7 @@ const Registration = () => {
   const navigate = useNavigate();
 
   const [isCodeStep, setIsCodeStep] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,7 +19,7 @@ const Registration = () => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get('email') ?? '').trim();
+    const email = String(formData.get('email') ?? '').trim().toLowerCase();
     const password = String(formData.get('password') ?? '');
     const passwordConfirm = String(formData.get('passwordConfirm') ?? '');
 
@@ -40,6 +41,7 @@ const Registration = () => {
       setMessage(null);
       setIsSubmitting(true);
       setMessage(await requestRegistration(email, password));
+      setPendingEmail(email);
       setIsCodeStep(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration request failed');
@@ -56,11 +58,16 @@ const Registration = () => {
       setError('Enter the 6-digit code');
       return;
     }
+    if (!pendingEmail) {
+      setError('Request a new registration code');
+      setIsCodeStep(false);
+      return;
+    }
 
     try {
       setError(null);
       setIsSubmitting(true);
-      await confirmRegistration(code);
+      await confirmRegistration(code, pendingEmail);
       navigate('/', { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration confirmation failed');
@@ -72,6 +79,7 @@ const Registration = () => {
   const handleUseAnotherEmail = () => {
     setError(null);
     setMessage(null);
+    setPendingEmail('');
     setIsCodeStep(false);
   };
 
