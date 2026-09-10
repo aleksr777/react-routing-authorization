@@ -39,6 +39,7 @@ const AdminTransferConfirm = () => {
     <section className={styles.wrapper}>
       <h2 className={styles.title}>Administrator rights transfer</h2>
       <p>Enter the 6-digit code from the invitation email and your current password.</p>
+      <p>Maximum 3 incorrect code attempts. The pending transfer is cancelled on the third.</p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <label className={styles.label}>
