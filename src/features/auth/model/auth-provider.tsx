@@ -49,8 +49,8 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     return response.message;
   }, []);
 
-  const confirmRegistration = useCallback(async (code: string) => {
-    await registrationConfirmRequest({ code });
+  const confirmRegistration = useCallback(async (code: string, email: string) => {
+    await registrationConfirmRequest({ code, email });
     setIsAuth(true);
   }, []);
 
@@ -59,10 +59,13 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     return response.message;
   }, []);
 
-  const confirmPasswordReset = useCallback(async (code: string, newPassword: string) => {
-    await passwordResetConfirmRequest({ code, new_password: newPassword });
-    setIsAuth(true);
-  }, []);
+  const confirmPasswordReset = useCallback(
+    async (code: string, newPassword: string, email: string) => {
+      await passwordResetConfirmRequest({ code, email, new_password: newPassword });
+      setIsAuth(true);
+    },
+    [],
+  );
 
   const clearSession = useCallback(() => {
     clearAuthTokens();
