@@ -1,11 +1,13 @@
 import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { confirmAdminTransferRequest } from '../../features/admin/api/admin-api';
+import { getAttemptsRemaining } from '../../shared/api/api-client';
 import styles from './admin-transfer-confirm.module.css';
 
 const AdminTransferConfirm = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -29,6 +31,8 @@ const AdminTransferConfirm = () => {
       await confirmAdminTransferRequest(code, password);
       navigate('/admin/users', { replace: true });
     } catch (err: unknown) {
+      const remaining = getAttemptsRemaining(err);
+      if (remaining !== null) setAttemptsRemaining(remaining);
       setError(err instanceof Error ? err.message : 'Administrator rights transfer failed');
     } finally {
       setIsSubmitting(false);
@@ -40,6 +44,7 @@ const AdminTransferConfirm = () => {
       <h2 className={styles.title}>Administrator rights transfer</h2>
       <p>Enter the 6-digit code from the invitation email and your current password.</p>
       <p>Maximum 3 incorrect code attempts. The pending transfer is cancelled on the third.</p>
+      {attemptsRemaining !== null && <p>Attempts remaining: {attemptsRemaining}.</p>}
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <label className={styles.label}>
