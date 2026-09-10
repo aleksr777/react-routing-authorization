@@ -8,6 +8,7 @@ type PasswordResetConfirmFormProps = {
   isSubmitting: boolean;
   resendSeconds: number;
   maxAttempts: number;
+  attemptsRemaining: number | null;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onResend: () => void;
   onUseAnotherEmail: () => void;
@@ -19,6 +20,7 @@ const PasswordResetConfirmForm = ({
   isSubmitting,
   resendSeconds,
   maxAttempts,
+  attemptsRemaining,
   onSubmit,
   onResend,
   onUseAnotherEmail,
@@ -68,6 +70,9 @@ const PasswordResetConfirmForm = ({
       </label>
 
       <p className={styles.message}>Maximum {maxAttempts} incorrect code attempts.</p>
+      {attemptsRemaining !== null && (
+        <p className={styles.message}>Attempts remaining: {attemptsRemaining}.</p>
+      )}
       {resendSeconds > 0 && (
         <p className={styles.message}>
           You can request a new code in {formatCountdown(resendSeconds)}.
