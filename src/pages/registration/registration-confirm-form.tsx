@@ -8,6 +8,7 @@ type RegistrationConfirmFormProps = {
   isSubmitting: boolean;
   resendSeconds: number;
   maxAttempts: number;
+  attemptsRemaining: number | null;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onResend: () => void;
   onUseAnotherEmail: () => void;
@@ -19,6 +20,7 @@ const RegistrationConfirmForm = ({
   isSubmitting,
   resendSeconds,
   maxAttempts,
+  attemptsRemaining,
   onSubmit,
   onResend,
   onUseAnotherEmail,
@@ -42,6 +44,9 @@ const RegistrationConfirmForm = ({
       </label>
 
       <p className={styles.message}>Maximum {maxAttempts} incorrect code attempts.</p>
+      {attemptsRemaining !== null && (
+        <p className={styles.message}>Attempts remaining: {attemptsRemaining}.</p>
+      )}
       {resendSeconds > 0 && (
         <p className={styles.message}>
           You can request a new code in {formatCountdown(resendSeconds)}.
