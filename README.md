@@ -23,7 +23,8 @@ The frontend provides:
 - transfer cancellation only on the target user's management page;
 - disabled transfer actions for all other users while a transfer is pending;
 - transfer acceptance with a six-digit code and the recipient's current password;
-- backend-enforced limits for incorrect verification-code confirmation attempts.
+- backend-enforced limits for incorrect verification-code confirmation attempts;
+- backend-enforced registration/password-reset code resend cooldowns with a visible countdown.
 
 ## Tech stack
 
@@ -107,18 +108,36 @@ original protected request can be retried
 
 Reloading the page clears the in-memory access token, so the application relies on the refresh-cookie flow to restore authentication state when possible.
 
-## Verification-code attempt limits
+## Verification-code limits and resend countdown
 
-The backend limits incorrect six-digit confirmation-code attempts. The frontend does not maintain or trust its own security counter.
+The backend remains the source of truth for verification-code restrictions. The frontend displays the values returned by the server.
 
-- registration, password reset/change, and email-change confirmation flows allow up to 5 incorrect code attempts within the backend counter TTL;
-- administrator-rights transfer confirmation allows up to 3 incorrect code attempts;
-- after the limit is reached, the backend continues returning the same invalid/expired-code style response rather than exposing the lockout threshold;
-- a successful confirmation clears the corresponding failure counter;
-- requesting another code does not reset an already active failure counter;
-- when the intended administrator-transfer recipient reaches the third incorrect-code attempt, the pending transfer is invalidated by the backend.
+For registration and public password reset:
 
-For public registration and public password-reset confirmation, the backend scopes failed attempts by client IP. Authenticated confirmation flows are scoped by user ID.
+- up to `5` incorrect code attempts are allowed for each active confirmation cycle;
+- after a code is sent, another code cannot be requested until the backend cooldown expires;
+- the example backend configuration uses a `60` second cooldown;
+- the confirmation page shows `Maximum 5 incorrect code attempts`;
+- while the cooldown is active, `Resend code` is disabled and the page shows a live countdown such as `You can request a new code in 00:42`;
+- successful request responses provide `retry_after` and `max_attempts`, so the frontend does not hardcode the countdown duration;
+- if a resend request reaches the server too early, HTTP `429` includes the actual remaining `retry_after`, and the frontend resynchronizes its timer to that value;
+- a successfully reissued registration/password-reset code starts a new attempt cycle and makes the previous code invalid.
+
+Registration resends use:
+
+```text
+POST /api/auth/registration/resend
+```
+
+Only the email is sent for registration resend. The frontend does not retain the user's plaintext registration password merely to resend a code.
+
+Public password-reset resends reuse:
+
+```text
+POST /api/auth/password-reset/request
+```
+
+Administrator-rights transfer keeps its stricter limit of `3` incorrect code attempts; on the third incorrect code attempt, the pending transfer is invalidated by the backend.
 
 ## Blocked accounts
 
@@ -272,7 +291,8 @@ Authentication state is refreshed after flows that issue new tokens.
 - Access tokens are kept in memory rather than localStorage/sessionStorage.
 - Protected routes and `AdminRoute` are UX controls only; backend authorization remains mandatory.
 - Blocked-account state is intentionally not persisted after the one-time notification.
-- Verification-code attempt limits are enforced by the backend, not by frontend state.
+- Verification-code attempt and resend limits are enforced by the backend, not by frontend state.
+- Registration resends do not require retaining the plaintext registration password in frontend state.
 - Administrator user blocking and deletion require current-administrator password re-entry and backend verification.
 - Administrator transfer initiation requires the current administrator's password.
 - Transfer acceptance requires the recipient's six-digit code and current password.
