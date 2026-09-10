@@ -1,6 +1,10 @@
 import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
+import {
+  getAttemptsRemaining,
+  isVerificationLocked,
+} from '../../shared/api/api-client';
 import { useVerificationRequestState } from '../../shared/model/verification-request';
 import RegistrationConfirmForm from './registration-confirm-form';
 import RegistrationRequestForm from './registration-request-form';
@@ -41,10 +45,9 @@ const Registration = () => {
       setPendingEmail(email);
       setIsCodeStep(true);
     } catch (err: unknown) {
-      if (verification.applyRetryError(err)) {
-        setPendingEmail(email);
-        setIsCodeStep(true);
-      }
+      verification.applyRetryError(err);
+      setPendingEmail(email);
+      if (!isVerificationLocked(err)) setIsCodeStep(true);
       setError(err instanceof Error ? err.message : 'Registration request failed');
     } finally {
       setIsSubmitting(false);
@@ -68,6 +71,11 @@ const Registration = () => {
       navigate('/', { replace: true });
     } catch (err: unknown) {
       verification.applyAttemptError(err);
+      verification.applyRetryError(err);
+      const attemptsRemaining = getAttemptsRemaining(err);
+      if (attemptsRemaining === 0 || isVerificationLocked(err)) {
+        setIsCodeStep(false);
+      }
       setError(err instanceof Error ? err.message : 'Registration confirmation failed');
     } finally {
       setIsSubmitting(false);
@@ -82,6 +90,7 @@ const Registration = () => {
       verification.applyResult(await resendRegistration(pendingEmail));
     } catch (err: unknown) {
       verification.applyRetryError(err);
+      if (isVerificationLocked(err)) setIsCodeStep(false);
       setError(err instanceof Error ? err.message : 'Failed to resend registration code');
     } finally {
       setIsSubmitting(false);
@@ -117,6 +126,8 @@ const Registration = () => {
         <RegistrationRequestForm
           error={error}
           isSubmitting={isSubmitting}
+          isLocked={verification.isLocked}
+          lockoutSeconds={verification.lockoutSeconds}
           onSubmit={handleRegistrationRequest}
         />
       )}
