@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { getRetryAfterSeconds } from '../api/api-client';
+import { getAttemptsRemaining, getRetryAfterSeconds } from '../api/api-client';
 import { useCountdown } from './countdown';
 
 type VerificationRequestResult = {
@@ -12,11 +12,13 @@ export const useVerificationRequestState = () => {
   const { seconds, start } = useCountdown();
   const [message, setMessage] = useState<string | null>(null);
   const [maxAttempts, setMaxAttempts] = useState(5);
+  const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
 
   const applyResult = useCallback(
     (result: VerificationRequestResult) => {
       setMessage(result.message);
       setMaxAttempts(result.max_attempts);
+      setAttemptsRemaining(null);
       start(result.retry_after);
     },
     [start],
@@ -32,9 +34,17 @@ export const useVerificationRequestState = () => {
     [start],
   );
 
+  const applyAttemptError = useCallback((error: unknown) => {
+    const remaining = getAttemptsRemaining(error);
+    if (remaining === null) return false;
+    setAttemptsRemaining(remaining);
+    return true;
+  }, []);
+
   const reset = useCallback(() => {
     setMessage(null);
     setMaxAttempts(5);
+    setAttemptsRemaining(null);
     start(0);
   }, [start]);
 
@@ -42,8 +52,10 @@ export const useVerificationRequestState = () => {
     resendSeconds: seconds,
     message,
     maxAttempts,
+    attemptsRemaining,
     applyResult,
     applyRetryError,
+    applyAttemptError,
     reset,
   };
 };
