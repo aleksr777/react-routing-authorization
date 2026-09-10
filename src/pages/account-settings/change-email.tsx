@@ -4,6 +4,7 @@ import {
   confirmEmailChange,
   requestEmailChange,
 } from '../../features/users/api/account-settings-api';
+import { getAttemptsRemaining } from '../../shared/api/api-client';
 import { formatCountdown } from '../../shared/model/countdown';
 import { useEmailChangeLockout } from './use-email-change-lockout';
 import styles from './account-settings.module.css';
@@ -60,8 +61,12 @@ const ChangeEmail = () => {
       await confirmEmailChange(code);
       navigate('/users/me/settings', { replace: true });
     } catch (err: unknown) {
+      const remaining = getAttemptsRemaining(err);
       await syncError(err);
       setError(err instanceof Error ? err.message : 'Email change failed');
+      if (remaining === 0) {
+        setNewEmail(null);
+      }
     } finally {
       setIsSubmitting(false);
     }
