@@ -63,6 +63,7 @@ const PasswordReset = () => {
       await confirmPasswordReset(code, newPassword, pendingEmail);
       navigate('/users/me', { replace: true });
     } catch (err: unknown) {
+      verification.applyAttemptError(err);
       setError(err instanceof Error ? err.message : 'Password reset failed');
     } finally {
       setIsSubmitting(false);
@@ -103,6 +104,7 @@ const PasswordReset = () => {
           isSubmitting={isSubmitting}
           resendSeconds={verification.resendSeconds}
           maxAttempts={verification.maxAttempts}
+          attemptsRemaining={verification.attemptsRemaining}
           onSubmit={handleConfirm}
           onResend={() => void handleResend()}
           onUseAnotherEmail={handleUseAnotherEmail}
