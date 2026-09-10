@@ -27,15 +27,23 @@ export class ApiError extends Error {
   }
 }
 
-export const getRetryAfterSeconds = (error: unknown): number | null => {
+const getPayloadNumber = (error: unknown, field: string): number | null => {
   if (!(error instanceof ApiError)) return null;
   if (typeof error.payload !== 'object' || error.payload === null) return null;
-  if (!('retry_after' in error.payload)) return null;
+  if (!(field in error.payload)) return null;
 
-  const retryAfter = (error.payload as { retry_after?: unknown }).retry_after;
-  return typeof retryAfter === 'number' && Number.isFinite(retryAfter)
-    ? Math.max(0, Math.ceil(retryAfter))
-    : null;
+  const value = (error.payload as Record<string, unknown>)[field];
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+};
+
+export const getRetryAfterSeconds = (error: unknown): number | null => {
+  const retryAfter = getPayloadNumber(error, 'retry_after');
+  return retryAfter === null ? null : Math.max(0, Math.ceil(retryAfter));
+};
+
+export const getAttemptsRemaining = (error: unknown): number | null => {
+  const attemptsRemaining = getPayloadNumber(error, 'attempts_remaining');
+  return attemptsRemaining === null ? null : Math.max(0, Math.floor(attemptsRemaining));
 };
 
 const parseResponseBody = async (response: Response): Promise<unknown> => {
