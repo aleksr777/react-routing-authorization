@@ -67,6 +67,7 @@ const Registration = () => {
       await confirmRegistration(code, pendingEmail);
       navigate('/', { replace: true });
     } catch (err: unknown) {
+      verification.applyAttemptError(err);
       setError(err instanceof Error ? err.message : 'Registration confirmation failed');
     } finally {
       setIsSubmitting(false);
@@ -107,6 +108,7 @@ const Registration = () => {
           isSubmitting={isSubmitting}
           resendSeconds={verification.resendSeconds}
           maxAttempts={verification.maxAttempts}
+          attemptsRemaining={verification.attemptsRemaining}
           onSubmit={handleRegistrationConfirm}
           onResend={() => void handleResend()}
           onUseAnotherEmail={handleUseAnotherEmail}
