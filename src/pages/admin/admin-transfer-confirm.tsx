@@ -74,7 +74,11 @@ const AdminTransferConfirm = () => {
 
         {error && <p className={styles.error}>{error}</p>}
 
-        <button className={styles.button} type="submit" disabled={isSubmitting}>
+        <button
+          className={styles.button}
+          type="submit"
+          disabled={isSubmitting || attemptsRemaining === 0}
+        >
           {isSubmitting ? 'Confirming...' : 'Accept administrator rights'}
         </button>
       </form>
