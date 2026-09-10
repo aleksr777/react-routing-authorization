@@ -9,6 +9,7 @@ import {
   passwordResetRequest,
   registrationConfirmRequest,
   registrationRequest,
+  registrationResendRequest,
 } from '../api/auth-api';
 import { AuthContext, type AuthContextValue, type LoginOutcome } from './auth-context';
 
@@ -45,8 +46,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const requestRegistration = useCallback(async (email: string, password: string) => {
-    const response = await registrationRequest({ email, password });
-    return response.message;
+    return registrationRequest({ email, password });
+  }, []);
+
+  const resendRegistration = useCallback(async (email: string) => {
+    return registrationResendRequest({ email });
   }, []);
 
   const confirmRegistration = useCallback(async (code: string, email: string) => {
@@ -55,8 +59,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const requestPasswordReset = useCallback(async (email: string) => {
-    const response = await passwordResetRequest({ email });
-    return response.message;
+    return passwordResetRequest({ email });
   }, []);
 
   const confirmPasswordReset = useCallback(
@@ -82,6 +85,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     isInitializing,
     login,
     requestRegistration,
+    resendRegistration,
     confirmRegistration,
     requestPasswordReset,
     confirmPasswordReset,
