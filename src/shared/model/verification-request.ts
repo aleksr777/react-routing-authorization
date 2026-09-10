@@ -1,5 +1,9 @@
 import { useCallback, useState } from 'react';
-import { getAttemptsRemaining, getRetryAfterSeconds } from '../api/api-client';
+import {
+  getAttemptsRemaining,
+  getRetryAfterSeconds,
+  isVerificationLocked,
+} from '../api/api-client';
 import { useCountdown } from './countdown';
 
 type VerificationRequestResult = {
@@ -9,7 +13,8 @@ type VerificationRequestResult = {
 };
 
 export const useVerificationRequestState = () => {
-  const { seconds, start } = useCountdown();
+  const { seconds: resendSeconds, start: startResend } = useCountdown();
+  const { seconds: lockoutSeconds, start: startLockout } = useCountdown();
   const [message, setMessage] = useState<string | null>(null);
   const [maxAttempts, setMaxAttempts] = useState(5);
   const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
@@ -19,37 +24,54 @@ export const useVerificationRequestState = () => {
       setMessage(result.message);
       setMaxAttempts(result.max_attempts);
       setAttemptsRemaining(null);
-      start(result.retry_after);
+      startResend(result.retry_after);
+      startLockout(0);
     },
-    [start],
+    [startLockout, startResend],
   );
 
   const applyRetryError = useCallback(
     (error: unknown) => {
       const retryAfter = getRetryAfterSeconds(error);
       if (retryAfter === null) return false;
-      start(retryAfter);
+
+      if (isVerificationLocked(error)) {
+        startLockout(retryAfter);
+      } else {
+        startResend(retryAfter);
+      }
       return true;
     },
-    [start],
+    [startLockout, startResend],
   );
 
-  const applyAttemptError = useCallback((error: unknown) => {
-    const remaining = getAttemptsRemaining(error);
-    if (remaining === null) return false;
-    setAttemptsRemaining(remaining);
-    return true;
-  }, []);
+  const applyAttemptError = useCallback(
+    (error: unknown) => {
+      const remaining = getAttemptsRemaining(error);
+      if (remaining === null) return false;
+      setAttemptsRemaining(remaining);
+
+      if (remaining === 0) {
+        const retryAfter = getRetryAfterSeconds(error);
+        if (retryAfter !== null) startLockout(retryAfter);
+      }
+      return true;
+    },
+    [startLockout],
+  );
 
   const reset = useCallback(() => {
     setMessage(null);
     setMaxAttempts(5);
     setAttemptsRemaining(null);
-    start(0);
-  }, [start]);
+    startResend(0);
+    startLockout(0);
+  }, [startLockout, startResend]);
 
   return {
-    resendSeconds: seconds,
+    resendSeconds,
+    lockoutSeconds,
+    isLocked: lockoutSeconds > 0,
     message,
     maxAttempts,
     attemptsRemaining,
