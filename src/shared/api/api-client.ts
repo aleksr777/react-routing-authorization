@@ -36,6 +36,15 @@ const getPayloadNumber = (error: unknown, field: string): number | null => {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 };
 
+const getPayloadBoolean = (error: unknown, field: string): boolean | null => {
+  if (!(error instanceof ApiError)) return null;
+  if (typeof error.payload !== 'object' || error.payload === null) return null;
+  if (!(field in error.payload)) return null;
+
+  const value = (error.payload as Record<string, unknown>)[field];
+  return typeof value === 'boolean' ? value : null;
+};
+
 export const getRetryAfterSeconds = (error: unknown): number | null => {
   const retryAfter = getPayloadNumber(error, 'retry_after');
   return retryAfter === null ? null : Math.max(0, Math.ceil(retryAfter));
@@ -44,6 +53,10 @@ export const getRetryAfterSeconds = (error: unknown): number | null => {
 export const getAttemptsRemaining = (error: unknown): number | null => {
   const attemptsRemaining = getPayloadNumber(error, 'attempts_remaining');
   return attemptsRemaining === null ? null : Math.max(0, Math.floor(attemptsRemaining));
+};
+
+export const isVerificationLocked = (error: unknown): boolean => {
+  return getPayloadBoolean(error, 'locked') === true;
 };
 
 const parseResponseBody = async (response: Response): Promise<unknown> => {
