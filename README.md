@@ -22,7 +22,8 @@ The frontend provides:
 - pending-transfer synchronization across administrator pages;
 - transfer cancellation only on the target user's management page;
 - disabled transfer actions for all other users while a transfer is pending;
-- transfer acceptance with a six-digit code and the recipient's current password.
+- transfer acceptance with a six-digit code and the recipient's current password;
+- backend-enforced limits for incorrect verification-code confirmation attempts.
 
 ## Tech stack
 
@@ -105,6 +106,19 @@ original protected request can be retried
 ```
 
 Reloading the page clears the in-memory access token, so the application relies on the refresh-cookie flow to restore authentication state when possible.
+
+## Verification-code attempt limits
+
+The backend limits incorrect six-digit confirmation-code attempts. The frontend does not maintain or trust its own security counter.
+
+- registration, password reset/change, and email-change confirmation flows allow up to 5 incorrect code attempts within the backend counter TTL;
+- administrator-rights transfer confirmation allows up to 3 incorrect code attempts;
+- after the limit is reached, the backend continues returning the same invalid/expired-code style response rather than exposing the lockout threshold;
+- a successful confirmation clears the corresponding failure counter;
+- requesting another code does not reset an already active failure counter;
+- when the intended administrator-transfer recipient reaches the third incorrect-code attempt, the pending transfer is invalidated by the backend.
+
+For public registration and public password-reset confirmation, the backend scopes failed attempts by client IP. Authenticated confirmation flows are scoped by user ID.
 
 ## Blocked accounts
 
@@ -213,6 +227,8 @@ The recipient must be authenticated and enter:
 - the six-digit invitation code;
 - their own current account password.
 
+The backend permits no more than 3 incorrect code attempts for the recipient. On the third incorrect code attempt, the pending transfer is invalidated.
+
 After successful confirmation, the backend changes the roles transactionally. The former administrator loses administrator access and the recipient becomes the new administrator.
 
 ## Administrator transfer state synchronization
@@ -256,6 +272,7 @@ Authentication state is refreshed after flows that issue new tokens.
 - Access tokens are kept in memory rather than localStorage/sessionStorage.
 - Protected routes and `AdminRoute` are UX controls only; backend authorization remains mandatory.
 - Blocked-account state is intentionally not persisted after the one-time notification.
+- Verification-code attempt limits are enforced by the backend, not by frontend state.
 - Administrator user blocking and deletion require current-administrator password re-entry and backend verification.
 - Administrator transfer initiation requires the current administrator's password.
 - Transfer acceptance requires the recipient's six-digit code and current password.
