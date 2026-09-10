@@ -68,8 +68,21 @@ const UserManagementDetails = () => {
     }
   };
 
-  const handleBlock = (reason: string) =>
-    runAction(() => blockAdminUserRequest(userId, reason), 'User blocked');
+  const runConfirmedAction = async (action: () => Promise<unknown>, successMessage: string) => {
+    setError(null);
+    setMessage(null);
+    setIsBusy(true);
+    try {
+      await action();
+      setMessage(successMessage);
+      await loadUser();
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  const handleBlock = (reason: string, password: string) =>
+    runConfirmedAction(() => blockAdminUserRequest(userId, reason, password), 'User blocked');
   const handleUnblock = () => runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
   const handleTransfer = async (password: string) => {
     try {
@@ -88,15 +101,13 @@ const UserManagementDetails = () => {
     await refreshTransferStatus();
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (password: string) => {
+    setError(null);
+    setMessage(null);
+    setIsBusy(true);
     try {
-      setError(null);
-      setIsBusy(true);
-      await deleteAdminUserRequest(userId);
+      await deleteAdminUserRequest(userId, password);
       navigate('/admin/users', { replace: true });
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'User deletion failed');
-      throw err;
     } finally {
       setIsBusy(false);
     }
