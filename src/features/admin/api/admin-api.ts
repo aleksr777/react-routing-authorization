@@ -46,10 +46,14 @@ export const getAdminUserRequest = async (id: number): Promise<AdminUser> => {
   return apiRequest<AdminUser>(`/admin/users/${id}`);
 };
 
-export const blockAdminUserRequest = async (id: number, blockedReason: string): Promise<void> => {
+export const blockAdminUserRequest = async (
+  id: number,
+  blockedReason: string,
+  password: string,
+): Promise<void> => {
   await apiRequest(`/admin/users/block/${id}`, {
     method: 'PATCH',
-    body: JSON.stringify({ blocked_reason: blockedReason.trim() }),
+    body: JSON.stringify({ blocked_reason: blockedReason.trim(), password }),
   });
 };
 
@@ -59,9 +63,10 @@ export const unblockAdminUserRequest = async (id: number): Promise<void> => {
   });
 };
 
-export const deleteAdminUserRequest = async (id: number): Promise<void> => {
+export const deleteAdminUserRequest = async (id: number, password: string): Promise<void> => {
   await apiRequest(`/admin/users/delete/${id}`, {
     method: 'DELETE',
+    body: JSON.stringify({ password }),
   });
 };
 
