@@ -55,7 +55,11 @@ const RegistrationConfirmForm = ({
 
       {error && <p className={styles.error}>{error}</p>}
 
-      <button className={styles.button} type="submit" disabled={isSubmitting}>
+      <button
+        className={styles.button}
+        type="submit"
+        disabled={isSubmitting || attemptsRemaining === 0}
+      >
         {isSubmitting ? 'Confirming...' : 'Confirm registration'}
       </button>
 
