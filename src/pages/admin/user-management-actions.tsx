@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import type { AdminUser } from '../../features/admin/api/admin-api';
+import UserManagementBlockConfirm from './user-management-block-confirm';
+import UserManagementDeleteConfirm from './user-management-delete-confirm';
 import styles from './user-management.module.css';
 
 type UserManagementActionsProps = {
   user: AdminUser;
   isBusy: boolean;
-  onBlock: (reason: string) => Promise<void>;
+  onBlock: (reason: string, password: string) => Promise<void>;
   onUnblock: () => Promise<void>;
-  onDelete: () => Promise<void>;
+  onDelete: (password: string) => Promise<void>;
 };
 
 const UserManagementActions = ({
@@ -20,15 +22,13 @@ const UserManagementActions = ({
   const [isBlockConfirming, setIsBlockConfirming] = useState(false);
   const [isUnblockConfirming, setIsUnblockConfirming] = useState(false);
   const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
-  const [blockReason, setBlockReason] = useState('');
 
   if (user.role === 'admin') {
     return <p>Administrator account cannot be blocked or deleted.</p>;
   }
 
-  const handleConfirmBlock = async () => {
-    await onBlock(blockReason);
-    setBlockReason('');
+  const handleConfirmBlock = async (reason: string, password: string) => {
+    await onBlock(reason, password);
     setIsBlockConfirming(false);
   };
 
@@ -37,8 +37,8 @@ const UserManagementActions = ({
     setIsUnblockConfirming(false);
   };
 
-  const handleConfirmDelete = async () => {
-    await onDelete();
+  const handleConfirmDelete = async (password: string) => {
+    await onDelete(password);
     setIsDeleteConfirming(false);
   };
 
@@ -71,29 +71,11 @@ const UserManagementActions = ({
           </button>
         )
       ) : isBlockConfirming ? (
-        <div className={styles.confirmPanel}>
-          <label className={styles.reasonField}>
-            Block reason (optional)
-            <input
-              value={blockReason}
-              onChange={(event) => setBlockReason(event.target.value)}
-              maxLength={255}
-            />
-          </label>
-          <p>Confirm blocking this user?</p>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              disabled={isBusy}
-              onClick={() => void handleConfirmBlock().catch(() => undefined)}
-            >
-              Confirm block
-            </button>
-            <button type="button" disabled={isBusy} onClick={() => setIsBlockConfirming(false)}>
-              Cancel
-            </button>
-          </div>
-        </div>
+        <UserManagementBlockConfirm
+          isBusy={isBusy}
+          onConfirm={handleConfirmBlock}
+          onCancel={() => setIsBlockConfirming(false)}
+        />
       ) : (
         <button
           type="button"
@@ -105,21 +87,11 @@ const UserManagementActions = ({
       )}
 
       {isDeleteConfirming ? (
-        <div className={styles.confirmPanel}>
-          <p>Delete this user permanently?</p>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              disabled={isBusy}
-              onClick={() => void handleConfirmDelete().catch(() => undefined)}
-            >
-              Confirm delete
-            </button>
-            <button type="button" disabled={isBusy} onClick={() => setIsDeleteConfirming(false)}>
-              Cancel
-            </button>
-          </div>
-        </div>
+        <UserManagementDeleteConfirm
+          isBusy={isBusy}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setIsDeleteConfirming(false)}
+        />
       ) : (
         <button
           type="button"
