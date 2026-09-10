@@ -11,6 +11,10 @@ type RegistrationRequestDto = {
   password: string;
 };
 
+type RegistrationResendDto = {
+  email: string;
+};
+
 type RegistrationConfirmDto = {
   code: string;
   email: string;
@@ -28,6 +32,11 @@ type PasswordResetConfirmDto = {
 
 type MessageResponse = {
   message: string;
+};
+
+export type VerificationRequestResult = MessageResponse & {
+  retry_after: number;
+  max_attempts: number;
 };
 
 export type BlockedAccountInfo = {
@@ -58,8 +67,18 @@ export const loginRequest = async (dto: LoginDto): Promise<LoginResult> => {
 
 export const registrationRequest = async (
   dto: RegistrationRequestDto,
-): Promise<MessageResponse> => {
-  return apiRequest<MessageResponse>('/auth/registration/request', {
+): Promise<VerificationRequestResult> => {
+  return apiRequest<VerificationRequestResult>('/auth/registration/request', {
+    method: 'POST',
+    auth: 'none',
+    body: JSON.stringify(dto),
+  });
+};
+
+export const registrationResendRequest = async (
+  dto: RegistrationResendDto,
+): Promise<VerificationRequestResult> => {
+  return apiRequest<VerificationRequestResult>('/auth/registration/resend', {
     method: 'POST',
     auth: 'none',
     body: JSON.stringify(dto),
@@ -81,8 +100,8 @@ export const registrationConfirmRequest = async (
 
 export const passwordResetRequest = async (
   dto: PasswordResetRequestDto,
-): Promise<MessageResponse> => {
-  return apiRequest<MessageResponse>('/auth/password-reset/request', {
+): Promise<VerificationRequestResult> => {
+  return apiRequest<VerificationRequestResult>('/auth/password-reset/request', {
     method: 'POST',
     auth: 'none',
     body: JSON.stringify(dto),
