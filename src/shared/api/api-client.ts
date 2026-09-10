@@ -27,6 +27,17 @@ export class ApiError extends Error {
   }
 }
 
+export const getRetryAfterSeconds = (error: unknown): number | null => {
+  if (!(error instanceof ApiError)) return null;
+  if (typeof error.payload !== 'object' || error.payload === null) return null;
+  if (!('retry_after' in error.payload)) return null;
+
+  const retryAfter = (error.payload as { retry_after?: unknown }).retry_after;
+  return typeof retryAfter === 'number' && Number.isFinite(retryAfter)
+    ? Math.max(0, Math.ceil(retryAfter))
+    : null;
+};
+
 const parseResponseBody = async (response: Response): Promise<unknown> => {
   if (response.status === 204) return null;
 
