@@ -56,7 +56,8 @@ export const getAttemptsRemaining = (error: unknown): number | null => {
 };
 
 export const isVerificationLocked = (error: unknown): boolean => {
-  return getPayloadBoolean(error, 'locked') === true;
+  if (getPayloadBoolean(error, 'locked') === true) return true;
+  return error instanceof ApiError && error.message.toLowerCase().includes('temporarily locked');
 };
 
 const parseResponseBody = async (response: Response): Promise<unknown> => {
