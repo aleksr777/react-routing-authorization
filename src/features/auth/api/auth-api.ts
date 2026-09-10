@@ -13,6 +13,7 @@ type RegistrationRequestDto = {
 
 type RegistrationConfirmDto = {
   code: string;
+  email: string;
 };
 
 type PasswordResetRequestDto = {
@@ -21,6 +22,7 @@ type PasswordResetRequestDto = {
 
 type PasswordResetConfirmDto = {
   code: string;
+  email: string;
   new_password: string;
 };
 
