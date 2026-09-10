@@ -10,6 +10,7 @@ const PasswordReset = () => {
   const navigate = useNavigate();
 
   const [isCodeStep, setIsCodeStep] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,7 +18,9 @@ const PasswordReset = () => {
   const handleRequest = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
+    const email = String(new FormData(event.currentTarget).get('email') ?? '')
+      .trim()
+      .toLowerCase();
     if (!email) {
       setError('Enter your email');
       return;
@@ -28,6 +31,7 @@ const PasswordReset = () => {
       setMessage(null);
       setIsSubmitting(true);
       setMessage(await requestPasswordReset(email));
+      setPendingEmail(email);
       setIsCodeStep(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Password reset request failed');
@@ -56,11 +60,16 @@ const PasswordReset = () => {
       setError('Passwords do not match');
       return;
     }
+    if (!pendingEmail) {
+      setError('Request a new password reset code');
+      setIsCodeStep(false);
+      return;
+    }
 
     try {
       setError(null);
       setIsSubmitting(true);
-      await confirmPasswordReset(code, newPassword);
+      await confirmPasswordReset(code, newPassword, pendingEmail);
       navigate('/users/me', { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Password reset failed');
@@ -72,6 +81,7 @@ const PasswordReset = () => {
   const handleUseAnotherEmail = () => {
     setError(null);
     setMessage(null);
+    setPendingEmail('');
     setIsCodeStep(false);
   };
 
