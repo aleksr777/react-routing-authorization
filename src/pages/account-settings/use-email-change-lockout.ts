@@ -25,9 +25,8 @@ export const useEmailChangeLockout = () => {
   useEffect(() => {
     if (isLocked && lockoutSeconds === 0) {
       setIsLocked(false);
-      setAttemptsRemaining(maxAttempts);
     }
-  }, [isLocked, lockoutSeconds, maxAttempts]);
+  }, [isLocked, lockoutSeconds]);
 
   const syncError = useCallback(
     async (error: unknown) => {
