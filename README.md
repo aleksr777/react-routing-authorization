@@ -24,7 +24,8 @@ The frontend provides:
 - disabled transfer actions for all other users while a transfer is pending;
 - transfer acceptance with a six-digit code and the recipient's current password;
 - backend-enforced limits for incorrect verification-code confirmation attempts;
-- backend-enforced registration/password-reset code resend cooldowns with a visible countdown.
+- backend-enforced registration/password-reset code resend cooldowns with a visible countdown;
+- backend-enforced temporary verification lockouts for registration, public password reset, and email change, with visible countdowns.
 
 ## Tech stack
 
@@ -108,20 +109,24 @@ original protected request can be retried
 
 Reloading the page clears the in-memory access token, so the application relies on the refresh-cookie flow to restore authentication state when possible.
 
-## Verification-code limits and resend countdown
+## Verification-code limits, resend cooldown, and lockouts
 
 The backend remains the source of truth for verification-code restrictions. The frontend displays the values returned by the server.
 
 For registration and public password reset:
 
-- up to `5` incorrect code attempts are allowed for each active confirmation cycle;
-- after a code is sent, another code cannot be requested until the backend cooldown expires;
-- the example backend configuration uses a `60` second cooldown;
-- the confirmation page shows `Maximum 5 incorrect code attempts`;
-- while the cooldown is active, `Resend code` is disabled and the page shows a live countdown such as `You can request a new code in 00:42`;
-- successful request responses provide `retry_after` and `max_attempts`, so the frontend does not hardcode the countdown duration;
+- up to `5` incorrect code attempts are allowed for each confirmation cycle;
+- after a code is sent, another code cannot be requested until the backend resend cooldown expires;
+- the example backend configuration uses a `60` second resend cooldown;
+- the confirmation page shows `Maximum 5 incorrect code attempts` and the current remaining-attempt count;
+- while the resend cooldown is active, `Resend code` is disabled and the page shows a live countdown such as `You can request a new code in 00:42`;
+- successful request responses provide `retry_after` and `max_attempts`, so the frontend does not hardcode the resend duration;
 - if a resend request reaches the server too early, HTTP `429` includes the actual remaining `retry_after`, and the frontend resynchronizes its timer to that value;
 - a successfully reissued registration/password-reset code starts a new attempt cycle and makes the previous code invalid.
+
+After the fifth incorrect code, registration and public password reset enter a separate server-side lockout. The example backend configuration uses `180` seconds (`3` minutes). The frontend returns the user from the confirmation step to the email-entry step, disables the form while the lockout is active, and displays the countdown returned by the backend. This lockout is separate from the `60` second resend cooldown.
+
+Authenticated email change uses the same `5`-attempt / `180`-second lockout model. After the fifth incorrect code, the frontend automatically returns to the new-email entry step and displays the remaining lockout countdown there. The backend remains authoritative, so reloading or reopening the page does not bypass the restriction.
 
 Registration resends use:
 
@@ -278,7 +283,7 @@ This allows every user-management detail page to decide whether to:
 The frontend supports:
 
 - partial profile editing;
-- email change with confirmation code;
+- email change with confirmation code and temporary lockout after 5 incorrect codes;
 - password change after current-password verification;
 - authenticated password reset by emailed code;
 - self-account deletion after password verification.
@@ -291,7 +296,9 @@ Authentication state is refreshed after flows that issue new tokens.
 - Access tokens are kept in memory rather than localStorage/sessionStorage.
 - Protected routes and `AdminRoute` are UX controls only; backend authorization remains mandatory.
 - Blocked-account state is intentionally not persisted after the one-time notification.
-- Verification-code attempt and resend limits are enforced by the backend, not by frontend state.
+- Verification-code attempt, resend-cooldown, and temporary-lockout restrictions are enforced by the backend, not by frontend state.
+- Registration and public password reset use a 60-second resend countdown and, after 5 incorrect codes, a separate 180-second lockout countdown with the example backend configuration.
+- Email change uses a 180-second lockout after 5 incorrect confirmation codes with the example backend configuration.
 - Registration resends do not require retaining the plaintext registration password in frontend state.
 - Administrator user blocking and deletion require current-administrator password re-entry and backend verification.
 - Administrator transfer initiation requires the current administrator's password.
