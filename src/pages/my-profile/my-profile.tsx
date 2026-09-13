@@ -72,8 +72,6 @@ const MyProfile = () => {
         <span>Email: {user.email}</span>
         <span>Name: {user.name ?? '—'}</span>
         <span>Age: {user.age ?? '—'}</span>
-        <span>Status: {user.is_blocked ? 'Blocked' : 'Active'}</span>
-        {user.blocked_reason && <span>Block reason: {user.blocked_reason}</span>}
       </div>
 
       <Link className={styles.settingsLink} to="/users/me/settings">
