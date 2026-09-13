@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useChangeEmail } from './use-change-email';
 import styles from './account-settings.module.css';
 
@@ -75,6 +76,9 @@ const ChangeEmail = () => {
           </button>
         </form>
       )}
+      <Link className={styles.link} to="/users/me">
+        Back to profile
+      </Link>
     </section>
   );
 };

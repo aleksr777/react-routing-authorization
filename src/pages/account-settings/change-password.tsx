@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   confirmCurrentUserPasswordReset,
   confirmPasswordChange,
@@ -105,6 +105,9 @@ const ChangePassword = () => {
           onForgotPassword={handleForgotPassword}
         />
       )}
+      <Link className={styles.link} to="/users/me">
+        Back to profile
+      </Link>
     </section>
   );
 };
