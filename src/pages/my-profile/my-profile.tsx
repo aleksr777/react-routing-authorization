@@ -68,8 +68,12 @@ const MyProfile = () => {
       <h2 className={styles.title}>My profile</h2>
 
       <div className={styles.info}>
-        <p>Email: {user.email}</p>
-        <p>Nickname: {user.nickname}</p>
+        <strong>{user.nickname ?? 'No nickname'}</strong>
+        <span>Email: {user.email}</span>
+        <span>Name: {user.name ?? '—'}</span>
+        <span>Age: {user.age ?? '—'}</span>
+        <span>Status: {user.is_blocked ? 'Blocked' : 'Active'}</span>
+        {user.blocked_reason && <span>Block reason: {user.blocked_reason}</span>}
       </div>
 
       <Link className={styles.settingsLink} to="/users/me/settings">
