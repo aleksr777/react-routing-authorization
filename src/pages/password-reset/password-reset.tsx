@@ -1,10 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
-import {
-  getAttemptsRemaining,
-  isVerificationLocked,
-} from '../../shared/api/api-client';
+import { getAttemptsRemaining, isVerificationLocked } from '../../shared/api/api-client';
 import { useVerificationRequestState } from '../../shared/model/verification-request';
 import PasswordResetConfirmForm from './password-reset-confirm-form';
 import PasswordResetRequestForm from './password-reset-request-form';

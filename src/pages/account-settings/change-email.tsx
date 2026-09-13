@@ -14,14 +14,8 @@ const ChangeEmail = () => {
   const [newEmail, setNewEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {
-    isLocked,
-    lockoutSeconds,
-    maxAttempts,
-    attemptsRemaining,
-    syncError,
-    resetAttempts,
-  } = useEmailChangeLockout();
+  const { isLocked, lockoutSeconds, maxAttempts, attemptsRemaining, syncError, resetAttempts } =
+    useEmailChangeLockout();
 
   const handleRequest = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

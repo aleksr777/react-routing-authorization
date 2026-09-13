@@ -1,23 +1,15 @@
 import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
-import {
-  getAttemptsRemaining,
-  isVerificationLocked,
-} from '../../shared/api/api-client';
+import { getAttemptsRemaining, isVerificationLocked } from '../../shared/api/api-client';
 import { useVerificationRequestState } from '../../shared/model/verification-request';
 import RegistrationConfirmForm from './registration-confirm-form';
 import RegistrationRequestForm from './registration-request-form';
 import styles from './registration.module.css';
 
 const Registration = () => {
-  const {
-    isAuth,
-    isInitializing,
-    requestRegistration,
-    resendRegistration,
-    confirmRegistration,
-  } = useAuth();
+  const { isAuth, isInitializing, requestRegistration, resendRegistration, confirmRegistration } =
+    useAuth();
   const navigate = useNavigate();
   const verification = useVerificationRequestState();
   const [isCodeStep, setIsCodeStep] = useState(false);
@@ -28,7 +20,9 @@ const Registration = () => {
   const handleRegistrationRequest = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get('email') ?? '').trim().toLowerCase();
+    const email = String(formData.get('email') ?? '')
+      .trim()
+      .toLowerCase();
     const password = String(formData.get('password') ?? '');
     const passwordConfirm = String(formData.get('passwordConfirm') ?? '');
 
