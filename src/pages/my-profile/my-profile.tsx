@@ -78,9 +78,19 @@ const MyProfile = () => {
         Edit profile
       </Link>
 
-      <Link className={styles.settingsLink} to="/users/me/settings">
-        Settings
+      <Link className={styles.settingsLink} to="/users/me/settings/password">
+        Change password
       </Link>
+
+      <Link className={styles.settingsLink} to="/users/me/settings/email">
+        Change email
+      </Link>
+
+      {user.role !== 'admin' && (
+        <Link className={styles.dangerLink} to="/users/me/settings/delete">
+          Delete profile
+        </Link>
+      )}
 
       <button
         className={styles.logoutButton}
