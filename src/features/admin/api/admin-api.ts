@@ -10,6 +10,7 @@ export type AdminUser = {
   role: UserRole;
   is_blocked: boolean;
   blocked_reason: string | null;
+  last_activity_at: string | null;
 };
 
 type AdminUsersResponse = {
