@@ -68,7 +68,7 @@ const MyProfile = () => {
       <h2 className={styles.title}>My profile</h2>
 
       <div className={styles.info}>
-        <strong>{user.nickname ?? 'No nickname'}</strong>
+        <span>Nickname: {user.nickname ?? 'No nickname'}</span>
         <span>Email: {user.email}</span>
         <span>Name: {user.name ?? '—'}</span>
         <span>Age: {user.age ?? '—'}</span>
