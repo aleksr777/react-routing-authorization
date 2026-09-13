@@ -52,7 +52,7 @@ export const useChangeEmail = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmEmailChange(code);
-      navigate('/users/me/settings', { replace: true });
+      navigate('/users/me', { replace: true });
     } catch (err: unknown) {
       const remaining = getAttemptsRemaining(err);
       await syncError(err);
