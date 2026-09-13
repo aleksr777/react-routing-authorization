@@ -15,7 +15,6 @@ const UserManagementUserData = ({ user }: UserManagementUserDataProps) => (
     <span>Email: {user.email}</span>
     <span>Name: {user.name ?? '—'}</span>
     <span>Age: {user.age ?? '—'}</span>
-    <span>Role: {user.role}</span>
     <span>Status: {user.is_blocked ? 'Blocked' : 'Active'}</span>
     <span>Last activity: {formatLastActivity(user.last_activity_at)}</span>
     {user.blocked_reason && <span>Block reason: {user.blocked_reason}</span>}
