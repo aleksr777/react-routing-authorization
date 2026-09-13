@@ -109,8 +109,8 @@ const EditProfile = () => {
         onAgeChange={setAge}
         onSubmit={handleSubmit}
       />
-      <Link className={styles.link} to="/users/me/settings">
-        Back to settings
+      <Link className={styles.link} to="/users/me">
+        Back to profile
       </Link>
     </section>
   );
