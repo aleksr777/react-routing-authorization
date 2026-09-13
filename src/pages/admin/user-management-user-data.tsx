@@ -8,7 +8,6 @@ type UserManagementUserDataProps = {
 const UserManagementUserData = ({ user }: UserManagementUserDataProps) => (
   <div className={styles.userData}>
     <strong>{user.nickname ?? 'No nickname'}</strong>
-    <span>ID: {user.id}</span>
     <span>Email: {user.email}</span>
     <span>Name: {user.name ?? '—'}</span>
     <span>Age: {user.age ?? '—'}</span>

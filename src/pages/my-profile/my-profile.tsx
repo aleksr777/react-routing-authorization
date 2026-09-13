@@ -68,7 +68,6 @@ const MyProfile = () => {
       <h2 className={styles.title}>My profile</h2>
 
       <div className={styles.info}>
-        <p>ID: {user.id}</p>
         <p>Email: {user.email}</p>
         <p>Nickname: {user.nickname}</p>
         <p>Role: {user.role}</p>
