@@ -61,7 +61,7 @@ const ChangePassword = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmPasswordChange(code, newPassword);
-      navigate('/users/me/settings', { replace: true });
+      navigate('/users/me', { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Password change failed');
     } finally {
@@ -82,7 +82,7 @@ const ChangePassword = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmCurrentUserPasswordReset(resetCode, newPassword);
-      navigate('/users/me/settings', { replace: true });
+      navigate('/users/me', { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Password reset failed');
     } finally {
