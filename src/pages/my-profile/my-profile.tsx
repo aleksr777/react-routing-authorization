@@ -74,6 +74,10 @@ const MyProfile = () => {
         <span>Age: {user.age ?? '—'}</span>
       </div>
 
+      <Link className={styles.settingsLink} to="/users/me/settings/profile">
+        Edit profile
+      </Link>
+
       <Link className={styles.settingsLink} to="/users/me/settings">
         Settings
       </Link>
