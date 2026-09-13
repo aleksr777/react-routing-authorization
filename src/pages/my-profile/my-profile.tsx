@@ -70,7 +70,6 @@ const MyProfile = () => {
       <div className={styles.info}>
         <p>Email: {user.email}</p>
         <p>Nickname: {user.nickname}</p>
-        <p>Role: {user.role}</p>
       </div>
 
       <Link className={styles.settingsLink} to="/users/me/settings">
