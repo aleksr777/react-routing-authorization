@@ -1,38 +1,13 @@
 import { apiRequest } from '../../../shared/api/api-client';
 import { clearAuthTokens, setAuthTokens, type AuthTokens } from '../../../shared/api/tokens';
 
-type LoginDto = {
-  email: string;
-  password: string;
-};
-
-type RegistrationRequestDto = {
-  email: string;
-  password: string;
-};
-
-type RegistrationResendDto = {
-  email: string;
-};
-
-type RegistrationConfirmDto = {
-  code: string;
-  email: string;
-};
-
-type PasswordResetRequestDto = {
-  email: string;
-};
-
-type PasswordResetConfirmDto = {
-  code: string;
-  email: string;
-  new_password: string;
-};
-
-type MessageResponse = {
-  message: string;
-};
+type LoginDto = { email: string; password: string };
+type RegistrationRequestDto = { email: string; password: string };
+type RegistrationResendDto = { email: string };
+type RegistrationConfirmDto = { code: string; email: string };
+type PasswordResetRequestDto = { email: string };
+type PasswordResetConfirmDto = { code: string; email: string; new_password: string };
+type MessageResponse = { message: string };
 
 export type VerificationRequestResult = MessageResponse & {
   retry_after: number;
