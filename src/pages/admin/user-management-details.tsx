@@ -13,8 +13,7 @@ import styles from './user-management.module.css';
 
 const UserManagementDetails = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const userId = Number(id);
+  const userId = Number(useParams().id);
   const [user, setUser] = useState<AdminUser | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -87,7 +86,6 @@ const UserManagementDetails = () => {
       setIsBusy(false);
     }
   };
-
   if (isLoading) return <p>Loading user...</p>;
 
   return (
