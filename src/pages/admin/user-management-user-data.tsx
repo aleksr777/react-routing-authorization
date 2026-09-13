@@ -11,7 +11,7 @@ const formatLastActivity = (value: string | null) => {
 
 const UserManagementUserData = ({ user }: UserManagementUserDataProps) => (
   <div className={styles.userData}>
-    <strong>{user.nickname ?? 'No nickname'}</strong>
+    <strong>Nickname: {user.nickname ?? 'No nickname'}</strong>
     <span>Email: {user.email}</span>
     <span>Name: {user.name ?? '—'}</span>
     <span>Age: {user.age ?? '—'}</span>
