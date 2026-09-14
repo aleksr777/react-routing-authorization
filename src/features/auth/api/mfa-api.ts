@@ -43,10 +43,10 @@ export const beginMfaSetupRequest = (): Promise<MfaSetup> => {
   return apiRequest<MfaSetup>('/auth/mfa/totp/setup', { method: 'POST' });
 };
 
-export const enableMfaRequest = (code: string): Promise<MfaStatus> => {
+export const enableMfaRequest = (password: string, code: string): Promise<MfaStatus> => {
   return apiRequest<MfaStatus>('/auth/mfa/totp/enable', {
     method: 'POST',
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({ password, code }),
   });
 };
 
