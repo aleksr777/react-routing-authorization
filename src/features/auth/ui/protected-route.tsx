@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { ApiError } from '../../../shared/api/api-error';
+import { isSessionInvalidStatus } from '../../../shared/api/auth-policy.mjs';
 import { validateSessionRequest } from '../api/auth-api';
 import { useAuth } from '../model/use-auth';
 
@@ -28,7 +29,7 @@ const ProtectedRoute = () => {
         }
       } catch (err: unknown) {
         if (currentValidationId !== validationId.current) return;
-        if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+        if (err instanceof ApiError && isSessionInvalidStatus(err.status)) {
           clearSession();
           return;
         }
