@@ -16,6 +16,7 @@ export {
 } from './api-error';
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5174/api';
 const DEFAULT_TIMEOUT_MS = 15_000;
+const REFRESH_LOCK_NAME = 'auth-refresh-token';
 type AuthMode = 'access' | 'none';
 
 type ApiRequestOptions = Omit<RequestInit, 'headers'> & {
@@ -78,9 +79,17 @@ const performRefreshAuthTokens = async (): Promise<AuthTokens> => {
   return tokens;
 };
 
+const performSerializedRefresh = (): Promise<AuthTokens> => {
+  if (typeof navigator === 'undefined' || !navigator.locks) {
+    return performRefreshAuthTokens();
+  }
+
+  return navigator.locks.request(REFRESH_LOCK_NAME, () => performRefreshAuthTokens());
+};
+
 export const refreshAuthTokens = (): Promise<AuthTokens> => {
   if (!refreshPromise) {
-    refreshPromise = performRefreshAuthTokens().finally(() => {
+    refreshPromise = performSerializedRefresh().finally(() => {
       refreshPromise = null;
     });
   }
