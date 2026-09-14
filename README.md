@@ -64,9 +64,9 @@ The refresh request uses the same timeout policy.
 
 ## Browser security policy
 
-`index.html` includes a CSP meta policy and `strict-origin-when-cross-origin` referrer policy. The CSP limits scripts to the application origin, blocks plugins/objects, constrains forms/base URLs, and allows API connectivity required by local and HTTPS deployments.
+The Vite build injects a CSP meta policy into `index.html` together with a `strict-origin-when-cross-origin` referrer policy. In production, `connect-src` is restricted to the exact origin derived from `VITE_API_URL` plus the frontend origin; development additionally allows WebSocket connections for Vite HMR. The CSP also limits scripts to the application origin, blocks plugins/objects, and constrains forms/base URLs.
 
-GitHub Pages cannot configure all HTTP response security headers. In particular, `frame-ancestors` cannot be enforced from a CSP `<meta>` element. For a production deployment where clickjacking protection or a stricter dynamic `connect-src` policy is required, serve the built frontend from hosting that supports response headers.
+GitHub Pages cannot configure all HTTP response security headers. In particular, `frame-ancestors` cannot be enforced from a CSP `<meta>` element. For production hosting where clickjacking protection and full response-header control are required, serve the built frontend from hosting that supports custom headers.
 
 ## Environment
 
