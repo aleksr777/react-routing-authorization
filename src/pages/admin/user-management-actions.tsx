@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import type { AdminUser } from '../../features/admin/api/admin-api';
 import UserManagementBlockConfirm from './user-management-block-confirm';
-import UserManagementDeleteConfirm from './user-management-delete-confirm';
+import UserManagementPasswordConfirm from './user-management-delete-confirm';
 import styles from './user-management.module.css';
 
 type UserManagementActionsProps = {
   user: AdminUser;
   isBusy: boolean;
   onBlock: (reason: string, password: string) => Promise<void>;
-  onUnblock: () => Promise<void>;
+  onUnblock: (password: string) => Promise<void>;
   onDelete: (password: string) => Promise<void>;
 };
 
@@ -32,8 +32,8 @@ const UserManagementActions = ({
     setIsBlockConfirming(false);
   };
 
-  const handleConfirmUnblock = async () => {
-    await onUnblock();
+  const handleConfirmUnblock = async (password: string) => {
+    await onUnblock(password);
     setIsUnblockConfirming(false);
   };
 
@@ -46,21 +46,14 @@ const UserManagementActions = ({
     <div className={styles.actionSection}>
       {user.is_blocked ? (
         isUnblockConfirming ? (
-          <div className={styles.confirmPanel}>
-            <p>Confirm unblocking this user?</p>
-            <div className={styles.actions}>
-              <button
-                type="button"
-                disabled={isBusy}
-                onClick={() => void handleConfirmUnblock().catch(() => undefined)}
-              >
-                Confirm unblock
-              </button>
-              <button type="button" disabled={isBusy} onClick={() => setIsUnblockConfirming(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
+          <UserManagementPasswordConfirm
+            isBusy={isBusy}
+            onConfirm={handleConfirmUnblock}
+            onCancel={() => setIsUnblockConfirming(false)}
+            prompt="Unblock this user?"
+            confirmLabel="Confirm unblock"
+            failureMessage="Failed to unblock user"
+          />
         ) : (
           <button
             type="button"
@@ -87,7 +80,7 @@ const UserManagementActions = ({
       )}
 
       {isDeleteConfirming ? (
-        <UserManagementDeleteConfirm
+        <UserManagementPasswordConfirm
           isBusy={isBusy}
           onConfirm={handleConfirmDelete}
           onCancel={() => setIsDeleteConfirming(false)}
