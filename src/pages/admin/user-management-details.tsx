@@ -42,22 +42,6 @@ const UserManagementDetails = () => {
     void loadUser();
   }, [loadUser]);
 
-  const runAction = async (action: () => Promise<unknown>, successMessage: string) => {
-    try {
-      setError(null);
-      setMessage(null);
-      setIsBusy(true);
-      await action();
-      setMessage(successMessage);
-      await loadUser();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'User action failed');
-      throw err;
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
   const runConfirmedAction = async (action: () => Promise<unknown>, successMessage: string) => {
     setError(null);
     setMessage(null);
@@ -73,7 +57,8 @@ const UserManagementDetails = () => {
 
   const handleBlock = (reason: string, password: string) =>
     runConfirmedAction(() => blockAdminUserRequest(userId, reason, password), 'User blocked');
-  const handleUnblock = () => runAction(() => unblockAdminUserRequest(userId), 'User unblocked');
+  const handleUnblock = (password: string) =>
+    runConfirmedAction(() => unblockAdminUserRequest(userId, password), 'User unblocked');
 
   const handleDelete = async (password: string) => {
     setError(null);

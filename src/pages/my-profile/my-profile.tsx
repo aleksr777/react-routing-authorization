@@ -19,23 +19,17 @@ const MyProfile = () => {
     const loadProfile = async () => {
       try {
         const currentUser = await getCurrentUserRequest();
-
-        if (isMounted) {
-          setUser(currentUser);
-        }
+        if (isMounted) setUser(currentUser);
       } catch (err: unknown) {
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Failed to load user');
         }
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     };
 
     void loadProfile();
-
     return () => {
       isMounted = false;
     };
@@ -51,17 +45,9 @@ const MyProfile = () => {
     }
   };
 
-  if (isLoading) {
-    return <p>Loading profile...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  if (!user) {
-    return <p>User not found</p>;
-  }
+  if (isLoading) return <p>Loading profile...</p>;
+  if (error) return <p>{error}</p>;
+  if (!user) return <p>User not found</p>;
 
   return (
     <section className={styles.wrapper}>
@@ -77,18 +63,21 @@ const MyProfile = () => {
       <Link className={styles.settingsLink} to="/users/me/settings/profile">
         Edit profile
       </Link>
-
       <Link className={styles.settingsLink} to="/users/me/settings/password">
         Change password
       </Link>
-
       <Link className={styles.settingsLink} to="/users/me/settings/email">
         Change email
       </Link>
-
       <Link className={styles.settingsLink} to="/users/me/sessions">
         Active sessions
       </Link>
+
+      {user.role === 'admin' && (
+        <Link className={styles.settingsLink} to="/users/me/security/mfa">
+          Two-factor authentication
+        </Link>
+      )}
 
       {user.role !== 'admin' && (
         <Link className={styles.dangerLink} to="/users/me/settings/delete">

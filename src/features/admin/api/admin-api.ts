@@ -49,9 +49,10 @@ export const blockAdminUserRequest = async (
   });
 };
 
-export const unblockAdminUserRequest = async (id: number): Promise<void> => {
+export const unblockAdminUserRequest = async (id: number, password: string): Promise<void> => {
   await apiRequest(`/admin/users/unblock/${id}`, {
     method: 'PATCH',
+    body: JSON.stringify({ password }),
   });
 };
 

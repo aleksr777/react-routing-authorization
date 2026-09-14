@@ -3,8 +3,10 @@ import { refreshAuthTokens } from '../../../shared/api/api-client';
 import { clearAuthTokens, subscribeAuthTokensCleared } from '../../../shared/api/tokens';
 import {
   isBlockedAccountInfo,
+  isMfaRequiredInfo,
   loginRequest,
   logoutRequest,
+  mfaLoginRequest,
   passwordResetConfirmRequest,
   passwordResetRequest,
   registrationConfirmRequest,
@@ -27,7 +29,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         await refreshAuthTokens();
         setIsAuth(true);
       } catch {
-        clearAuthTokens();
+        clearAuthTokens(false);
         setIsAuth(false);
       } finally {
         setIsInitializing(false);
@@ -44,9 +46,19 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       setIsAuth(false);
       return { status: 'blocked', info: result };
     }
+    if (isMfaRequiredInfo(result)) {
+      clearAuthTokens(false);
+      setIsAuth(false);
+      return { status: 'mfa_required', challenge: result.challenge };
+    }
 
     setIsAuth(true);
     return { status: 'authenticated' };
+  }, []);
+
+  const verifyMfa = useCallback(async (challenge: string, code: string) => {
+    await mfaLoginRequest(challenge, code);
+    setIsAuth(true);
   }, []);
 
   const requestRegistration = useCallback(async (email: string, password: string) => {
@@ -69,7 +81,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const confirmPasswordReset = useCallback(
     async (code: string, newPassword: string, email: string) => {
       await passwordResetConfirmRequest({ code, email, new_password: newPassword });
-      setIsAuth(true);
+      setIsAuth(false);
     },
     [],
   );
@@ -88,6 +100,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     isAuth,
     isInitializing,
     login,
+    verifyMfa,
     requestRegistration,
     resendRegistration,
     confirmRegistration,

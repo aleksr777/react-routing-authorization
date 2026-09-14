@@ -29,13 +29,15 @@ export default tseslint.config(
         ...globals.node,
         ...globals.es2020,
       },
-      parserOptions: {
-        project: ['tsconfig.json', 'tsconfig.node.json'],
-      },
     },
   },
   {
     files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: ['tsconfig.json', 'tsconfig.node.json'],
+      },
+    },
     settings: {
       react: {
         version: 'detect',

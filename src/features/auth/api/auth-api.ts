@@ -1,5 +1,6 @@
 import { apiRequest } from '../../../shared/api/api-client';
 import { clearAuthTokens, setAuthTokens, type AuthTokens } from '../../../shared/api/tokens';
+import { isMfaRequiredInfo, type MfaRequiredInfo } from './mfa-api';
 import type {
   LoginDto,
   MessageResponse,
@@ -10,6 +11,15 @@ import type {
   RegistrationResendDto,
 } from './auth-api.types';
 
+export {
+  beginMfaSetupRequest,
+  disableMfaRequest,
+  enableMfaRequest,
+  getMfaStatusRequest,
+  isMfaRequiredInfo,
+  mfaLoginRequest,
+} from './mfa-api';
+export type { MfaRequiredInfo, MfaSetup, MfaStatus } from './mfa-api';
 export type VerificationRequestResult = MessageResponse & {
   retry_after: number;
   max_attempts: number;
@@ -20,8 +30,7 @@ export type BlockedAccountInfo = {
   blocked_reason: string | null;
   contact_email: string;
 };
-
-export type LoginResult = AuthTokens | BlockedAccountInfo;
+export type LoginResult = AuthTokens | BlockedAccountInfo | MfaRequiredInfo;
 
 export const isBlockedAccountInfo = (value: LoginResult): value is BlockedAccountInfo => {
   return 'blocked' in value && value.blocked === true;
@@ -34,10 +43,9 @@ export const loginRequest = async (dto: LoginDto): Promise<LoginResult> => {
     body: JSON.stringify(dto),
   });
 
-  if (!isBlockedAccountInfo(result)) {
+  if (!isBlockedAccountInfo(result) && !isMfaRequiredInfo(result)) {
     setAuthTokens(result);
   }
-
   return result;
 };
 
@@ -76,7 +84,6 @@ export const registrationConfirmRequest = async (
     auth: 'none',
     body: JSON.stringify(dto),
   });
-
   setAuthTokens(tokens);
   return tokens;
 };
@@ -93,15 +100,14 @@ export const passwordResetRequest = async (
 
 export const passwordResetConfirmRequest = async (
   dto: PasswordResetConfirmDto,
-): Promise<AuthTokens> => {
-  const tokens = await apiRequest<AuthTokens>('/auth/password-reset/confirm', {
+): Promise<MessageResponse> => {
+  const result = await apiRequest<MessageResponse>('/auth/password-reset/confirm', {
     method: 'POST',
     auth: 'none',
     body: JSON.stringify(dto),
   });
-
-  setAuthTokens(tokens);
-  return tokens;
+  clearAuthTokens();
+  return result;
 };
 
 export const logoutRequest = async (): Promise<void> => {

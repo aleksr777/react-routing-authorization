@@ -7,19 +7,16 @@ import {
 } from '../../features/auth/api/session-api';
 import { formatSessionDate, getSessionDeviceLabel } from './session-device';
 import styles from './active-sessions.module.css';
-
 const ActiveSessions = () => {
   const [sessions, setSessions] = useState<AuthSession[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [revokingIds, setRevokingIds] = useState<Set<string>>(new Set());
   const [isRevokingOthers, setIsRevokingOthers] = useState(false);
-
   const orderedSessions = useMemo(
     () => [...sessions].sort((a, b) => Number(b.current) - Number(a.current)),
     [sessions],
   );
-
   const loadSessions = useCallback(async () => {
     try {
       setError(null);
@@ -30,11 +27,9 @@ const ActiveSessions = () => {
       setIsLoading(false);
     }
   }, []);
-
   useEffect(() => {
     void loadSessions();
   }, [loadSessions]);
-
   const handleRevoke = async (sessionId: string) => {
     setRevokingIds((current) => new Set(current).add(sessionId));
     try {
@@ -51,11 +46,9 @@ const ActiveSessions = () => {
       });
     }
   };
-
   const handleRevokeOthers = async () => {
     const otherSessions = sessions.filter((session) => !session.current);
     if (otherSessions.length === 0) return;
-
     try {
       setError(null);
       setIsRevokingOthers(true);
@@ -68,9 +61,7 @@ const ActiveSessions = () => {
       setIsRevokingOthers(false);
     }
   };
-
   if (isLoading) return <p>Loading sessions...</p>;
-
   return (
     <section className={styles.section}>
       <div className={styles.header}>
@@ -88,7 +79,6 @@ const ActiveSessions = () => {
           {isRevokingOthers ? 'Terminating...' : 'Terminate all other sessions'}
         </button>
       </div>
-
       {error && <p className={styles.error}>{error}</p>}
       {orderedSessions.length === 0 ? (
         <p>No active sessions found.</p>
@@ -118,7 +108,6 @@ const ActiveSessions = () => {
           ))}
         </div>
       )}
-
       <Link className={styles.backLink} to="/users/me">
         Back to profile
       </Link>

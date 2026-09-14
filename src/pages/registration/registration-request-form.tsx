@@ -38,7 +38,7 @@ const RegistrationRequestForm = ({
           name="password"
           type="password"
           autoComplete="new-password"
-          minLength={8}
+          minLength={12}
           maxLength={100}
           disabled={isLocked}
           required
@@ -52,7 +52,7 @@ const RegistrationRequestForm = ({
           name="passwordConfirm"
           type="password"
           autoComplete="new-password"
-          minLength={8}
+          minLength={12}
           maxLength={100}
           disabled={isLocked}
           required

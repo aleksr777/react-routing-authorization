@@ -1,17 +1,23 @@
 import { useState } from 'react';
 import styles from './user-management.module.css';
 
-type UserManagementDeleteConfirmProps = {
+type UserManagementPasswordConfirmProps = {
   isBusy: boolean;
   onConfirm: (password: string) => Promise<void>;
   onCancel: () => void;
+  prompt?: string;
+  confirmLabel?: string;
+  failureMessage?: string;
 };
 
-const UserManagementDeleteConfirm = ({
+const UserManagementPasswordConfirm = ({
   isBusy,
   onConfirm,
   onCancel,
-}: UserManagementDeleteConfirmProps) => {
+  prompt = 'Delete this user permanently?',
+  confirmLabel = 'Confirm delete',
+  failureMessage = 'Failed to delete user',
+}: UserManagementPasswordConfirmProps) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -21,13 +27,13 @@ const UserManagementDeleteConfirm = ({
       await onConfirm(password);
       setPassword('');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to delete user');
+      setError(err instanceof Error ? err.message : failureMessage);
     }
   };
 
   return (
     <div className={styles.confirmPanel}>
-      <p>Delete this user permanently?</p>
+      <p>{prompt}</p>
       <label className={styles.reasonField}>
         Current administrator password
         <input
@@ -48,7 +54,7 @@ const UserManagementDeleteConfirm = ({
           disabled={isBusy || password.length < 8 || password.length > 100}
           onClick={() => void handleConfirm()}
         >
-          Confirm delete
+          {confirmLabel}
         </button>
         <button type="button" disabled={isBusy} onClick={onCancel}>
           Cancel
@@ -59,4 +65,4 @@ const UserManagementDeleteConfirm = ({
   );
 };
 
-export default UserManagementDeleteConfirm;
+export default UserManagementPasswordConfirm;
