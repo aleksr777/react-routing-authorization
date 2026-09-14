@@ -18,17 +18,23 @@ export const useChangeEmail = () => {
 
   const handleRequest = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const email = String(new FormData(event.currentTarget).get('newEmail') ?? '').trim();
+    const data = new FormData(event.currentTarget);
+    const email = String(data.get('newEmail') ?? '').trim();
+    const currentPassword = String(data.get('currentPassword') ?? '');
 
     if (!email) {
       setError('Enter a new email');
+      return;
+    }
+    if (!currentPassword) {
+      setError('Enter your current password');
       return;
     }
 
     try {
       setError(null);
       setIsSubmitting(true);
-      await requestEmailChange(email);
+      await requestEmailChange(email, currentPassword);
       resetAttempts();
       setNewEmail(email);
     } catch (err: unknown) {
@@ -52,7 +58,10 @@ export const useChangeEmail = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmEmailChange(code);
-      navigate('/users/me', { replace: true });
+      navigate('/auth/login', {
+        replace: true,
+        state: { message: 'Email changed successfully. Sign in with your new email.' },
+      });
     } catch (err: unknown) {
       const remaining = getAttemptsRemaining(err);
       await syncError(err);
