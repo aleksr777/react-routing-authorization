@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getSessionsRequest,
   revokeSessionRequest,
@@ -19,7 +19,7 @@ const ActiveSessions = () => {
     [sessions],
   );
 
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     try {
       setError(null);
       setSessions(await getSessionsRequest());
@@ -28,11 +28,11 @@ const ActiveSessions = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     void loadSessions();
-  }, []);
+  }, [loadSessions]);
 
   const handleRevoke = async (sessionId: string) => {
     setRevokingIds((current) => new Set(current).add(sessionId));
