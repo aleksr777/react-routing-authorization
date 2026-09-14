@@ -34,33 +34,3 @@ export const CredentialsForm = ({ error, isSubmitting, onSubmit }: CredentialsFo
     </button>
   </form>
 );
-
-type MfaFormProps = FormStateProps & {
-  onSubmit: FormEventHandler<HTMLFormElement>;
-  onBack: () => void;
-};
-
-export const MfaForm = ({ error, isSubmitting, onSubmit, onBack }: MfaFormProps) => (
-  <form className={styles.form} onSubmit={onSubmit}>
-    <label className={styles.label}>
-      Authentication code
-      <input
-        className={styles.input}
-        name="code"
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        pattern="[0-9]{6}"
-        maxLength={6}
-        required
-        autoFocus
-      />
-    </label>
-    {error && <p className={styles.error}>{error}</p>}
-    <button className={styles.button} type="submit" disabled={isSubmitting}>
-      {isSubmitting ? 'Verifying...' : 'Verify'}
-    </button>
-    <button className={styles.button} type="button" onClick={onBack} disabled={isSubmitting}>
-      Back
-    </button>
-  </form>
-);
