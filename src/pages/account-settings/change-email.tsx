@@ -32,6 +32,17 @@ const ChangeEmail = () => {
               required
             />
           </label>
+          <label className={styles.label}>
+            Current password
+            <input
+              className={styles.input}
+              name="currentPassword"
+              type="password"
+              autoComplete="current-password"
+              disabled={isLocked}
+              required
+            />
+          </label>
           {lockoutMessage && <p className={styles.error}>{lockoutMessage}</p>}
           {error && <p className={styles.error}>{error}</p>}
           <button className={styles.button} type="submit" disabled={isSubmitting || isLocked}>
