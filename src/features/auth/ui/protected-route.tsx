@@ -4,6 +4,8 @@ import { ApiError } from '../../../shared/api/api-error';
 import { validateSessionRequest } from '../api/auth-api';
 import { useAuth } from '../model/use-auth';
 
+const SESSION_HEARTBEAT_MS = 60_000;
+
 const ProtectedRoute = () => {
   const { isAuth, isInitializing, clearSession } = useAuth();
   const location = useLocation();
@@ -12,25 +14,25 @@ const ProtectedRoute = () => {
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const validateSession = useCallback(
-    async (locationKey: string) => {
+    async (locationKey: string, blocking = true) => {
       const currentValidationId = ++validationId.current;
-      setValidatedLocationKey(null);
-      setValidationError(null);
+      if (blocking) {
+        setValidatedLocationKey(null);
+        setValidationError(null);
+      }
 
       try {
         await validateSessionRequest();
-        if (currentValidationId === validationId.current) {
+        if (currentValidationId === validationId.current && blocking) {
           setValidatedLocationKey(locationKey);
         }
       } catch (err: unknown) {
         if (currentValidationId !== validationId.current) return;
-
         if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
           clearSession();
           return;
         }
-
-        setValidationError('Unable to verify the session. Please try again.');
+        if (blocking) setValidationError('Unable to verify the session. Please try again.');
       }
     },
     [clearSession],
@@ -46,18 +48,23 @@ const ProtectedRoute = () => {
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        void validateSession(location.key);
+        void validateSession(location.key, false);
       }
     };
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void validateSession(location.key, false);
+      }
+    }, SESSION_HEARTBEAT_MS);
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.clearInterval(interval);
+    };
   }, [isAuth, isInitializing, location.key, validateSession]);
 
-  if (isInitializing) {
-    return <p>Loading...</p>;
-  }
-
+  if (isInitializing) return <p>Loading...</p>;
   if (!isAuth) {
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
@@ -73,7 +80,6 @@ const ProtectedRoute = () => {
         </div>
       );
     }
-
     return <p>Checking session...</p>;
   }
 
