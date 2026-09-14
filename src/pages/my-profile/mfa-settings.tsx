@@ -46,11 +46,13 @@ const MfaSettings = () => {
 
   const enable = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const code = String(new FormData(event.currentTarget).get('code') ?? '').trim();
+    const data = new FormData(event.currentTarget);
+    const password = String(data.get('password') ?? '');
+    const code = String(data.get('code') ?? '').trim();
     try {
       setError(null);
       setIsBusy(true);
-      const result = await enableMfaRequest(code);
+      const result = await enableMfaRequest(password, code);
       setEnabled(result.enabled);
       setSetup(null);
       setMessage('Two-factor authentication is enabled. Other sessions were terminated.');
