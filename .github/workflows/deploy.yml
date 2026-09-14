@@ -11,6 +11,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CI: true
 
     steps:
       - name: Checkout code
@@ -24,6 +26,18 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run prettier
+
+      - name: Regression tests
+        run: npm test
 
       - name: Build project
         run: npm run build
