@@ -8,6 +8,7 @@ type LocationState = {
   from?: {
     pathname?: string;
   };
+  message?: string;
 };
 
 const Login = () => {
@@ -77,6 +78,7 @@ const Login = () => {
   return (
     <section className={styles.wrapper}>
       <h2 className={styles.title}>Login</h2>
+      {state?.message && <p>{state.message}</p>}
       {mfaChallenge ? (
         <MfaForm
           error={error}
