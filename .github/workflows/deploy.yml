@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      VITE_API_URL: ${{ vars.VITE_API_URL }}
 
     steps:
       - name: Checkout code
@@ -23,6 +24,15 @@ jobs:
         with:
           node-version: 24
           cache: npm
+
+      - name: Validate deployment configuration
+        shell: bash
+        run: |
+          if [ -z "$VITE_API_URL" ]; then
+            echo "Repository variable VITE_API_URL is required for deployment."
+            exit 1
+          fi
+          node -e "const u = new URL(process.env.VITE_API_URL); if (u.protocol !== 'https:') { throw new Error('Deployment VITE_API_URL must use HTTPS.'); }"
 
       - name: Install dependencies
         run: npm ci
