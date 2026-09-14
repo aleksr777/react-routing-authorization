@@ -1,6 +1,5 @@
 import { apiRequest } from '../../../shared/api/api-client';
 import { clearAuthTokens, setAuthTokens, type AuthTokens } from '../../../shared/api/tokens';
-import { isMfaRequiredInfo, type MfaRequiredInfo } from './mfa-api';
 import type {
   LoginDto,
   MessageResponse,
@@ -11,15 +10,6 @@ import type {
   RegistrationResendDto,
 } from './auth-api.types';
 
-export {
-  beginMfaSetupRequest,
-  disableMfaRequest,
-  enableMfaRequest,
-  getMfaStatusRequest,
-  isMfaRequiredInfo,
-  mfaLoginRequest,
-} from './mfa-api';
-export type { MfaSetup } from './mfa-api';
 export type VerificationRequestResult = MessageResponse & {
   retry_after: number;
   max_attempts: number;
@@ -30,7 +20,7 @@ export type BlockedAccountInfo = {
   blocked_reason: string | null;
   contact_email: string;
 };
-type LoginResult = AuthTokens | BlockedAccountInfo | MfaRequiredInfo;
+type LoginResult = AuthTokens | BlockedAccountInfo;
 
 export const isBlockedAccountInfo = (value: LoginResult): value is BlockedAccountInfo => {
   return 'blocked' in value && value.blocked === true;
@@ -43,7 +33,7 @@ export const loginRequest = async (dto: LoginDto): Promise<LoginResult> => {
     body: JSON.stringify(dto),
   });
 
-  if (!isBlockedAccountInfo(result) && !isMfaRequiredInfo(result)) {
+  if (!isBlockedAccountInfo(result)) {
     setAuthTokens(result);
   }
   return result;

@@ -73,12 +73,6 @@ const MyProfile = () => {
         Active sessions
       </Link>
 
-      {user.role === 'admin' && (
-        <Link className={styles.settingsLink} to="/users/me/security/mfa">
-          Two-factor authentication
-        </Link>
-      )}
-
       {user.role !== 'admin' && (
         <Link className={styles.dangerLink} to="/users/me/settings/delete">
           Delete profile
