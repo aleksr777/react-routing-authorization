@@ -24,8 +24,8 @@ export const useRegistration = () => {
     const passwordConfirm = String(formData.get('passwordConfirm') ?? '');
 
     if (!email || !password || !passwordConfirm) return setError('Fill in all fields');
-    if (password.length < 8 || password.length > 100) {
-      return setError('Password must contain from 8 to 100 characters');
+    if (password.length < 12 || password.length > 100) {
+      return setError('Password must contain from 12 to 100 characters');
     }
     if (password !== passwordConfirm) return setError('Passwords do not match');
 
