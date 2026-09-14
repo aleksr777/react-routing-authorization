@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type PropsWithChildren } from 'react';
 import { refreshAuthTokens } from '../../../shared/api/api-client';
-import { clearAuthTokens } from '../../../shared/api/tokens';
+import { clearAuthTokens, subscribeAuthTokensCleared } from '../../../shared/api/tokens';
 import {
   isBlockedAccountInfo,
   loginRequest,
@@ -16,6 +16,10 @@ import { AuthContext, type AuthContextValue, type LoginOutcome } from './auth-co
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [isAuth, setIsAuth] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    return subscribeAuthTokensCleared(() => setIsAuth(false));
+  }, []);
 
   useEffect(() => {
     const initializeAuth = async () => {
