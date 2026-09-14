@@ -41,6 +41,13 @@ export const loginRequest = async (dto: LoginDto): Promise<LoginResult> => {
   return result;
 };
 
+export const validateSessionRequest = async (): Promise<void> => {
+  await apiRequest<null>('/auth/session', {
+    method: 'GET',
+    auth: 'access',
+  });
+};
+
 export const registrationRequest = async (
   dto: RegistrationRequestDto,
 ): Promise<VerificationRequestResult> => {
