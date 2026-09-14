@@ -16,7 +16,7 @@ const PasswordNewForm = ({ error, isSubmitting, onSubmit }: PasswordNewFormProps
         name="newPassword"
         type="password"
         autoComplete="new-password"
-        minLength={8}
+        minLength={12}
         maxLength={100}
         required
       />
@@ -29,7 +29,7 @@ const PasswordNewForm = ({ error, isSubmitting, onSubmit }: PasswordNewFormProps
         name="newPasswordConfirm"
         type="password"
         autoComplete="new-password"
-        minLength={8}
+        minLength={12}
         maxLength={100}
         required
       />
