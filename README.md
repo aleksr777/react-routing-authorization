@@ -74,9 +74,12 @@ Create `.env` for local development:
 
 ```env
 VITE_API_URL=http://localhost:5174/api
+VITE_BASE_PATH=/
 ```
 
 Production builds require an explicit `VITE_API_URL`. A non-local production API URL must use HTTPS; the build no longer silently falls back to `http://localhost:5174/api`.
+
+`VITE_BASE_PATH` controls both Vite asset URLs and the React Router basename. Keep `/` for localhost or root-domain hosting. The GitHub Pages workflow sets it automatically to `/<repository-name>/` so project-page assets and routes resolve correctly.
 
 For GitHub Pages, create a repository **Actions variable** named `VITE_API_URL` containing the full HTTPS API base URL, including `/api`. The deploy workflow refuses to publish when this variable is missing or non-HTTPS.
 
@@ -110,6 +113,8 @@ The authentication regression tests cover the shared response policy, including 
 
 The GitHub Pages workflow validates the same critical checks before building/deploying `develop`. It obtains the real production API URL exclusively from the repository Actions variable `VITE_API_URL`.
 
+For GitHub Pages project hosting, the workflow sets the Vite/Router base to `/<repository-name>/`. After the production build it copies `dist/index.html` to `dist/404.html`; GitHub Pages therefore serves the SPA for direct deep-link requests while React Router keeps normal path-based URLs instead of hash routing.
+
 Before deploying the frontend together with backend authentication changes:
 
 1. Deploy/configure the backend and run required database migrations first.
@@ -118,7 +123,7 @@ Before deploying the frontend together with backend authentication changes:
 4. Confirm the production frontend origin matches backend `FRONTEND_URL`/CORS configuration.
 5. Confirm refresh-cookie `Secure`/`SameSite` settings match the actual frontend/backend topology.
 6. Build and deploy the frontend.
-7. Smoke-test login, refresh after page reload, logout, protected routes, remote session revocation, and administrator MFA.
+7. Smoke-test the project root plus a direct deep link, then login, refresh after page reload, logout, protected routes, remote session revocation, and administrator MFA.
 
 ## Security notes
 
