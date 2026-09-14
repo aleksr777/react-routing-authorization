@@ -45,7 +45,7 @@ const ProtectedRoute = () => {
   }, [isAuth, isInitializing, location.key, validateSession]);
 
   useEffect(() => {
-    if (isInitializing || !isAuth) return;
+    if (isInitializing || !isAuth || validatedLocationKey !== location.key) return;
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
@@ -63,7 +63,7 @@ const ProtectedRoute = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.clearInterval(interval);
     };
-  }, [isAuth, isInitializing, location.key, validateSession]);
+  }, [isAuth, isInitializing, location.key, validatedLocationKey, validateSession]);
 
   if (isInitializing) return <p>Loading...</p>;
   if (!isAuth) {
