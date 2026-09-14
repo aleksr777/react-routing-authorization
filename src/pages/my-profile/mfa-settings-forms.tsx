@@ -16,6 +16,17 @@ export const MfaSetupForm = ({ setup, isBusy, onSubmit }: MfaSetupFormProps) => 
     <p>The setup expires in {Math.ceil(setup.expires_in / 60)} minutes.</p>
     <form className={styles.form} onSubmit={onSubmit}>
       <label>
+        Current password
+        <input
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          minLength={8}
+          maxLength={100}
+          required
+        />
+      </label>
+      <label>
         Authentication code
         <input
           name="code"
@@ -42,7 +53,14 @@ export const MfaDisableForm = ({ isBusy, onSubmit }: MfaDisableFormProps) => (
   <form className={styles.form} onSubmit={onSubmit}>
     <label>
       Current password
-      <input name="password" type="password" autoComplete="current-password" required />
+      <input
+        name="password"
+        type="password"
+        autoComplete="current-password"
+        minLength={8}
+        maxLength={100}
+        required
+      />
     </label>
     <label>
       Authentication code
