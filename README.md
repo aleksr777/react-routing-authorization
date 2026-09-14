@@ -88,7 +88,9 @@ npm run dev
 Useful validation commands:
 
 ```bash
+npm run typecheck
 npm run lint
+npm run stylelint
 npm run prettier
 npm test
 npm run build
@@ -98,15 +100,17 @@ npm run build
 
 ## CI
 
-The frontend CI workflow validates pull requests with dependency installation/audit, linting, formatting checks, regression tests, and a production build. CI supplies a non-routable HTTPS example API origin solely to validate compilation; it is never used for deployment.
+The frontend CI workflow validates pushes to `develop`/`main` and pull requests targeting either branch. It runs dependency installation/audit, TypeScript checking, ESLint, Stylelint, Prettier, regression tests, and a production build. CI supplies a non-routable HTTPS example API origin solely to validate compilation; it is never used for deployment.
 
 The authentication regression tests cover the shared response policy, including session invalidation and the single refresh/retry rule.
 
 ## Deployment
 
-The GitHub Pages workflow validates the same critical checks before building/deploying `develop`. It obtains the real production API URL exclusively from the repository Actions variable `VITE_API_URL`.
+The GitHub Pages workflow validates the same critical checks before building/deploying `main`. It obtains the real production API URL exclusively from the repository Actions variable `VITE_API_URL`.
 
 For GitHub Pages project hosting, the workflow sets the Vite/Router base to `/<repository-name>/`. After the production build it copies `dist/index.html` to `dist/404.html`; GitHub Pages therefore serves the SPA for direct deep-link requests while React Router keeps normal path-based URLs instead of hash routing.
+
+GitHub Actions is the canonical deployment path for this template; the legacy local `gh-pages` package deployment script is intentionally not included.
 
 Before deploying the frontend together with backend authentication changes:
 
