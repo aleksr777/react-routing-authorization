@@ -11,6 +11,7 @@ import ProtectedPage from './pages/protected-page/protected-page';
 import UserManagement from './pages/admin/user-management';
 import UserManagementDetails from './pages/admin/user-management-details';
 import MyProfile from './pages/my-profile/my-profile';
+import ActiveSessions from './pages/my-profile/active-sessions';
 import EditProfile from './pages/account-settings/edit-profile';
 import ChangePassword from './pages/account-settings/change-password';
 import ChangeEmail from './pages/account-settings/change-email';
@@ -31,6 +32,7 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="protected-page" element={<ProtectedPage />} />
           <Route path="users/me" element={<MyProfile />} />
+          <Route path="users/me/sessions" element={<ActiveSessions />} />
           <Route path="users/me/settings/profile" element={<EditProfile />} />
           <Route path="users/me/settings/password" element={<ChangePassword />} />
           <Route path="users/me/settings/email" element={<ChangeEmail />} />

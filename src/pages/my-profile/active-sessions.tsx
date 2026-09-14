@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   getSessionsRequest,
   revokeSessionRequest,
@@ -73,12 +74,16 @@ const ActiveSessions = () => {
   return (
     <section className={styles.section}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Active sessions</h3>
+        <h2 className={styles.title}>Active sessions</h2>
         <button
           className={styles.terminateAllButton}
           type="button"
-          onClick={handleRevokeOthers}
-          disabled={isRevokingOthers || !sessions.some((session) => !session.current)}
+          onClick={() => void handleRevokeOthers()}
+          disabled={
+            isRevokingOthers ||
+            revokingIds.size > 0 ||
+            !sessions.some((session) => !session.current)
+          }
         >
           {isRevokingOthers ? 'Terminating...' : 'Terminate all other sessions'}
         </button>
@@ -113,6 +118,10 @@ const ActiveSessions = () => {
           ))}
         </div>
       )}
+
+      <Link className={styles.backLink} to="/users/me">
+        Back to profile
+      </Link>
     </section>
   );
 };
