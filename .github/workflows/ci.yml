@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      # Build-only value. Real deployments must provide the repository variable.
+      VITE_API_URL: https://api.example.invalid/api
 
     steps:
       - name: Checkout repository
