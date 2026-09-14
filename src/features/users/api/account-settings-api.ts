@@ -9,7 +9,7 @@ type MessageResponse = {
   message: string;
 };
 
-export type EmailChangeStatus = {
+type EmailChangeStatus = {
   locked: boolean;
   retry_after: number;
   max_attempts: number;
