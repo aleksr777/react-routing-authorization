@@ -3,14 +3,12 @@ import type { BlockedAccountInfo, VerificationRequestResult } from '../api/auth-
 
 export type LoginOutcome =
   | { status: 'authenticated' }
-  | { status: 'blocked'; info: BlockedAccountInfo }
-  | { status: 'mfa_required'; challenge: string };
+  | { status: 'blocked'; info: BlockedAccountInfo };
 
 export type AuthContextValue = {
   isAuth: boolean;
   isInitializing: boolean;
   login: (email: string, password: string) => Promise<LoginOutcome>;
-  verifyMfa: (challenge: string, code: string) => Promise<void>;
   requestRegistration: (email: string, password: string) => Promise<VerificationRequestResult>;
   resendRegistration: (email: string) => Promise<VerificationRequestResult>;
   confirmRegistration: (code: string, email: string) => Promise<void>;
