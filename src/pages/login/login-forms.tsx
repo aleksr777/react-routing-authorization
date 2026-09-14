@@ -14,13 +14,7 @@ export const CredentialsForm = ({ error, isSubmitting, onSubmit }: CredentialsFo
   <form className={styles.form} onSubmit={onSubmit}>
     <label className={styles.label}>
       Email
-      <input
-        className={styles.input}
-        name="email"
-        type="email"
-        autoComplete="email"
-        required
-      />
+      <input className={styles.input} name="email" type="email" autoComplete="email" required />
     </label>
 
     <label className={styles.label}>
