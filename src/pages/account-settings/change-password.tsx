@@ -52,6 +52,13 @@ const ChangePassword = () => {
     }
   };
 
+  const navigateToLogin = () => {
+    navigate('/auth/login', {
+      replace: true,
+      state: { message: 'Password changed successfully. Sign in with your new password.' },
+    });
+  };
+
   const handleChange = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!code) return;
@@ -61,7 +68,7 @@ const ChangePassword = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmPasswordChange(code, newPassword);
-      navigate('/users/me', { replace: true });
+      navigateToLogin();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Password change failed');
     } finally {
@@ -82,7 +89,7 @@ const ChangePassword = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmCurrentUserPasswordReset(resetCode, newPassword);
-      navigate('/users/me', { replace: true });
+      navigateToLogin();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Password reset failed');
     } finally {
