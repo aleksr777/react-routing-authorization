@@ -17,9 +17,7 @@ const validateBasePath = (basePath: string): string => {
 export default defineConfig(({ mode }) => {
   const fileEnv = loadEnv(mode, process.cwd(), 'VITE_');
   const apiUrl = process.env.VITE_API_URL ?? fileEnv.VITE_API_URL;
-  const basePath = validateBasePath(
-    process.env.VITE_BASE_PATH ?? fileEnv.VITE_BASE_PATH ?? '/',
-  );
+  const basePath = validateBasePath(process.env.VITE_BASE_PATH ?? fileEnv.VITE_BASE_PATH ?? '/');
 
   if (mode === 'production') {
     if (!apiUrl) {
@@ -36,9 +34,7 @@ export default defineConfig(({ mode }) => {
     }
 
     if (parsed.protocol !== 'https:' && !isLocalApiHost(parsed.hostname)) {
-      throw new Error(
-        'VITE_API_URL must use HTTPS for non-local production builds.',
-      );
+      throw new Error('VITE_API_URL must use HTTPS for non-local production builds.');
     }
   }
 
