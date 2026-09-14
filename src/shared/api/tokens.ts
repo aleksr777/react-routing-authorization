@@ -38,7 +38,9 @@ export const setAuthTokens = (tokens: AuthTokens): void => {
 
 export const clearAuthTokens = (broadcast = true): void => {
   clearLocalTokens();
-  if (broadcast) authChannel?.postMessage({ type: 'session-cleared' } satisfies AuthBroadcastMessage);
+  if (broadcast) {
+    authChannel?.postMessage({ type: 'session-cleared' } satisfies AuthBroadcastMessage);
+  }
 };
 
 export const subscribeAuthTokensCleared = (listener: AuthTokensClearedListener): (() => void) => {
