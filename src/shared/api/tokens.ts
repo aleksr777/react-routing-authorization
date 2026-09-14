@@ -50,11 +50,7 @@ export const subscribeAuthTokensCleared = (listener: AuthTokensClearedListener):
 
 export const getAccessToken = (): string | null => accessToken;
 
-export const getAccessTokenExpires = (): number | null => accessTokenExpires;
-
 export const isAccessTokenExpiringSoon = (thresholdSeconds = 30): boolean => {
   if (!accessToken || accessTokenExpires === null) return true;
   return accessTokenExpires <= Math.floor(Date.now() / 1000) + thresholdSeconds;
 };
-
-export const hasAccessToken = (): boolean => Boolean(accessToken);
