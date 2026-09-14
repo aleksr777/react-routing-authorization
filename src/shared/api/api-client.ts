@@ -1,3 +1,5 @@
+import { isSessionInvalidStatus, shouldRefreshAfterResponse } from './auth-policy.mjs';
+import { ApiError, getErrorMessage } from './api-error';
 import {
   clearAuthTokens,
   getAccessToken,
@@ -5,7 +7,6 @@ import {
   setAuthTokens,
   type AuthTokens,
 } from './tokens';
-import { ApiError, getErrorMessage } from './api-error';
 
 export {
   ApiError,
@@ -70,7 +71,7 @@ const performRefreshAuthTokens = async (): Promise<AuthTokens> => {
   const payload = await parseResponseBody(response);
 
   if (!response.ok) {
-    if (response.status === 401 || response.status === 403) clearAuthTokens();
+    if (isSessionInvalidStatus(response.status)) clearAuthTokens();
     throw new ApiError(response.status, getErrorMessage(payload), payload);
   }
 
@@ -115,7 +116,7 @@ export const apiRequest = async <T>(path: string, options: ApiRequestOptions = {
   );
   const payload = await parseResponseBody(response);
 
-  if (response.status === 401 && auth === 'access' && retry) {
+  if (shouldRefreshAfterResponse({ status: response.status, auth, retry })) {
     await refreshAuthTokens();
     return apiRequest<T>(path, { ...options, retry: false });
   }
