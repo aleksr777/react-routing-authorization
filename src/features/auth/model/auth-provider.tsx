@@ -81,7 +81,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const confirmPasswordReset = useCallback(
     async (code: string, newPassword: string, email: string) => {
       await passwordResetConfirmRequest({ code, email, new_password: newPassword });
-      setIsAuth(true);
+      setIsAuth(false);
     },
     [],
   );
