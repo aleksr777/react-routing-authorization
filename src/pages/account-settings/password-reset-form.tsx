@@ -32,7 +32,7 @@ const PasswordResetForm = ({ error, isSubmitting, onSubmit }: PasswordResetFormP
         name="newPassword"
         type="password"
         autoComplete="new-password"
-        minLength={8}
+        minLength={12}
         maxLength={100}
         required
       />
@@ -45,7 +45,7 @@ const PasswordResetForm = ({ error, isSubmitting, onSubmit }: PasswordResetFormP
         name="newPasswordConfirm"
         type="password"
         autoComplete="new-password"
-        minLength={8}
+        minLength={12}
         maxLength={100}
         required
       />
