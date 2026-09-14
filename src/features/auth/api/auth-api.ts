@@ -100,14 +100,14 @@ export const passwordResetRequest = async (
 
 export const passwordResetConfirmRequest = async (
   dto: PasswordResetConfirmDto,
-): Promise<AuthTokens> => {
-  const tokens = await apiRequest<AuthTokens>('/auth/password-reset/confirm', {
+): Promise<MessageResponse> => {
+  const result = await apiRequest<MessageResponse>('/auth/password-reset/confirm', {
     method: 'POST',
     auth: 'none',
     body: JSON.stringify(dto),
   });
-  setAuthTokens(tokens);
-  return tokens;
+  clearAuthTokens();
+  return result;
 };
 
 export const logoutRequest = async (): Promise<void> => {
