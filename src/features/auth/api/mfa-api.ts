@@ -6,7 +6,7 @@ export type MfaRequiredInfo = {
   challenge: string;
 };
 
-export type MfaStatus = {
+type MfaStatus = {
   enabled: boolean;
 };
 
