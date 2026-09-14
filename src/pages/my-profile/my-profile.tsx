@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
 import { getCurrentUserRequest, type CurrentUser } from '../../features/users/api/users-api';
+import ActiveSessions from './active-sessions';
 import styles from './my-profile.module.css';
 
 const MyProfile = () => {
@@ -91,6 +92,8 @@ const MyProfile = () => {
           Delete profile
         </Link>
       )}
+
+      <ActiveSessions />
 
       <button
         className={styles.logoutButton}
