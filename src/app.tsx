@@ -12,7 +12,6 @@ import UserManagement from './pages/admin/user-management';
 import UserManagementDetails from './pages/admin/user-management-details';
 import MyProfile from './pages/my-profile/my-profile';
 import ActiveSessions from './pages/my-profile/active-sessions';
-import MfaSettings from './pages/my-profile/mfa-settings';
 import EditProfile from './pages/account-settings/edit-profile';
 import ChangePassword from './pages/account-settings/change-password';
 import ChangeEmail from './pages/account-settings/change-email';
@@ -39,7 +38,6 @@ const App = () => {
           <Route path="users/me/settings/email" element={<ChangeEmail />} />
           <Route path="users/me/settings/delete" element={<DeleteProfile />} />
           <Route element={<AdminRoute />}>
-            <Route path="users/me/security/mfa" element={<MfaSettings />} />
             <Route path="admin/users" element={<UserManagement />} />
             <Route path="admin/users/:id" element={<UserManagementDetails />} />
           </Route>
