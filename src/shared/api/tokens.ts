@@ -3,8 +3,11 @@ export type AuthTokens = {
   access_token_expires: number | null;
 };
 
+type AuthTokensClearedListener = () => void;
+
 let accessToken: string | null = null;
 let accessTokenExpires: number | null = null;
+const clearedListeners = new Set<AuthTokensClearedListener>();
 
 export const setAuthTokens = (tokens: AuthTokens): void => {
   accessToken = tokens.access_token;
@@ -14,6 +17,12 @@ export const setAuthTokens = (tokens: AuthTokens): void => {
 export const clearAuthTokens = (): void => {
   accessToken = null;
   accessTokenExpires = null;
+  clearedListeners.forEach((listener) => listener());
+};
+
+export const subscribeAuthTokensCleared = (listener: AuthTokensClearedListener): (() => void) => {
+  clearedListeners.add(listener);
+  return () => clearedListeners.delete(listener);
 };
 
 export const getAccessToken = (): string | null => {
