@@ -32,7 +32,7 @@ jobs:
         run: |
           set +e
           echo '=== TSC_UNUSED_BEGIN ==='
-          npx tsc --noEmit --noUnusedLocals --noUnusedParameters --pretty false
+          npx tsc --noEmit --noUnusedLocals --noUnusedParameters --allowJs --checkJs false --pretty false
           echo "TSC_UNUSED_EXIT=$?"
           echo '=== TSC_UNUSED_END ==='
           exit 0
