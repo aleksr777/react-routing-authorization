@@ -9,6 +9,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "fix": "eslint --fix",
+    "test": "node --test test/*.test.mjs",
     "preview": "vite preview",
     "prettier": "prettier . --check --ignore-unknown",
     "prettier:fix": "prettier . -w",
