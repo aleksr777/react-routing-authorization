@@ -9,12 +9,7 @@ import {
   type AuthTokens,
 } from './tokens';
 
-export {
-  ApiError,
-  getAttemptsRemaining,
-  getRetryAfterSeconds,
-  isVerificationLocked,
-} from './api-error';
+export { getAttemptsRemaining, getRetryAfterSeconds, isVerificationLocked } from './api-error';
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5174/api';
 const REFRESH_LOCK_NAME = 'auth-refresh-token';
 type AuthMode = 'access' | 'none';
