@@ -19,7 +19,7 @@ export {
   isMfaRequiredInfo,
   mfaLoginRequest,
 } from './mfa-api';
-export type { MfaRequiredInfo, MfaSetup, MfaStatus } from './mfa-api';
+export type { MfaSetup } from './mfa-api';
 export type VerificationRequestResult = MessageResponse & {
   retry_after: number;
   max_attempts: number;
@@ -30,7 +30,7 @@ export type BlockedAccountInfo = {
   blocked_reason: string | null;
   contact_email: string;
 };
-export type LoginResult = AuthTokens | BlockedAccountInfo | MfaRequiredInfo;
+type LoginResult = AuthTokens | BlockedAccountInfo | MfaRequiredInfo;
 
 export const isBlockedAccountInfo = (value: LoginResult): value is BlockedAccountInfo => {
   return 'blocked' in value && value.blocked === true;
