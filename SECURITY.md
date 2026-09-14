@@ -4,9 +4,11 @@ The application keeps access tokens in JavaScript memory and refresh tokens in a
 
 ## Content Security Policy
 
-`index.html` contains a browser-enforced CSP meta policy so the GitHub Pages build has a baseline policy even though GitHub Pages does not allow this repository to configure arbitrary HTTP response headers.
+The Vite build injects a browser-enforced CSP meta policy into `index.html`. In production, `connect-src` is restricted to the exact origin derived from `VITE_API_URL` plus the frontend origin. Development builds additionally allow `ws:`/`wss:` for Vite HMR.
 
-For production hosting under your own reverse proxy or a provider that supports custom response headers, prefer sending CSP as an HTTP response header and tighten `connect-src` to the exact API origin.
+GitHub Pages does not allow this repository to configure arbitrary HTTP response headers, so the meta policy provides the strongest portable baseline available on the current static host.
+
+For production hosting under your own reverse proxy or a provider that supports custom response headers, prefer sending CSP as an HTTP response header.
 
 Recommended additional response headers for production hosting:
 
@@ -22,3 +24,5 @@ X-Content-Type-Options: nosniff
 ## Deployment
 
 The CI workflow runs dependency audit, ESLint, Prettier, regression tests, and the production build for pull requests into `develop`. The GitHub Pages deployment repeats these checks before publishing `develop`.
+
+Production deployment requires the repository Actions variable `VITE_API_URL` to contain the real HTTPS backend API URL. The build validates it and uses only its origin in `connect-src`; the full URL remains available to the frontend API client.
