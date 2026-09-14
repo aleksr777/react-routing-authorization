@@ -76,7 +76,11 @@ Create `.env` for local development:
 VITE_API_URL=http://localhost:5174/api
 ```
 
-For production, use the HTTPS backend API URL. Do not embed backend secrets in `VITE_*` variables: Vite variables are part of the client bundle and are public.
+Production builds require an explicit `VITE_API_URL`. A non-local production API URL must use HTTPS; the build no longer silently falls back to `http://localhost:5174/api`.
+
+For GitHub Pages, create a repository **Actions variable** named `VITE_API_URL` containing the full HTTPS API base URL, including `/api`. The deploy workflow refuses to publish when this variable is missing or non-HTTPS.
+
+Do not embed backend secrets in `VITE_*` variables: Vite variables are part of the client bundle and are public.
 
 ## Local development
 
@@ -94,24 +98,27 @@ npm test
 npm run build
 ```
 
+`npm run build` uses Vite production mode and therefore requires `VITE_API_URL` in the environment or an appropriate `.env` file. HTTP is accepted only for loopback hosts such as `localhost` during local validation.
+
 ## CI
 
-The frontend CI workflow validates pull requests with dependency installation/audit, linting, formatting checks, regression tests, and a production build.
+The frontend CI workflow validates pull requests with dependency installation/audit, linting, formatting checks, regression tests, and a production build. CI supplies a non-routable HTTPS example API origin solely to validate compilation; it is never used for deployment.
 
 The authentication regression tests cover the shared response policy, including session invalidation and the single refresh/retry rule.
 
 ## Deployment
 
-The GitHub Pages workflow validates the same critical checks before building/deploying `develop`.
+The GitHub Pages workflow validates the same critical checks before building/deploying `develop`. It obtains the real production API URL exclusively from the repository Actions variable `VITE_API_URL`.
 
 Before deploying the frontend together with backend authentication changes:
 
 1. Deploy/configure the backend and run required database migrations first.
 2. Confirm backend `/api/health/live` and `/api/health/ready`.
-3. Confirm the production frontend origin matches backend `FRONTEND_URL`/CORS configuration.
-4. Confirm refresh-cookie `Secure`/`SameSite` settings match the actual frontend/backend topology.
-5. Build and deploy the frontend.
-6. Smoke-test login, refresh after page reload, logout, protected routes, remote session revocation, and administrator MFA.
+3. Set/verify the repository Actions variable `VITE_API_URL` with the real HTTPS backend `/api` URL.
+4. Confirm the production frontend origin matches backend `FRONTEND_URL`/CORS configuration.
+5. Confirm refresh-cookie `Secure`/`SameSite` settings match the actual frontend/backend topology.
+6. Build and deploy the frontend.
+7. Smoke-test login, refresh after page reload, logout, protected routes, remote session revocation, and administrator MFA.
 
 ## Security notes
 
