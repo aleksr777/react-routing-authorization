@@ -14,13 +14,14 @@ Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/n
 - email change, password change/reset, and self-account deletion;
 - active-session list with remote session revocation;
 - administrator user search/view/block/unblock/delete workflows;
-- administrator TOTP MFA login, setup, enable, and disable flows;
 - blocked-account messaging;
 - backend-driven verification attempt/cooldown/lockout UI;
 - cross-tab logout/session invalidation;
 - periodic server-side session validation for already rendered protected pages;
 - request timeouts and controlled authentication retry behavior;
 - pull-request CI and validated GitHub Pages deployment.
+
+Multi-factor authentication is intentionally not part of this base template. Add the MFA mechanism and recovery policy appropriate to each application separately.
 
 ## Authentication model
 
@@ -47,14 +48,6 @@ A protected route validates the current server session through `GET /api/auth/se
 Background heartbeat checks do not replace already rendered content on transient failure, but a confirmed `401/403` invalidation clears authentication immediately.
 
 Authentication clearing is propagated between tabs through `BroadcastChannel` when supported, so logout or session invalidation in one tab is reflected in the others without moving tokens into persistent browser storage.
-
-## Administrator MFA
-
-When the backend indicates that administrator MFA is required, password login does not create an authenticated frontend state. The login screen switches to a second step and submits the six-digit TOTP code together with the short-lived backend challenge.
-
-Administrator profile settings expose TOTP setup and disable controls. MFA enable/disable requires the current password and a valid authenticator code. Other sessions are revoked by the backend when MFA state changes.
-
-The TOTP secret shown during setup is sensitive and should not be logged or placed in persistent browser storage.
 
 ## API timeout behavior
 
@@ -123,12 +116,12 @@ Before deploying the frontend together with backend authentication changes:
 4. Confirm the production frontend origin matches backend `FRONTEND_URL`/CORS configuration.
 5. Confirm refresh-cookie `Secure`/`SameSite` settings match the actual frontend/backend topology.
 6. Build and deploy the frontend.
-7. Smoke-test the project root plus a direct deep link, then login, refresh after page reload, logout, protected routes, remote session revocation, and administrator MFA.
+7. Smoke-test the project root plus a direct deep link, then login, refresh after page reload, logout, protected routes, and remote session revocation.
 
 ## Security notes
 
 - Never move the access token to browser persistent storage as a convenience workaround.
-- Never put passwords, access/refresh tokens, MFA secrets, verification codes, or backend secrets in console logs or analytics.
+- Never put passwords, access/refresh tokens, verification codes, or backend secrets in console logs or analytics.
 - Treat `VITE_API_URL` as public configuration.
 - Prefer HTTPS for every production origin.
-- Keep frontend and backend security changes version-compatible when deploying MFA/session protocol changes.
+- Keep frontend and backend authentication/session protocol changes version-compatible.
