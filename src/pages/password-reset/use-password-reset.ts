@@ -44,8 +44,8 @@ export const usePasswordReset = () => {
     const newPasswordConfirm = String(formData.get('newPasswordConfirm') ?? '');
 
     if (!/^\d{6}$/.test(code)) return setError('Enter the 6-digit code');
-    if (newPassword.length < 8 || newPassword.length > 100) {
-      return setError('Password must contain from 8 to 100 characters');
+    if (newPassword.length < 12 || newPassword.length > 100) {
+      return setError('Password must contain from 12 to 100 characters');
     }
     if (newPassword !== newPasswordConfirm) return setError('Passwords do not match');
     if (!pendingEmail) {
