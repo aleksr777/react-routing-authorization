@@ -58,10 +58,7 @@ export const useChangeEmail = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmEmailChange(code);
-      navigate('/auth/login', {
-        replace: true,
-        state: { message: 'Email changed successfully. Sign in with your new email.' },
-      });
+      navigate('/users/me', { replace: true });
     } catch (err: unknown) {
       const remaining = getAttemptsRemaining(err);
       await syncError(err);

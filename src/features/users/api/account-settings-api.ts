@@ -1,5 +1,4 @@
 import { apiRequest } from '../../../shared/api/api-client';
-import { clearAuthTokens } from '../../../shared/api/tokens';
 
 type PasswordChangeRequestResponse = {
   code: string;
@@ -27,15 +26,12 @@ export const requestPasswordChange = async (
 export const confirmPasswordChange = async (
   code: string,
   newPassword: string,
-): Promise<MessageResponse> => {
-  const result = await apiRequest<MessageResponse>('/users/me/password/change/confirm', {
+): Promise<MessageResponse> =>
+  apiRequest<MessageResponse>('/users/me/password/change/confirm', {
     method: 'POST',
     retry: false,
     body: JSON.stringify({ code, new_password: newPassword }),
   });
-  clearAuthTokens();
-  return result;
-};
 
 export const requestCurrentUserPasswordReset = async (): Promise<void> => {
   await apiRequest('/users/me/password/reset/request', {
@@ -46,15 +42,12 @@ export const requestCurrentUserPasswordReset = async (): Promise<void> => {
 export const confirmCurrentUserPasswordReset = async (
   code: string,
   newPassword: string,
-): Promise<MessageResponse> => {
-  const result = await apiRequest<MessageResponse>('/users/me/password/reset/confirm', {
+): Promise<MessageResponse> =>
+  apiRequest<MessageResponse>('/users/me/password/reset/confirm', {
     method: 'POST',
     retry: false,
     body: JSON.stringify({ code, new_password: newPassword }),
   });
-  clearAuthTokens();
-  return result;
-};
 
 export const getEmailChangeStatus = async (): Promise<EmailChangeStatus> => {
   return apiRequest<EmailChangeStatus>('/users/me/email/update/status');
@@ -73,12 +66,9 @@ export const requestEmailChange = async (
   });
 };
 
-export const confirmEmailChange = async (code: string): Promise<MessageResponse> => {
-  const result = await apiRequest<MessageResponse>('/users/me/email/update/confirm', {
+export const confirmEmailChange = async (code: string): Promise<MessageResponse> =>
+  apiRequest<MessageResponse>('/users/me/email/update/confirm', {
     method: 'POST',
     retry: false,
     body: JSON.stringify({ code }),
   });
-  clearAuthTokens();
-  return result;
-};
