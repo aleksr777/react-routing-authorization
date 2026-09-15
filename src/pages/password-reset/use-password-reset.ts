@@ -58,10 +58,7 @@ export const usePasswordReset = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmPasswordReset(code, newPassword, pendingEmail);
-      navigate('/auth/login', {
-        replace: true,
-        state: { message: 'Password reset successful. Sign in with your new password.' },
-      });
+      navigate('/users/me', { replace: true });
     } catch (err: unknown) {
       verification.applyAttemptError(err);
       verification.applyRetryError(err);
