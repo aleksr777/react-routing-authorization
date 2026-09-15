@@ -83,6 +83,9 @@ const UserManagementDetails = () => {
         <>
           <div className={styles.userCard}>
             <UserManagementUserData user={user} />
+            <Link className={styles.actionLink} to={`/admin/users/${user.id}/sessions`}>
+              Active sessions
+            </Link>
           </div>
 
           {error && <p className={styles.error}>{error}</p>}
