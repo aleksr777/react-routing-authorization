@@ -14,6 +14,7 @@ Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/n
 - email change, password change/reset, and self-account deletion;
 - active-session list with remote session revocation;
 - administrator user search/view/block/unblock/delete workflows;
+- administrator inspection and revocation of managed users' active sessions;
 - blocked-account messaging;
 - backend-driven verification attempt/cooldown/lockout UI;
 - cross-tab logout/session invalidation;
