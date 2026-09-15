@@ -1,5 +1,4 @@
 {
-  "homepage": "https://aleksr777.github.io/react-routing-authorization/",
   "name": "react-routing-authorization",
   "private": true,
   "version": "0.0.0",
@@ -13,7 +12,8 @@
     "preview": "vite preview",
     "prettier": "prettier . --check --ignore-unknown",
     "prettier:fix": "prettier . -w",
-    "deploy": "npm run build && gh-pages -d dist"
+    "typecheck": "tsc --noEmit",
+    "stylelint": "stylelint \"src/**/*.css\" --max-warnings 0"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -32,7 +32,6 @@
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
-    "gh-pages": "^6.3.0",
     "globals": "^15.12.0",
     "prettier": "^3.3.3",
     "stylelint": "^16.10.0",

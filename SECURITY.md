@@ -23,6 +23,6 @@ X-Content-Type-Options: nosniff
 
 ## Deployment
 
-The CI workflow runs dependency audit, ESLint, Prettier, regression tests, and the production build for pull requests into `develop`. The GitHub Pages deployment repeats these checks before publishing `develop`.
+The CI workflow runs dependency audit, TypeScript checking, ESLint, Stylelint, Prettier, regression tests, and the production build for pushes to `develop`/`main` and pull requests targeting either branch. The GitHub Pages deployment repeats these checks before publishing `main`.
 
 Production deployment requires the repository Actions variable `VITE_API_URL` to contain the real HTTPS backend API URL. The build validates it and uses only its origin in `connect-src`; the full URL remains available to the frontend API client.

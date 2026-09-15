@@ -85,13 +85,13 @@
 }
 
 .actionLink {
-  color: #0000ee;
+  color: #00e;
 }
 
 .actionButton {
   padding: 10px;
   background-color: #8ea6ff;
-  color: #000000;
+  color: #000;
 }
 
 .actionLink:hover,

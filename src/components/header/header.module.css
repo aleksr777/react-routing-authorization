@@ -2,7 +2,6 @@
 .ul,
 .li,
 .link,
-.link:hover,
 .linkText,
 .currentLink {
   box-sizing: border-box;
@@ -41,11 +40,11 @@
 }
 
 .linkText {
-  color: #0000ee;
+  color: #00e;
 }
 
 .currentLink {
-  color: #000000;
+  color: #000;
   cursor: default;
 }
 

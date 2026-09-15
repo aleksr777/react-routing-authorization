@@ -30,7 +30,7 @@
 }
 
 .link {
-  color: #0000ee;
+  color: #00e;
 }
 
 .dangerLink {
@@ -77,7 +77,7 @@
 
 .dangerButton {
   background-color: #b00000;
-  color: #ffffff;
+  color: #fff;
 }
 
 .button:disabled,

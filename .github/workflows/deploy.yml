@@ -3,14 +3,19 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - develop
+      - main
 
 permissions:
   contents: write
 
+concurrency:
+  group: frontend-pages
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       CI: true
       VITE_API_URL: ${{ vars.VITE_API_URL }}
@@ -18,10 +23,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -41,8 +46,14 @@ jobs:
       - name: Audit production dependencies
         run: npm audit --omit=dev
 
+      - name: Type check
+        run: npm run typecheck
+
       - name: Lint
         run: npm run lint
+
+      - name: Lint CSS
+        run: npm run stylelint
 
       - name: Check formatting
         run: npm run prettier
@@ -57,7 +68,7 @@ jobs:
         run: cp dist/index.html dist/404.html
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
