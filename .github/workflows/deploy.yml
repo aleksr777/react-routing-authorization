@@ -3,34 +3,72 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - development # Укажите вашу основную ветку (например, main или master)
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: frontend-pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # Используем последнюю версию Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+      VITE_API_URL: ${{ vars.VITE_API_URL }}
+      VITE_BASE_PATH: /${{ github.event.repository.name }}/
 
     steps:
-      # Шаг 1: Получить код из репозитория
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
-      # Шаг 2: Установить Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
-          node-version: 16 # Укажите версию Node.js, которую используете
+          node-version: 24
+          cache: npm
 
-      # Шаг 3: Установить зависимости
+      - name: Validate deployment configuration
+        shell: bash
+        run: |
+          if [ -z "$VITE_API_URL" ]; then
+            echo "Repository variable VITE_API_URL is required for deployment."
+            exit 1
+          fi
+          node -e "const u = new URL(process.env.VITE_API_URL); if (u.protocol !== 'https:') { throw new Error('Deployment VITE_API_URL must use HTTPS.'); }"
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      # Шаг 4: Собрать проект
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Lint CSS
+        run: npm run stylelint
+
+      - name: Check formatting
+        run: npm run prettier
+
+      - name: Regression tests
+        run: npm test
+
       - name: Build project
         run: npm run build
 
-      # Шаг 5: Деплой на GitHub Pages
+      - name: Add GitHub Pages SPA fallback
+        run: cp dist/index.html dist/404.html
+
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }} # Встроенный токен
-          publish_dir: ./dist # Папка, которую нужно задеплоить
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
