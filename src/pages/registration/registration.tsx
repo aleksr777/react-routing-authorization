@@ -19,7 +19,7 @@ const Registration = () => {
   } = useRegistration();
 
   if (isInitializing) return <p>Loading...</p>;
-  if (isAuth) return <Navigate to="/" replace />;
+  if (isAuth) return <Navigate to="/users/me" replace />;
 
   return (
     <section className={styles.wrapper}>

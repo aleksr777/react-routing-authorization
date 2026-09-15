@@ -102,7 +102,7 @@ npm run build
 
 The frontend CI workflow validates pushes to `develop`/`main` and pull requests targeting either branch. It runs dependency installation/audit, TypeScript checking, ESLint, Stylelint, Prettier, regression tests, and a production build. CI supplies a non-routable HTTPS example API origin solely to validate compilation; it is never used for deployment.
 
-The authentication regression tests cover the shared response policy, including session invalidation and the single refresh/retry rule.
+The authentication regression tests cover the shared response policy, including session invalidation and the single refresh/retry rule. Vitest also renders the real application with mocked API responses to check registration/profile redirects, automatic sign-in after password recovery, and preservation of the current credentials after email changes, including rejected confirmation codes.
 
 ## Deployment
 
