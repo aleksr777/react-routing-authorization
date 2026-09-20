@@ -1,10 +1,10 @@
 .track {
   position: fixed;
   inset: 0 0 0 auto;
-  z-index: 1000;
-  width: 12px;
+  z-index: 2147483000;
+  width: 14px;
   height: 100dvh;
-  background: rgb(223 229 246 / 72%);
+  background: rgb(223 229 246 / 92%);
   cursor: default;
   touch-action: none;
   user-select: none;
@@ -30,7 +30,7 @@
   min-height: 40px;
   border: 3px solid transparent;
   border-radius: 999px;
-  background: #8794bb;
+  background: #6f80bd;
   background-clip: padding-box;
   cursor: grab;
   transition: background-color 0.16s ease;
