@@ -10,6 +10,16 @@
   user-select: none;
 }
 
+.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .track:focus-visible {
   outline: 2px solid #6079d8;
   outline-offset: -2px;
