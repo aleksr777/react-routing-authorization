@@ -12,27 +12,18 @@ type ScrollbarState = {
 };
 
 const getMetrics = () => {
-  const root = document.documentElement;
-  const body = document.body;
-  const scrollingElement = document.scrollingElement ?? root;
-  const viewportHeight = Math.max(scrollingElement.clientHeight, window.innerHeight);
-  const documentHeight = Math.max(
-    scrollingElement.scrollHeight,
-    root.scrollHeight,
-    root.offsetHeight,
-    body.scrollHeight,
-    body.offsetHeight,
-    viewportHeight,
-  );
+  const scrollingElement = document.scrollingElement ?? document.documentElement;
+  const viewportHeight = scrollingElement.clientHeight || window.innerHeight;
+  const documentHeight = scrollingElement.scrollHeight;
   const maxScroll = Math.max(documentHeight - viewportHeight, 0);
   const thumbHeight =
     maxScroll > 0
       ? Math.max((viewportHeight / documentHeight) * viewportHeight, MIN_THUMB_HEIGHT)
       : viewportHeight;
   const thumbTravel = Math.max(viewportHeight - thumbHeight, 0);
-  const scrollY = Math.min(Math.max(window.scrollY, 0), maxScroll);
-  const thumbTop = maxScroll > 0 ? (scrollY / maxScroll) * thumbTravel : 0;
-  const valueNow = maxScroll > 0 ? Math.round((scrollY / maxScroll) * 100) : 0;
+  const scrollTop = Math.min(Math.max(scrollingElement.scrollTop, 0), maxScroll);
+  const thumbTop = maxScroll > 0 ? (scrollTop / maxScroll) * thumbTravel : 0;
+  const valueNow = maxScroll > 0 ? Math.round((scrollTop / maxScroll) * 100) : 0;
 
   return {
     maxScroll,
@@ -41,7 +32,7 @@ const getMetrics = () => {
     thumbTop,
     valueNow,
   };
-};
+}
 
 const CustomScrollbar = () => {
   const location = useLocation();
@@ -125,7 +116,7 @@ const CustomScrollbar = () => {
     dragRef.current = {
       pointerId: event.pointerId,
       startY: event.clientY,
-      startScrollY: window.scrollY,
+      startScrollY: (document.scrollingElement ?? document.documentElement).scrollTop,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
