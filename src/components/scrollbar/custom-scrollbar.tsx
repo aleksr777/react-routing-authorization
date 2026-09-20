@@ -74,7 +74,7 @@ const CustomScrollbar = () => {
     mutationObserver?.observe(document.body, {
       childList: true,
       subtree: true,
-      attributes: true,
+      characterData: true,
     });
 
     return () => {
