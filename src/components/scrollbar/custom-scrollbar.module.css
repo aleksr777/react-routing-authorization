@@ -1,0 +1,42 @@
+.track {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 1000;
+  width: 12px;
+  height: 100dvh;
+  background: rgb(223 229 246 / 72%);
+  cursor: default;
+  touch-action: none;
+  user-select: none;
+}
+
+.track:focus-visible {
+  outline: 2px solid #6079d8;
+  outline-offset: -2px;
+}
+
+.thumb {
+  width: 100%;
+  min-height: 40px;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #8794bb;
+  background-clip: padding-box;
+  cursor: grab;
+  transition: background-color 0.16s ease;
+}
+
+.thumb:hover {
+  background-color: #6878aa;
+}
+
+.thumb:active {
+  background-color: #53679e;
+  cursor: grabbing;
+}
+
+@media (pointer: coarse) {
+  .track {
+    width: 10px;
+  }
+}
