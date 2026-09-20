@@ -5,12 +5,14 @@ import { fill, startApp, submit } from './auth-flow-fixture';
 
 test('registration confirms the code, signs in, and opens the protected profile', async () => {
   const { router, calls } = startApp('/auth/registration');
-  await screen.findByLabelText('Email', { exact: true });
+  const dialog = await screen.findByRole('dialog', { name: 'Registration' });
+  expect(screen.getByRole('heading', { name: 'Home page' })).toBeTruthy();
+  expect(dialog).toBeTruthy();
   fill('Email', 'user@example.com');
   fill('Password', 'password12345');
   fill('Repeat password', 'password12345');
   submit('Create account');
-  await screen.findByLabelText('Confirmation code');
+  await screen.findByRole('dialog', { name: 'Confirm registration' });
   fill('Confirmation code', '123456');
   submit('Confirm registration');
 
@@ -31,10 +33,10 @@ test('the registration page also redirects an authenticated user to the profile'
 
 test('password recovery installs the new credentials before opening the profile', async () => {
   const { router, calls } = startApp('/auth/password-reset');
-  await screen.findByLabelText('Email', { exact: true });
+  await screen.findByRole('dialog', { name: 'Password recovery' });
   fill('Email', 'user@example.com');
   submit('Send reset code');
-  await screen.findByLabelText('Reset code');
+  await screen.findByRole('dialog', { name: 'Set a new password' });
   fill('Reset code', '123456');
   fill('New password', 'new-password123');
   fill('Repeat new password', 'new-password123');

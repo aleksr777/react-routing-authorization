@@ -6,8 +6,8 @@ Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/n
 
 ## Features
 
-- registration and email-code confirmation;
-- login/logout and password recovery;
+- modal registration and email-code confirmation;
+- modal login/logout and password recovery, including code and new-password steps;
 - access-token refresh through an HttpOnly backend refresh cookie;
 - protected and administrator-only routes;
 - current-user profile and profile editing;
@@ -23,6 +23,18 @@ Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/n
 - pull-request CI and validated GitHub Pages deployment.
 
 Multi-factor authentication is intentionally not part of this base template. Add the MFA mechanism and recovery policy appropriate to each application separately.
+
+## Modal authentication routes
+
+Public authentication keeps normal deep-link URLs while rendering the workflow in the reusable native `<dialog>` component over the Home page:
+
+- `/auth/login` — email/password login;
+- `/auth/registration` — registration request and six-digit confirmation code;
+- `/auth/password-reset` — reset request, confirmation code, new password, and password confirmation.
+
+The modal template lives under `src/components/modal`. It includes 0.4-second open/close transitions, background scroll locking without removing the visible scrollbar, nested-dialog support, focus restoration, and delayed pointer dismissal for the close button/backdrop during the opening animation.
+
+Closing an auth modal returns to `/`. Protected-route redirects can still pass the original location to `/auth/login`, and a successful login returns to that protected location.
 
 ## Authentication model
 

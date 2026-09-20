@@ -1,27 +1,31 @@
-import styles from './app-layout.module.css';
-import Header from '../header/header';
-import Footer from '../footer/footer';
 import { Outlet } from 'react-router-dom';
+import Footer from '../footer/footer';
+import Header from '../header/header';
+import CustomScrollbar from '../scrollbar/custom-scrollbar';
+import styles from './app-layout.module.css';
 
 const AppLayout = () => {
   return (
-    <div className={styles.main}>
-      <header className={styles.main__header}>
-        <div className={styles.main__container}>
-          <Header />
+    <>
+      <CustomScrollbar />
+      <div className={styles.main}>
+        <header className={styles.main__header}>
+          <div className={styles.main__container}>
+            <Header />
+          </div>
+        </header>
+        <div className={styles.main__content}>
+          <div className={styles.main__container}>
+            <Outlet />
+          </div>
         </div>
-      </header>
-      <div className={styles.main__content}>
-        <div className={styles.main__container}>
-          <Outlet />
-        </div>
+        <footer className={styles.main__footer}>
+          <div className={styles.main__container}>
+            <Footer />
+          </div>
+        </footer>
       </div>
-      <footer className={styles.main__footer}>
-        <div className={styles.main__container}>
-          <Footer />
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
+import AuthModalShell from '../auth-modal/auth-modal-shell';
 import { CredentialsForm } from './login-forms';
 import styles from './login.module.css';
 
@@ -12,7 +13,7 @@ type LocationState = {
 };
 
 const Login = () => {
-  const { login } = useAuth();
+  const { isAuth, isInitializing, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState<string | null>(null);
@@ -47,18 +48,22 @@ const Login = () => {
     }
   };
 
+  if (isInitializing) return <p>Loading...</p>;
+  if (isAuth) return <Navigate to="/users/me" replace />;
+
   return (
-    <section className={styles.wrapper}>
-      <h2 className={styles.title}>Login</h2>
-      {state?.message && <p>{state.message}</p>}
-      <CredentialsForm error={error} isSubmitting={isSubmitting} onSubmit={handleCredentials} />
-      <Link className={styles.link} to="/auth/password-reset">
-        Forgot password?
-      </Link>
-      <Link className={styles.link} to="/auth/registration">
-        Registration
-      </Link>
-    </section>
+    <AuthModalShell title="Login">
+      <section className={styles.wrapper}>
+        {state?.message && <p>{state.message}</p>}
+        <CredentialsForm error={error} isSubmitting={isSubmitting} onSubmit={handleCredentials} />
+        <Link className={styles.link} to="/auth/password-reset">
+          Forgot password?
+        </Link>
+        <Link className={styles.link} to="/auth/registration">
+          Registration
+        </Link>
+      </section>
+    </AuthModalShell>
   );
 };
 
