@@ -1,4 +1,5 @@
 import { Link, Navigate } from 'react-router-dom';
+import AuthModalShell from '../auth-modal/auth-modal-shell';
 import PasswordResetConfirmForm from './password-reset-confirm-form';
 import PasswordResetRequestForm from './password-reset-request-form';
 import { usePasswordReset } from './use-password-reset';
@@ -22,34 +23,35 @@ const PasswordReset = () => {
   if (isAuth) return <Navigate to="/users/me" replace />;
 
   return (
-    <section className={styles.wrapper}>
-      <h2 className={styles.title}>Password recovery</h2>
-      {isCodeStep ? (
-        <PasswordResetConfirmForm
-          message={verification.message}
-          error={error}
-          isSubmitting={isSubmitting}
-          resendSeconds={verification.resendSeconds}
-          maxAttempts={verification.maxAttempts}
-          attemptsRemaining={verification.attemptsRemaining}
-          onSubmit={handleConfirm}
-          onResend={() => void handleResend()}
-          onUseAnotherEmail={handleUseAnotherEmail}
-        />
-      ) : (
-        <PasswordResetRequestForm
-          error={error}
-          isSubmitting={isSubmitting}
-          isLocked={verification.isLocked}
-          lockoutSeconds={verification.lockoutSeconds}
-          onSubmit={handleRequest}
-        />
-      )}
-      <div className={styles.authLinks}>
-        <Link to="/auth/login">Login</Link>
-        <Link to="/auth/registration">Registration</Link>
-      </div>
-    </section>
+    <AuthModalShell title={isCodeStep ? 'Set a new password' : 'Password recovery'}>
+      <section className={styles.wrapper}>
+        {isCodeStep ? (
+          <PasswordResetConfirmForm
+            message={verification.message}
+            error={error}
+            isSubmitting={isSubmitting}
+            resendSeconds={verification.resendSeconds}
+            maxAttempts={verification.maxAttempts}
+            attemptsRemaining={verification.attemptsRemaining}
+            onSubmit={handleConfirm}
+            onResend={() => void handleResend()}
+            onUseAnotherEmail={handleUseAnotherEmail}
+          />
+        ) : (
+          <PasswordResetRequestForm
+            error={error}
+            isSubmitting={isSubmitting}
+            isLocked={verification.isLocked}
+            lockoutSeconds={verification.lockoutSeconds}
+            onSubmit={handleRequest}
+          />
+        )}
+        <div className={styles.authLinks}>
+          <Link to="/auth/login">Login</Link>
+          <Link to="/auth/registration">Registration</Link>
+        </div>
+      </section>
+    </AuthModalShell>
   );
 };
 
