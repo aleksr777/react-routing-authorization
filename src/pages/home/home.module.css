@@ -1,6 +1,7 @@
 .page {
   display: grid;
   gap: 24px;
+  min-height: 220vh;
   padding-bottom: 48px;
 }
 
