@@ -75,3 +75,45 @@ test('custom scrollbar updates after navigation cancels a pending animation fram
     vi.useRealTimers();
   }
 });
+
+test('thumb size, position and track clicks use the actual track bounds', async () => {
+  render(
+    <MemoryRouter>
+      <CustomScrollbar />
+    </MemoryRouter>,
+  );
+  const scrollbar = await screen.findByRole('scrollbar', { name: 'Page scroll' });
+  const thumb = scrollbar.firstElementChild;
+  vi.spyOn(scrollbar, 'clientHeight', 'get').mockReturnValue(600);
+  vi.spyOn(scrollbar, 'getBoundingClientRect').mockReturnValue({ top: 20 });
+  vi.spyOn(document.documentElement, 'scrollTop', 'get').mockReturnValue(800);
+  fireEvent.resize(window);
+
+  await waitFor(() => {
+    expect(thumb.style.height).toBe('200px');
+    expect(thumb.style.transform).toBe('translateY(200px)');
+  });
+
+  const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+  fireEvent(scrollbar, new MouseEvent('pointerdown', { bubbles: true, button: 0, clientY: 320 }));
+  expect(scrollTo).toHaveBeenCalledWith({ top: 800 });
+});
+
+test('responsive minimum thumb height never extends beyond a short track', async () => {
+  vi.spyOn(document.documentElement, 'scrollHeight', 'get').mockReturnValue(80000);
+  render(
+    <MemoryRouter>
+      <CustomScrollbar />
+    </MemoryRouter>,
+  );
+  const scrollbar = await screen.findByRole('scrollbar', { name: 'Page scroll' });
+  const thumb = scrollbar.firstElementChild;
+  scrollbar.style.setProperty('--thumb-min-height', '64px');
+  fireEvent.resize(window);
+  await waitFor(() => expect(thumb.style.height).toBe('64px'));
+
+  vi.spyOn(scrollbar, 'clientHeight', 'get').mockReturnValue(24);
+  fireEvent.resize(window);
+  await waitFor(() => expect(thumb.style.height).toBe('24px'));
+  expect(thumb.style.transform).toBe('translateY(0px)');
+});

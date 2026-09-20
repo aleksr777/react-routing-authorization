@@ -1,9 +1,11 @@
 .track {
+  --thumb-min-height: 32px;
+
   position: fixed;
-  inset: 0 0 0 auto;
+  inset: env(safe-area-inset-top) 0 auto auto;
   z-index: 2147483000;
-  width: 14px;
-  height: 100dvh;
+  width: var(--scrollbar-width);
+  height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   background: rgb(223 229 246 / 92%);
   cursor: default;
   touch-action: none;
@@ -27,12 +29,11 @@
 
 .thumb {
   width: 100%;
-  min-height: 40px;
-  border: 3px solid transparent;
+  border: clamp(2px, 0.08vw, 3px) solid transparent;
   border-radius: 999px;
   background: #6f80bd;
   background-clip: padding-box;
-  cursor: grab;
+  cursor: default;
   transition: background-color 0.16s ease;
 }
 
@@ -42,11 +43,22 @@
 
 .thumb:active {
   background-color: #53679e;
-  cursor: grabbing;
 }
 
-@media (pointer: coarse) {
+@media (width >= 48rem) {
   .track {
-    width: 10px;
+    --thumb-min-height: 40px;
+  }
+}
+
+@media (width >= 100rem) {
+  .track {
+    --thumb-min-height: 48px;
+  }
+}
+
+@media (width >= 160rem) {
+  .track {
+    --thumb-min-height: 64px;
   }
 }

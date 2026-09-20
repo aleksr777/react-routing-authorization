@@ -1,9 +1,11 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--page-gap);
   width: 100%;
-  max-width: 760px;
+  min-width: 0;
+  max-width: 72rem;
+  margin-inline: auto;
 }
 
 .wrapper h2,
@@ -15,35 +17,38 @@
   margin: 0;
   padding: 0;
   text-align: center;
-  font-size: 25px;
+  font-size: var(--page-title-size);
 }
 
 .searchForm {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .searchForm input,
 .reasonField input {
   box-sizing: border-box;
-  padding: 10px;
+  min-height: var(--control-height);
+  padding: 0.625rem;
   border: 1px solid #8ea6ff;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .searchForm input {
-  flex: 1;
+  flex: 1 1 18rem;
 }
 
 .searchForm button,
 .actionSection button,
 .actions button,
 .pagination button {
-  padding: 10px;
+  min-height: var(--control-height);
+  padding: 0.625rem 0.875rem;
   border: none;
   background-color: #8ea6ff;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .searchForm button:disabled,
@@ -55,9 +60,9 @@
 }
 
 .userList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--page-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -66,22 +71,24 @@
 .userCard {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem;
   border: 1px solid #d0d0d0;
 }
 
 .userData {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .actionLink,
 .actionButton {
   width: fit-content;
+  max-width: 100%;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .actionLink {
@@ -89,7 +96,9 @@
 }
 
 .actionButton {
-  padding: 10px;
+  margin-top: auto;
+  min-height: var(--control-height);
+  padding: 0.625rem 0.875rem;
   background-color: #8ea6ff;
   color: #000;
 }
@@ -103,7 +112,8 @@
 .confirmPanel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.75rem;
+  min-width: 0;
 }
 
 .actionSection {
@@ -112,22 +122,23 @@
 
 .confirmPanel {
   width: 100%;
-  padding: 16px;
+  padding: 1rem;
   border: 1px solid #d0d0d0;
 }
 
 .reasonField {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
   width: 100%;
-  max-width: 420px;
+  max-width: var(--form-width);
 }
 
 .actions,
 .pagination {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .pagination {
@@ -137,4 +148,26 @@
 
 .error {
   color: #b00000;
+}
+
+@media (width <= 40rem) {
+  .searchForm button {
+    width: 100%;
+  }
+
+  .actions button {
+    flex: 1 1 8rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .userList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 160rem) {
+  .userList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }

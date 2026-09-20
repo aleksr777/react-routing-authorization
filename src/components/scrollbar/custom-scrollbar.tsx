@@ -11,22 +11,32 @@ type ScrollbarState = {
   valueNow: number;
 };
 
-const getMetrics = () => {
+const getMetrics = (track: HTMLDivElement | null) => {
   const scrollingElement = document.scrollingElement ?? document.documentElement;
   const viewportHeight = scrollingElement.clientHeight || window.innerHeight;
   const documentHeight = scrollingElement.scrollHeight;
   const maxScroll = Math.max(documentHeight - viewportHeight, 0);
+  const trackHeight = track?.clientHeight || viewportHeight;
+  const trackTop = track?.getBoundingClientRect().top ?? 0;
+  const minThumbHeight = track
+    ? Number.parseFloat(window.getComputedStyle(track).getPropertyValue('--thumb-min-height')) ||
+      MIN_THUMB_HEIGHT
+    : MIN_THUMB_HEIGHT;
   const thumbHeight =
     maxScroll > 0
-      ? Math.max((viewportHeight / documentHeight) * viewportHeight, MIN_THUMB_HEIGHT)
-      : viewportHeight;
-  const thumbTravel = Math.max(viewportHeight - thumbHeight, 0);
+      ? Math.min(
+          trackHeight,
+          Math.max((viewportHeight / documentHeight) * trackHeight, minThumbHeight),
+        )
+      : trackHeight;
+  const thumbTravel = Math.max(trackHeight - thumbHeight, 0);
   const scrollTop = Math.min(Math.max(scrollingElement.scrollTop, 0), maxScroll);
   const thumbTop = maxScroll > 0 ? (scrollTop / maxScroll) * thumbTravel : 0;
   const valueNow = maxScroll > 0 ? Math.round((scrollTop / maxScroll) * 100) : 0;
 
   return {
     maxScroll,
+    trackTop,
     thumbHeight,
     thumbTravel,
     thumbTop,
@@ -42,6 +52,7 @@ const CustomScrollbar = () => {
     thumbTop: 0,
     valueNow: 0,
   });
+  const trackRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const dragRef = useRef<{ pointerId: number; startY: number; startScrollY: number } | null>(null);
@@ -49,7 +60,7 @@ const CustomScrollbar = () => {
   useEffect(() => {
     const update = () => {
       frameRef.current = null;
-      const metrics = getMetrics();
+      const metrics = getMetrics(trackRef.current);
       setState({
         visible: metrics.maxScroll > 1,
         thumbHeight: metrics.thumbHeight,
@@ -67,11 +78,13 @@ const CustomScrollbar = () => {
     const delayedUpdate = window.setTimeout(scheduleUpdate, 0);
     window.addEventListener('scroll', scheduleUpdate, { passive: true });
     window.addEventListener('resize', scheduleUpdate);
+    window.visualViewport?.addEventListener('resize', scheduleUpdate);
 
     const resizeObserver =
       typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleUpdate);
     resizeObserver?.observe(document.documentElement);
     resizeObserver?.observe(document.body);
+    if (trackRef.current) resizeObserver?.observe(trackRef.current);
 
     const main = document.querySelector('main, [class*="main__content"], [class*="main_"]');
     if (main) resizeObserver?.observe(main);
@@ -92,16 +105,17 @@ const CustomScrollbar = () => {
       window.clearTimeout(delayedUpdate);
       window.removeEventListener('scroll', scheduleUpdate);
       window.removeEventListener('resize', scheduleUpdate);
+      window.visualViewport?.removeEventListener('resize', scheduleUpdate);
       resizeObserver?.disconnect();
       mutationObserver?.disconnect();
     };
   }, [location.key]);
 
   const scrollFromTrackPosition = (clientY: number) => {
-    const metrics = getMetrics();
+    const metrics = getMetrics(trackRef.current);
     if (metrics.maxScroll <= 0 || metrics.thumbTravel <= 0) return;
     const nextThumbTop = Math.min(
-      Math.max(clientY - metrics.thumbHeight / 2, 0),
+      Math.max(clientY - metrics.trackTop - metrics.thumbHeight / 2, 0),
       metrics.thumbTravel,
     );
     window.scrollTo({ top: (nextThumbTop / metrics.thumbTravel) * metrics.maxScroll });
@@ -127,7 +141,7 @@ const CustomScrollbar = () => {
   const handleThumbPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
-    const metrics = getMetrics();
+    const metrics = getMetrics(trackRef.current);
     if (metrics.maxScroll <= 0 || metrics.thumbTravel <= 0) return;
     const deltaY = event.clientY - drag.startY;
     window.scrollTo({
@@ -160,7 +174,7 @@ const CustomScrollbar = () => {
     }
     if (event.key === 'End') {
       event.preventDefault();
-      window.scrollTo({ top: getMetrics().maxScroll });
+      window.scrollTo({ top: getMetrics(trackRef.current).maxScroll });
       return;
     }
 
@@ -172,6 +186,7 @@ const CustomScrollbar = () => {
 
   return (
     <div
+      ref={trackRef}
       className={[styles.track, state.visible ? styles.visible : styles.hidden].join(' ')}
       role="scrollbar"
       aria-label="Page scroll"

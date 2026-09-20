@@ -40,7 +40,8 @@ const Home = () => {
     <section className={styles.page}>
       <h2 className={styles.title}>Home page</h2>
       <p className={styles.lead}>
-        Scroll this page to verify the custom viewport scrollbar and its layout-stability behavior.
+        Explore the template features. The layout adapts to your screen, and the scrollbar appears
+        whenever the page needs scrolling.
       </p>
       <div className={styles.sections}>
         {sections.map((section) => (
@@ -48,8 +49,8 @@ const Home = () => {
             <h3>{section.title}</h3>
             <p>{section.text}</p>
             <p>
-              The content is intentionally extended on this demonstration page so the document
-              exceeds the viewport height and the custom scrollbar can be tested directly.
+              Resize the window to see the layout adapt. When the content exceeds the viewport, use
+              the mouse wheel, keyboard, or scrollbar to explore the page.
             </p>
           </article>
         ))}

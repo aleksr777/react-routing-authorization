@@ -1,10 +1,14 @@
 .modal {
+  --modal-gap: clamp(0.5rem, 2vw, 2rem);
+
   border: 1px solid #8ea6ff;
-  border-radius: 14px;
+  border-radius: 0.875rem;
   padding: 0;
-  width: var(--modal-width, 460px);
-  max-width: calc(100% - 32px);
-  max-height: calc(100dvh - 32px);
+  width: var(--modal-width, 32rem);
+  max-width: calc(100% - 2 * var(--modal-gap));
+  max-height: calc(
+    100dvh - 2 * var(--modal-gap) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: #8794bb #e9edfa;
@@ -25,7 +29,7 @@
 }
 
 .modal::-webkit-scrollbar {
-  width: 10px;
+  width: var(--scrollbar-width);
 }
 
 .modal::-webkit-scrollbar-track {
@@ -62,45 +66,35 @@
 
 .content {
   position: relative;
-  padding: 32px;
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 2rem);
 }
 
 .title {
-  margin: 0 44px 24px 0;
-  font-size: 26px;
+  margin: 0 3rem 1.5rem 0;
+  font-size: var(--page-title-size);
   line-height: 1.2;
 }
 
 .close {
   position: absolute;
-  top: 14px;
-  right: 16px;
+  top: 0.75rem;
+  right: 0.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--control-height);
+  height: var(--control-height);
   border: 0;
   border-radius: 50%;
   background: transparent;
   color: #17213f;
   cursor: pointer;
-  font-size: 28px;
+  font-size: 1.75rem;
   line-height: 1;
 }
 
 .close:hover,
 .close:focus-visible {
   background: rgb(142 166 255 / 18%);
-}
-
-@media (width <= 520px) {
-  .modal {
-    max-width: calc(100% - 16px);
-    max-height: calc(100dvh - 16px);
-  }
-
-  .content {
-    padding: 26px 20px;
-  }
 }
