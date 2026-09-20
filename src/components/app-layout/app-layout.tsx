@@ -1,11 +1,14 @@
 import styles from './app-layout.module.css';
 import Header from '../header/header';
 import Footer from '../footer/footer';
+import CustomScrollbar from '../scrollbar/custom-scrollbar';
 import { Outlet } from 'react-router-dom';
 
 const AppLayout = () => {
   return (
-    <div className={styles.main}>
+    <>
+      <CustomScrollbar />
+      <div className={styles.main}>
       <header className={styles.main__header}>
         <div className={styles.main__container}>
           <Header />
@@ -21,7 +24,8 @@ const AppLayout = () => {
           <Footer />
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 };
 
