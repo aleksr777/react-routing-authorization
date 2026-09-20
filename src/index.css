@@ -6,6 +6,15 @@
   background-color: #e7ecff;
 }
 
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 html,
 body {
   box-sizing: border-box;
