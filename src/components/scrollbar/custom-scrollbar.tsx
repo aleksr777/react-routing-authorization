@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './custom-scrollbar.module.css';
 
 const MIN_THUMB_HEIGHT = 40;
@@ -12,8 +19,17 @@ type ScrollbarState = {
 
 const getMetrics = () => {
   const root = document.documentElement;
-  const documentHeight = Math.max(root.scrollHeight, document.body.scrollHeight);
-  const viewportHeight = window.innerHeight;
+  const body = document.body;
+  const scrollingElement = document.scrollingElement ?? root;
+  const viewportHeight = Math.max(scrollingElement.clientHeight, window.innerHeight);
+  const documentHeight = Math.max(
+    scrollingElement.scrollHeight,
+    root.scrollHeight,
+    root.offsetHeight,
+    body.scrollHeight,
+    body.offsetHeight,
+    viewportHeight,
+  );
   const maxScroll = Math.max(documentHeight - viewportHeight, 0);
   const thumbHeight =
     maxScroll > 0
@@ -25,8 +41,6 @@ const getMetrics = () => {
   const valueNow = maxScroll > 0 ? Math.round((scrollY / maxScroll) * 100) : 0;
 
   return {
-    documentHeight,
-    viewportHeight,
     maxScroll,
     thumbHeight,
     thumbTravel,
@@ -36,6 +50,7 @@ const getMetrics = () => {
 };
 
 const CustomScrollbar = () => {
+  const location = useLocation();
   const [state, setState] = useState<ScrollbarState>({
     visible: false,
     thumbHeight: MIN_THUMB_HEIGHT,
@@ -64,6 +79,7 @@ const CustomScrollbar = () => {
     };
 
     scheduleUpdate();
+    const delayedUpdate = window.setTimeout(scheduleUpdate, 0);
     window.addEventListener('scroll', scheduleUpdate, { passive: true });
     window.addEventListener('resize', scheduleUpdate);
 
@@ -71,14 +87,12 @@ const CustomScrollbar = () => {
       typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleUpdate);
     resizeObserver?.observe(document.documentElement);
     resizeObserver?.observe(document.body);
-    Array.from(document.body.children).forEach((element) => resizeObserver?.observe(element));
+
+    const main = document.querySelector('main, [class*="main__content"], [class*="main_"]');
+    if (main) resizeObserver?.observe(main);
 
     const mutationObserver =
-      typeof MutationObserver === 'undefined'
-        ? null
-        : new MutationObserver(() => {
-            scheduleUpdate();
-          });
+      typeof MutationObserver === 'undefined' ? null : new MutationObserver(scheduleUpdate);
     mutationObserver?.observe(document.body, {
       childList: true,
       subtree: true,
@@ -87,12 +101,13 @@ const CustomScrollbar = () => {
 
     return () => {
       if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
+      window.clearTimeout(delayedUpdate);
       window.removeEventListener('scroll', scheduleUpdate);
       window.removeEventListener('resize', scheduleUpdate);
       resizeObserver?.disconnect();
       mutationObserver?.disconnect();
     };
-  }, []);
+  }, [location.key]);
 
   const scrollFromTrackPosition = (clientY: number) => {
     const metrics = getMetrics();
@@ -167,18 +182,17 @@ const CustomScrollbar = () => {
     window.scrollBy({ top: delta });
   };
 
-  if (!state.visible) return null;
-
   return (
     <div
-      className={styles.track}
+      className={[styles.track, state.visible ? styles.visible : styles.hidden].join(' ')}
       role="scrollbar"
       aria-label="Page scroll"
       aria-orientation="vertical"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={state.valueNow}
-      tabIndex={0}
+      aria-hidden={!state.visible}
+      tabIndex={state.visible ? 0 : -1}
       onKeyDown={handleKeyDown}
       onPointerDown={handleTrackPointerDown}
     >
