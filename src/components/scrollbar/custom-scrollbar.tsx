@@ -32,7 +32,7 @@ const getMetrics = () => {
     thumbTop,
     valueNow,
   };
-}
+};
 
 const CustomScrollbar = () => {
   const location = useLocation();
