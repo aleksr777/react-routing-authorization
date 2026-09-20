@@ -24,7 +24,15 @@ const getMetrics = () => {
   const thumbTop = maxScroll > 0 ? (scrollY / maxScroll) * thumbTravel : 0;
   const valueNow = maxScroll > 0 ? Math.round((scrollY / maxScroll) * 100) : 0;
 
-  return { documentHeight, viewportHeight, maxScroll, thumbHeight, thumbTravel, thumbTop, valueNow };
+  return {
+    documentHeight,
+    viewportHeight,
+    maxScroll,
+    thumbHeight,
+    thumbTravel,
+    thumbTop,
+    valueNow,
+  };
 };
 
 const CustomScrollbar = () => {
