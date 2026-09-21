@@ -5,10 +5,7 @@ import { bindModalScrollGuards } from './modal-scroll-guards';
 const OPEN_DURATION_MS = 400;
 const CLOSE_DURATION_MS = 400;
 
-export const useModalBehavior = (
-  onClose: () => void,
-  dismissible: boolean,
-) => {
+export const useModalBehavior = (onClose: () => void, dismissible: boolean) => {
   const ref = useRef<HTMLDialogElement>(null);
   const closeTimer = useRef<number | null>(null);
   const openTimer = useRef<number | null>(null);
