@@ -8,8 +8,9 @@ import {
   type AdminUser,
 } from '../../features/admin/api/admin-api';
 import type { AuthSession } from '../../features/auth/api/session-api';
-import { formatSessionDate, getSessionDeviceLabel } from '../my-profile/session-device';
 import styles from '../my-profile/active-sessions.module.css';
+import UserManagementSessionCard from './user-management-session-card';
+import UserManagementSessionsHeader from './user-management-sessions-header';
 
 const UserManagementSessions = () => {
   const userId = Number(useParams().id);
@@ -84,20 +85,13 @@ const UserManagementSessions = () => {
 
   return (
     <section className={styles.section}>
-      <div className={styles.header}>
-        <div>
-          <h2 className={styles.title}>Active sessions</h2>
-          {user && <p>User: {user.email}</p>}
-        </div>
-        <button
-          className={styles.terminateAllButton}
-          type="button"
-          onClick={() => void handleRevokeAll()}
-          disabled={isRevokingAll || revokingIds.size > 0 || sessions.length === 0}
-        >
-          {isRevokingAll ? 'Terminating...' : 'Terminate all sessions'}
-        </button>
-      </div>
+      <UserManagementSessionsHeader
+        user={user}
+        isRevokingAll={isRevokingAll}
+        revokingCount={revokingIds.size}
+        sessionCount={sessions.length}
+        onRevokeAll={() => void handleRevokeAll()}
+      />
 
       {error && <p className={styles.error}>{error}</p>}
 
@@ -106,23 +100,13 @@ const UserManagementSessions = () => {
       ) : (
         <div className={styles.list}>
           {sessions.map((session) => (
-            <article className={styles.card} key={session.id}>
-              <div className={styles.cardHeader}>
-                <strong>{getSessionDeviceLabel(session.user_agent)}</strong>
-              </div>
-              <span>IP: {session.ip_address ?? 'Unknown'}</span>
-              <span>Signed in: {formatSessionDate(session.created_at)}</span>
-              <span>Last used: {formatSessionDate(session.last_used_at)}</span>
-              <span>Expires: {formatSessionDate(session.expires_at)}</span>
-              <button
-                className={styles.terminateButton}
-                type="button"
-                onClick={() => void handleRevoke(session.id)}
-                disabled={revokingIds.has(session.id) || isRevokingAll}
-              >
-                {revokingIds.has(session.id) ? 'Terminating...' : 'Terminate session'}
-              </button>
-            </article>
+            <UserManagementSessionCard
+              key={session.id}
+              session={session}
+              revoking={revokingIds.has(session.id)}
+              disabled={revokingIds.has(session.id) || isRevokingAll}
+              onRevoke={(sessionId) => void handleRevoke(sessionId)}
+            />
           ))}
         </div>
       )}
