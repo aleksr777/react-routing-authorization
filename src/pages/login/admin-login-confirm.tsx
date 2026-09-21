@@ -1,9 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
-import {
-  resendAdminLoginRequest,
-  type AdminLoginChallenge,
-} from '../../features/auth/api/auth-api';
+import { resendAdminLoginRequest } from '../../features/auth/api/auth-api';
 import { useAuth } from '../../features/auth/model/use-auth';
 import {
   getAttemptsRemaining,
@@ -11,16 +8,15 @@ import {
   isVerificationLocked,
 } from '../../shared/api/api-client';
 import { formatCountdown } from '../../shared/model/countdown';
+import type { AdminLoginConfirmProps } from './admin-login-confirm.types';
 import styles from './login.module.css';
 
-type Props = {
-  challenge: AdminLoginChallenge;
-  onChallenge: (challenge: AdminLoginChallenge) => void;
-  onConfirmed: () => void;
-  onBack: () => void;
-};
-
-const AdminLoginConfirm = ({ challenge, onChallenge, onConfirmed, onBack }: Props) => {
+const AdminLoginConfirm = ({
+  challenge,
+  onChallenge,
+  onConfirmed,
+  onBack,
+}: AdminLoginConfirmProps) => {
   const { confirmAdminLogin } = useAuth();
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
