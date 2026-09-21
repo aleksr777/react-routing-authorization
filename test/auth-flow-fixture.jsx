@@ -12,7 +12,7 @@ const json = (body, status = 200) =>
 
 export const startApp = (
   path,
-  { signedIn = false, rejectCode = false, adminLogin = false } = {},
+  { signedIn = false, rejectCode = false, adminLogin = false, logoutStatus = 200 } = {},
 ) => {
   let accessToken = 'existing-access-token';
   let email = 'user@example.com';
@@ -65,6 +65,20 @@ export const startApp = (
       }
       if (!signedIn || options.headers?.Authorization !== `Bearer ${accessToken}`) {
         return json({ message: 'Invalid session' }, 401);
+      }
+      if (endpoint === '/auth/logout') {
+        if (logoutStatus === 'network') throw new TypeError('Network unavailable');
+        if (logoutStatus === 200 || logoutStatus === 401) signedIn = false;
+        return json(
+          { message: logoutStatus === 200 ? 'Logged out' : 'Logout failed' },
+          logoutStatus,
+        );
+      }
+      if (endpoint === '/users/me/delete') {
+        if (body?.password !== 'password12345')
+          return json({ message: 'Current password is incorrect.' }, 400);
+        signedIn = false;
+        return json({ message: 'Account deleted' });
       }
       if (endpoint === '/auth/session') return new Response(null, { status: 204 });
       if (endpoint === '/users/me') {

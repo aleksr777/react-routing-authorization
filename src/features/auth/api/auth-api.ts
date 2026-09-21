@@ -1,5 +1,5 @@
 import { apiRequest } from '../../../shared/api/api-client';
-import { clearAuthTokens, setAuthTokens, type AuthTokens } from '../../../shared/api/tokens';
+import { setAuthTokens, type AuthTokens } from '../../../shared/api/tokens';
 import type {
   LoginDto,
   MessageResponse,
@@ -128,13 +128,9 @@ export const passwordResetConfirmRequest = async (
 };
 
 export const logoutRequest = async (): Promise<void> => {
-  try {
-    await apiRequest<unknown>('/auth/logout', {
-      method: 'POST',
-      auth: 'access',
-      retry: false,
-    });
-  } finally {
-    clearAuthTokens();
-  }
+  await apiRequest<unknown>('/auth/logout', {
+    method: 'POST',
+    auth: 'access',
+    retry: false,
+  });
 };

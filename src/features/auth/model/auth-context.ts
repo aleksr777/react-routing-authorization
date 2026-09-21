@@ -13,6 +13,7 @@ export type LoginOutcome =
 export type AuthContextValue = {
   isAuth: boolean;
   isInitializing: boolean;
+  isEndingSession: boolean;
   login: (email: string, password: string) => Promise<LoginOutcome>;
   confirmAdminLogin: (challengeId: string, code: string) => Promise<void>;
   requestRegistration: (email: string, password: string) => Promise<VerificationRequestResult>;
@@ -21,6 +22,7 @@ export type AuthContextValue = {
   requestPasswordReset: (email: string) => Promise<VerificationRequestResult>;
   confirmPasswordReset: (code: string, newPassword: string, email: string) => Promise<void>;
   logout: () => Promise<void>;
+  endSession: () => void;
   clearSession: () => void;
 };
 

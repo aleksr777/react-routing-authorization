@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
 import { getCurrentUserRequest, type CurrentUser } from '../../features/users/api/users-api';
 import styles from './my-profile.module.css';
 
 const MyProfile = () => {
   const { logout } = useAuth();
-  const navigate = useNavigate();
 
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,12 +35,14 @@ const MyProfile = () => {
   }, []);
 
   const handleLogout = async () => {
+    if (isLogoutLoading) return;
     try {
       setIsLogoutLoading(true);
       await logout();
-      navigate('/', { replace: true });
     } catch {
-      navigate('/', { replace: true });
+      // The auth provider also completes local sign-out when the request fails.
+    } finally {
+      setIsLogoutLoading(false);
     }
   };
 
@@ -87,6 +88,7 @@ const MyProfile = () => {
       >
         {isLogoutLoading ? 'Signing out...' : 'Logout'}
       </button>
+      <Outlet context={user} />
     </section>
   );
 };

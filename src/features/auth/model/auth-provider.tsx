@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type PropsWithChildren } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { refreshAuthTokens } from '../../../shared/api/api-client';
 import { clearAuthTokens, subscribeAuthTokensCleared } from '../../../shared/api/tokens';
 import {
@@ -18,6 +19,14 @@ import { AuthContext, type AuthContextValue, type LoginOutcome } from './auth-co
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [isAuth, setIsAuth] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [isEndingSession, setIsEndingSession] = useState(false);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Retain the redirect intent until Home has committed, then allow normal protected links.
+    if (isEndingSession && !isAuth && pathname === '/') setIsEndingSession(false);
+  }, [isAuth, isEndingSession, pathname]);
 
   useEffect(() => {
     return subscribeAuthTokensCleared(() => setIsAuth(false));
@@ -92,14 +101,26 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     setIsAuth(false);
   }, []);
 
-  const logout = useCallback(async () => {
-    await logoutRequest();
+  const endSession = useCallback(() => {
+    setIsEndingSession(true);
+    clearAuthTokens();
     setIsAuth(false);
-  }, []);
+    navigate('/', { replace: true });
+  }, [navigate]);
+
+  const logout = useCallback(async () => {
+    setIsEndingSession(true);
+    try {
+      await logoutRequest();
+    } finally {
+      endSession();
+    }
+  }, [endSession]);
 
   const value: AuthContextValue = {
     isAuth,
     isInitializing,
+    isEndingSession,
     login,
     confirmAdminLogin,
     requestRegistration,
@@ -108,6 +129,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     requestPasswordReset,
     confirmPasswordReset,
     logout,
+    endSession,
     clearSession,
   };
 

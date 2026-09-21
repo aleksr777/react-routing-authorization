@@ -38,7 +38,7 @@ Closing an auth modal returns to `/`. Protected-route redirects can still pass t
 
 ## Account confirmation dialogs
 
-Blocking, unblocking, administrator deletion and self-account deletion use the shared modal component. Blocking/unblocking asks for confirmation without an administrator password. Deletion still requires the current password and backend verification. In-flight account actions disable duplicate submission and modal dismissal; closing a dialog clears its input state.
+Blocking, unblocking, administrator deletion and self-account deletion use the shared modal component. Selecting Delete profile immediately opens password confirmation over the current profile; cancellation returns to the profile without deleting it. Blocking/unblocking asks for confirmation without an administrator password. Deletion still requires the current password and backend verification. In-flight account actions disable duplicate submission and modal dismissal; closing a dialog clears its input state.
 
 Confirmation forms request `autocomplete="off"`; password confirmation fields use `autocomplete="new-password"` with password-manager ignore hints. Code fields no longer request `one-time-code` autofill. Ordinary login retains normal saved-credential support. Typing and intentional pasting remain available. These are best-effort hints: browser settings and extensions can override them, so the site cannot guarantee a universal autofill prohibition.
 
@@ -55,6 +55,8 @@ Protected requests use the Bearer access token. The API client refreshes proacti
 `401` and `403` responses that represent an invalid session clear local authentication state. Transient network failures, timeouts, and server errors do not incorrectly log the user out.
 
 Backend JWT/session/role guards are the security boundary. Frontend route guards only control presentation/navigation.
+
+Explicit logout and successful self-account deletion clear the local session and redirect to Home without opening Login. The protected-route guard retains this redirect intent until Home is shown; later visits to protected pages still open Login normally.
 
 ## Server-session validation
 
