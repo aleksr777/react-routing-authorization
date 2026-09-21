@@ -55,10 +55,10 @@ const UserManagementDetails = () => {
     }
   };
 
-  const handleBlock = (reason: string, password: string) =>
-    runConfirmedAction(() => blockAdminUserRequest(userId, reason, password), 'User blocked');
-  const handleUnblock = (password: string) =>
-    runConfirmedAction(() => unblockAdminUserRequest(userId, password), 'User unblocked');
+  const handleBlock = (reason: string) =>
+    runConfirmedAction(() => blockAdminUserRequest(userId, reason), 'User blocked');
+  const handleUnblock = () =>
+    runConfirmedAction(() => unblockAdminUserRequest(userId), 'User unblocked');
 
   const handleDelete = async (password: string) => {
     setError(null);
@@ -71,7 +71,7 @@ const UserManagementDetails = () => {
       setIsBusy(false);
     }
   };
-  if (isLoading) return <p>Loading user...</p>;
+  if (isLoading && !user) return <p>Loading user...</p>;
 
   return (
     <section className={styles.wrapper}>

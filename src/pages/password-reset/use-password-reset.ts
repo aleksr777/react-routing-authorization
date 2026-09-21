@@ -4,7 +4,7 @@ import { useAuth } from '../../features/auth/model/use-auth';
 import { getAttemptsRemaining, isVerificationLocked } from '../../shared/api/api-client';
 import { useVerificationRequestState } from '../../shared/model/verification-request';
 
-export const usePasswordReset = () => {
+export const usePasswordReset = (returnTo: string) => {
   const { isAuth, isInitializing, requestPasswordReset, confirmPasswordReset } = useAuth();
   const navigate = useNavigate();
   const verification = useVerificationRequestState();
@@ -58,7 +58,7 @@ export const usePasswordReset = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmPasswordReset(code, newPassword, pendingEmail);
-      navigate('/users/me', { replace: true });
+      navigate(returnTo, { replace: true });
     } catch (err: unknown) {
       verification.applyAttemptError(err);
       verification.applyRetryError(err);

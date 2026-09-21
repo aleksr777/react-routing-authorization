@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
+import { createAuthReturnState } from '../../features/auth/model/auth-return-location';
 import { getCurrentUserRequest } from '../../features/users/api/users-api';
 import styles from './header.module.css';
 
@@ -8,14 +9,15 @@ type NavigationItemProps = {
   to: string;
   label: string;
   currentPath: string;
+  state?: unknown;
 };
 
-const NavigationItem = ({ to, label, currentPath }: NavigationItemProps) => (
+const NavigationItem = ({ to, label, currentPath, state }: NavigationItemProps) => (
   <li className={styles.li}>
     {currentPath === to ? (
       <span className={styles.currentLink}>{label}</span>
     ) : (
-      <Link className={styles.link} to={to}>
+      <Link className={styles.link} to={to} state={state}>
         <span className={styles.linkText}>{label}</span>
       </Link>
     )}
@@ -24,7 +26,8 @@ const NavigationItem = ({ to, label, currentPath }: NavigationItemProps) => (
 
 const Header = () => {
   const { isAuth, isInitializing } = useAuth();
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const { pathname } = location;
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -61,8 +64,18 @@ const Header = () => {
 
           {!isInitializing && !isAuth && (
             <>
-              <NavigationItem to="/auth/login" label="Login" currentPath={pathname} />
-              <NavigationItem to="/auth/registration" label="Registration" currentPath={pathname} />
+              <NavigationItem
+                to="/auth/login"
+                label="Login"
+                currentPath={pathname}
+                state={createAuthReturnState(location)}
+              />
+              <NavigationItem
+                to="/auth/registration"
+                label="Registration"
+                currentPath={pathname}
+                state={createAuthReturnState(location)}
+              />
             </>
           )}
 

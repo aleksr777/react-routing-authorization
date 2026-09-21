@@ -10,7 +10,16 @@ const json = (body, status = 200) =>
     headers: { 'Content-Type': 'application/json' },
   });
 
-export const startApp = (path, { signedIn = false, rejectCode = false } = {}) => {
+export const startApp = (
+  path,
+  {
+    signedIn = false,
+    rejectCode = false,
+    adminLogin = false,
+    logoutStatus = 200,
+    sessionStatus = 204,
+  } = {},
+) => {
   let accessToken = 'existing-access-token';
   let email = 'user@example.com';
   const calls = [];
@@ -28,6 +37,29 @@ export const startApp = (path, { signedIn = false, rejectCode = false } = {}) =>
       if (endpoint === '/auth/refresh-tokens') {
         return signedIn ? json(tokens()) : json({ message: 'No session' }, 401);
       }
+      if (endpoint === '/auth/login') {
+        if (adminLogin)
+          return json({
+            admin_confirmation_required: true,
+            challenge_id: 'a'.repeat(64),
+            message: 'Code sent to your email',
+            retry_after: 60,
+            max_attempts: 5,
+            expires_in: 300,
+          });
+        signedIn = true;
+        return json(tokens());
+      }
+      if (endpoint === '/auth/login/admin/confirm') {
+        if (rejectCode || body.code !== '123456')
+          return json(
+            { message: 'Incorrect login confirmation code.', attempts_remaining: 4 },
+            401,
+          );
+        signedIn = true;
+        accessToken = 'new-access-token';
+        return json(tokens());
+      }
       if (/^\/auth\/(registration|password-reset)\/request$/.test(endpoint)) {
         return json({ message: 'Code sent', retry_after: 60, max_attempts: 5 });
       }
@@ -40,9 +72,34 @@ export const startApp = (path, { signedIn = false, rejectCode = false } = {}) =>
       if (!signedIn || options.headers?.Authorization !== `Bearer ${accessToken}`) {
         return json({ message: 'Invalid session' }, 401);
       }
-      if (endpoint === '/auth/session') return new Response(null, { status: 204 });
+      if (endpoint === '/auth/logout') {
+        if (logoutStatus === 'network') throw new TypeError('Network unavailable');
+        if (logoutStatus === 200 || logoutStatus === 401) signedIn = false;
+        return json(
+          { message: logoutStatus === 200 ? 'Logged out' : 'Logout failed' },
+          logoutStatus,
+        );
+      }
+      if (endpoint === '/users/me/delete') {
+        if (body?.password !== 'password12345')
+          return json({ message: 'Current password is incorrect.' }, 400);
+        signedIn = false;
+        return json({ message: 'Account deleted' });
+      }
+      if (endpoint === '/auth/session') {
+        return sessionStatus === 204
+          ? new Response(null, { status: 204 })
+          : json({ message: 'Session ended' }, sessionStatus);
+      }
       if (endpoint === '/users/me') {
-        return json({ id: 7, email, nickname: 'tester', name: null, age: null, role: 'user' });
+        return json({
+          id: 7,
+          email,
+          nickname: 'tester',
+          name: null,
+          age: null,
+          role: adminLogin ? 'admin' : 'user',
+        });
       }
       if (endpoint === '/users/me/email/update/status') {
         return json({ locked: false, retry_after: 0, max_attempts: 5, attempts_remaining: 5 });

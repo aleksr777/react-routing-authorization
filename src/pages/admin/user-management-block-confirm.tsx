@@ -1,68 +1,58 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
+import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
+import { ModalDismissButton } from '../../components/modal/modal';
 import styles from './user-management.module.css';
 
-type UserManagementBlockConfirmProps = {
+type Props = {
   isBusy: boolean;
-  onConfirm: (reason: string, password: string) => Promise<void>;
-  onCancel: () => void;
+  unblock?: boolean;
+  onConfirm: (reason: string) => Promise<void>;
 };
 
-const UserManagementBlockConfirm = ({
-  isBusy,
-  onConfirm,
-  onCancel,
-}: UserManagementBlockConfirmProps) => {
+const UserManagementBlockConfirm = ({ isBusy, unblock = false, onConfirm }: Props) => {
   const [reason, setReason] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  const handleConfirm = async () => {
+  const handleConfirm = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isBusy) return;
     try {
       setError(null);
-      await onConfirm(reason, password);
+      await onConfirm(reason);
       setReason('');
-      setPassword('');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to block user');
+      setError(err instanceof Error ? err.message : 'Failed to update user');
     }
   };
-
   return (
-    <div className={styles.confirmPanel}>
-      <label className={styles.reasonField}>
-        Block reason (optional)
-        <input value={reason} maxLength={255} onChange={(event) => setReason(event.target.value)} />
-      </label>
-      <label className={styles.reasonField}>
-        Current administrator password
-        <input
-          type="password"
-          value={password}
-          autoComplete="current-password"
-          minLength={8}
-          maxLength={100}
-          onChange={(event) => {
-            setPassword(event.target.value);
-            setError(null);
-          }}
-        />
-      </label>
-      <p>Confirm blocking this user?</p>
+    <form className={styles.confirmPanel} autoComplete="off" onSubmit={handleConfirm}>
+      <p>
+        {unblock
+          ? 'Restore access to this account?'
+          : 'Block this account and end all its active sessions?'}
+      </p>
+      {!unblock && (
+        <label className={styles.reasonField}>
+          Block reason (optional)
+          <ConfirmationInput
+            value={reason}
+            maxLength={255}
+            disabled={isBusy}
+            onChange={(event) => setReason(event.target.value)}
+          />
+        </label>
+      )}
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
       <div className={styles.actions}>
-        <button
-          type="button"
-          disabled={isBusy || password.length < 8 || password.length > 100}
-          onClick={() => void handleConfirm()}
-        >
-          Confirm block
+        <button type="submit" disabled={isBusy}>
+          {isBusy ? 'Please wait...' : unblock ? 'Confirm unblock' : 'Confirm block'}
         </button>
-        <button type="button" disabled={isBusy} onClick={onCancel}>
-          Cancel
-        </button>
+        <ModalDismissButton disabled={isBusy}>Cancel</ModalDismissButton>
       </div>
-      {error && <p className={styles.error}>{error}</p>}
-    </div>
+    </form>
   );
 };
-
 export default UserManagementBlockConfirm;

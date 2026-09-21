@@ -22,19 +22,25 @@ Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/n
 - request timeouts and controlled authentication retry behavior;
 - pull-request CI and validated GitHub Pages deployment.
 
-Multi-factor authentication is intentionally not part of this base template. Add the MFA mechanism and recovery policy appropriate to each application separately.
+Administrator password login requires an additional email code before authentication. The pending challenge remains only in memory; reload or returning to the credentials step starts a new login. The UI supports code expiry, resend cooldowns and attempt limits enforced by the companion backend.
 
 ## Modal authentication routes
 
 Public authentication keeps normal deep-link URLs while rendering the workflow in the reusable native `<dialog>` component over the Home page:
 
-- `/auth/login` — email/password login;
+- `/auth/login` — email/password login and administrator email confirmation;
 - `/auth/registration` — registration request and six-digit confirmation code;
 - `/auth/password-reset` — reset request, confirmation code, new password, and password confirmation.
 
 The modal template lives under `src/components/modal`. It includes 0.4-second open/close transitions, background scroll locking without removing the visible scrollbar, nested-dialog support, focus restoration, and delayed pointer dismissal for the close button/backdrop during the opening animation.
 
-Closing an auth modal returns to `/`. Protected-route redirects can still pass the original location to `/auth/login`, and a successful login returns to that protected location.
+Opening an auth modal from a public page records that page as the return location. Closing the modal and a successful login, registration, or password recovery return there, preserving query parameters and anchors. Protected-route redirects carry the originally requested protected location through all auth flows, so a successful login returns to that exact URL; closing an auth modal opened by such a redirect returns to Home instead of reopening the same protected route.
+
+## Account confirmation dialogs
+
+Blocking, unblocking, administrator deletion and self-account deletion use the shared modal component. Selecting Delete profile immediately opens password confirmation over the current profile; cancellation returns to the profile without deleting it. Blocking/unblocking asks for confirmation without an administrator password. Deletion still requires the current password and backend verification. In-flight account actions disable duplicate submission and modal dismissal; closing a dialog clears its input state.
+
+Confirmation forms request `autocomplete="off"`; password confirmation fields use `autocomplete="new-password"` with password-manager ignore hints. Code fields no longer request `one-time-code` autofill. Ordinary login retains normal saved-credential support. Typing and intentional pasting remain available. These are best-effort hints: browser settings and extensions can override them, so the site cannot guarantee a universal autofill prohibition.
 
 ## Authentication model
 
@@ -49,6 +55,8 @@ Protected requests use the Bearer access token. The API client refreshes proacti
 `401` and `403` responses that represent an invalid session clear local authentication state. Transient network failures, timeouts, and server errors do not incorrectly log the user out.
 
 Backend JWT/session/role guards are the security boundary. Frontend route guards only control presentation/navigation.
+
+Explicit logout, successful self-account deletion, an invalidated server session, failed refresh of an active session, and cross-tab session clearing all redirect to Home without opening Login. The protected-route guard retains this redirect intent until Home is shown; later visits to protected pages still open Login normally. An initially unauthenticated visitor who opens a protected URL is still taken to Login and, after success, returned to that URL.
 
 ## Server-session validation
 

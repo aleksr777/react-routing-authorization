@@ -32,12 +32,13 @@ const App = () => {
         <Route path="forbidden" element={<Forbidden />} />
         <Route element={<ProtectedRoute />}>
           <Route path="protected-page" element={<ProtectedPage />} />
-          <Route path="users/me" element={<MyProfile />} />
+          <Route path="users/me" element={<MyProfile />}>
+            <Route path="settings/delete" element={<DeleteProfile />} />
+          </Route>
           <Route path="users/me/sessions" element={<ActiveSessions />} />
           <Route path="users/me/settings/profile" element={<EditProfile />} />
           <Route path="users/me/settings/password" element={<ChangePassword />} />
           <Route path="users/me/settings/email" element={<ChangeEmail />} />
-          <Route path="users/me/settings/delete" element={<DeleteProfile />} />
           <Route element={<AdminRoute />}>
             <Route path="admin/users" element={<UserManagement />} />
             <Route path="admin/users/:id" element={<UserManagementDetails />} />
