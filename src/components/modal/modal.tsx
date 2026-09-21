@@ -1,4 +1,9 @@
-import { createContext, useContext, type ComponentPropsWithoutRef, type PropsWithChildren } from 'react';
+import {
+  createContext,
+  useContext,
+  type ComponentPropsWithoutRef,
+  type PropsWithChildren,
+} from 'react';
 import { createPortal } from 'react-dom';
 import styles from './modal.module.css';
 import { useModalBehavior } from './use-modal-behavior';
