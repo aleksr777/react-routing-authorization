@@ -38,12 +38,6 @@ export default defineConfig(({ mode }) => {
   const basePath = validateBasePath(process.env.VITE_BASE_PATH ?? fileEnv.VITE_BASE_PATH ?? '/');
   const production = mode === 'production';
 
-  if (production && !configuredApiUrl) {
-    throw new Error(
-      'VITE_API_URL is required for production builds. Refusing to build with a localhost fallback.',
-    );
-  }
-
   let parsedApiUrl: URL;
   try {
     parsedApiUrl = new URL(apiUrl);
