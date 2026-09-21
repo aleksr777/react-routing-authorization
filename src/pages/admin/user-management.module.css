@@ -126,6 +126,11 @@
   border: 1px solid #d0d0d0;
 }
 
+.confirmTarget {
+  overflow-wrap: anywhere;
+  margin: 0 0 1rem;
+}
+
 .reasonField {
   display: flex;
   flex-direction: column;

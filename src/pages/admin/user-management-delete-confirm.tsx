@@ -1,68 +1,55 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
+import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
+import { ModalDismissButton } from '../../components/modal/modal';
 import styles from './user-management.module.css';
 
-type UserManagementPasswordConfirmProps = {
-  isBusy: boolean;
-  onConfirm: (password: string) => Promise<void>;
-  onCancel: () => void;
-  prompt?: string;
-  confirmLabel?: string;
-  failureMessage?: string;
-};
+type Props = { isBusy: boolean; onConfirm: (password: string) => Promise<void> };
 
-const UserManagementPasswordConfirm = ({
-  isBusy,
-  onConfirm,
-  onCancel,
-  prompt = 'Delete this user permanently?',
-  confirmLabel = 'Confirm delete',
-  failureMessage = 'Failed to delete user',
-}: UserManagementPasswordConfirmProps) => {
+const UserManagementDeleteConfirm = ({ isBusy, onConfirm }: Props) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  const handleConfirm = async () => {
+  const handleConfirm = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isBusy || password.length < 8 || password.length > 100) return;
     try {
       setError(null);
       await onConfirm(password);
       setPassword('');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : failureMessage);
+      setPassword('');
+      setError(err instanceof Error ? err.message : 'Failed to delete user');
     }
   };
-
   return (
-    <div className={styles.confirmPanel}>
-      <p>{prompt}</p>
+    <form className={styles.confirmPanel} autoComplete="off" onSubmit={handleConfirm}>
+      <p>Delete this user permanently? This action cannot be undone.</p>
       <label className={styles.reasonField}>
         Current administrator password
-        <input
+        <ConfirmationInput
           type="password"
           value={password}
-          autoComplete="current-password"
           minLength={8}
           maxLength={100}
+          required
+          disabled={isBusy}
           onChange={(event) => {
             setPassword(event.target.value);
             setError(null);
           }}
         />
       </label>
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
       <div className={styles.actions}>
-        <button
-          type="button"
-          disabled={isBusy || password.length < 8 || password.length > 100}
-          onClick={() => void handleConfirm()}
-        >
-          {confirmLabel}
+        <button type="submit" disabled={isBusy || password.length < 8 || password.length > 100}>
+          {isBusy ? 'Deleting...' : 'Confirm delete'}
         </button>
-        <button type="button" disabled={isBusy} onClick={onCancel}>
-          Cancel
-        </button>
+        <ModalDismissButton disabled={isBusy}>Cancel</ModalDismissButton>
       </div>
-      {error && <p className={styles.error}>{error}</p>}
-    </div>
+    </form>
   );
 };
-
-export default UserManagementPasswordConfirm;
+export default UserManagementDeleteConfirm;

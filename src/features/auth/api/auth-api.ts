@@ -20,7 +20,15 @@ export type BlockedAccountInfo = {
   blocked_reason: string | null;
   contact_email: string;
 };
-type LoginResult = AuthTokens | BlockedAccountInfo;
+export type AdminLoginChallenge = VerificationRequestResult & {
+  admin_confirmation_required: true;
+  challenge_id: string;
+  expires_in: number;
+};
+type LoginResult = AuthTokens | BlockedAccountInfo | AdminLoginChallenge;
+
+export const isAdminLoginChallenge = (value: LoginResult): value is AdminLoginChallenge =>
+  'admin_confirmation_required' in value && value.admin_confirmation_required === true;
 
 export const isBlockedAccountInfo = (value: LoginResult): value is BlockedAccountInfo => {
   return 'blocked' in value && value.blocked === true;
@@ -33,11 +41,30 @@ export const loginRequest = async (dto: LoginDto): Promise<LoginResult> => {
     body: JSON.stringify(dto),
   });
 
-  if (!isBlockedAccountInfo(result)) {
+  if (!isBlockedAccountInfo(result) && !isAdminLoginChallenge(result)) {
     setAuthTokens(result);
   }
   return result;
 };
+
+export const confirmAdminLoginRequest = async (
+  challengeId: string,
+  code: string,
+): Promise<void> => {
+  const tokens = await apiRequest<AuthTokens>('/auth/login/admin/confirm', {
+    method: 'POST',
+    auth: 'none',
+    body: JSON.stringify({ challenge_id: challengeId, code }),
+  });
+  setAuthTokens(tokens);
+};
+
+export const resendAdminLoginRequest = (challengeId: string): Promise<AdminLoginChallenge> =>
+  apiRequest<AdminLoginChallenge>('/auth/login/admin/resend', {
+    method: 'POST',
+    auth: 'none',
+    body: JSON.stringify({ challenge_id: challengeId }),
+  });
 
 export const validateSessionRequest = async (): Promise<void> => {
   await apiRequest<null>('/auth/session', {

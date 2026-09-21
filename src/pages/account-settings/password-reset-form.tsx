@@ -1,3 +1,4 @@
+import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
 import type { FormEventHandler } from 'react';
 import styles from './account-settings.module.css';
 
@@ -8,17 +9,16 @@ type PasswordResetFormProps = {
 };
 
 const PasswordResetForm = ({ error, isSubmitting, onSubmit }: PasswordResetFormProps) => (
-  <form className={styles.form} onSubmit={onSubmit}>
+  <form autoComplete="off" className={styles.form} onSubmit={onSubmit}>
     <p className={styles.message}>Confirmation code sent to your account email.</p>
 
     <label className={styles.label}>
       Confirmation code
-      <input
+      <ConfirmationInput
         className={styles.input}
         name="code"
         type="text"
         inputMode="numeric"
-        autoComplete="one-time-code"
         pattern="[0-9]{6}"
         maxLength={6}
         required
@@ -40,11 +40,10 @@ const PasswordResetForm = ({ error, isSubmitting, onSubmit }: PasswordResetFormP
 
     <label className={styles.label}>
       Repeat new password
-      <input
+      <ConfirmationInput
         className={styles.input}
         name="newPasswordConfirm"
         type="password"
-        autoComplete="new-password"
         minLength={12}
         maxLength={100}
         required

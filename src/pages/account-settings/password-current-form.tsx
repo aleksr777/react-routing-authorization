@@ -1,3 +1,4 @@
+import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
 import type { FormEventHandler } from 'react';
 import styles from './account-settings.module.css';
 
@@ -14,14 +15,13 @@ const PasswordCurrentForm = ({
   onSubmit,
   onForgotPassword,
 }: PasswordCurrentFormProps) => (
-  <form className={styles.form} onSubmit={onSubmit}>
+  <form autoComplete="off" className={styles.form} onSubmit={onSubmit}>
     <label className={styles.label}>
       Current password
-      <input
+      <ConfirmationInput
         className={styles.input}
         name="oldPassword"
         type="password"
-        autoComplete="current-password"
         minLength={8}
         maxLength={100}
         required

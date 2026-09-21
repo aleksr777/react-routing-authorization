@@ -3,6 +3,8 @@ import { refreshAuthTokens } from '../../../shared/api/api-client';
 import { clearAuthTokens, subscribeAuthTokensCleared } from '../../../shared/api/tokens';
 import {
   isBlockedAccountInfo,
+  isAdminLoginChallenge,
+  confirmAdminLoginRequest,
   loginRequest,
   logoutRequest,
   passwordResetConfirmRequest,
@@ -45,8 +47,19 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       return { status: 'blocked', info: result };
     }
 
+    if (isAdminLoginChallenge(result)) {
+      clearAuthTokens();
+      setIsAuth(false);
+      return { status: 'admin-confirmation', challenge: result };
+    }
+
     setIsAuth(true);
     return { status: 'authenticated' };
+  }, []);
+
+  const confirmAdminLogin = useCallback(async (challengeId: string, code: string) => {
+    await confirmAdminLoginRequest(challengeId, code);
+    setIsAuth(true);
   }, []);
 
   const requestRegistration = useCallback(async (email: string, password: string) => {
@@ -88,6 +101,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     isAuth,
     isInitializing,
     login,
+    confirmAdminLogin,
     requestRegistration,
     resendRegistration,
     confirmRegistration,

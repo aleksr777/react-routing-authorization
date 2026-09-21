@@ -1,3 +1,4 @@
+import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
 import type { FormEventHandler } from 'react';
 import styles from './account-settings.module.css';
 
@@ -8,7 +9,7 @@ type PasswordNewFormProps = {
 };
 
 const PasswordNewForm = ({ error, isSubmitting, onSubmit }: PasswordNewFormProps) => (
-  <form className={styles.form} onSubmit={onSubmit}>
+  <form autoComplete="off" className={styles.form} onSubmit={onSubmit}>
     <label className={styles.label}>
       New password
       <input
@@ -24,11 +25,10 @@ const PasswordNewForm = ({ error, isSubmitting, onSubmit }: PasswordNewFormProps
 
     <label className={styles.label}>
       Repeat new password
-      <input
+      <ConfirmationInput
         className={styles.input}
         name="newPasswordConfirm"
         type="password"
-        autoComplete="new-password"
         minLength={12}
         maxLength={100}
         required

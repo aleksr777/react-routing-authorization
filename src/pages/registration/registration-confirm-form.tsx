@@ -1,3 +1,4 @@
+import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
 import type { FormEventHandler } from 'react';
 import { formatCountdown } from '../../shared/model/countdown';
 import styles from './registration.module.css';
@@ -26,17 +27,16 @@ const RegistrationConfirmForm = ({
   onUseAnotherEmail,
 }: RegistrationConfirmFormProps) => {
   return (
-    <form className={styles.form} onSubmit={onSubmit}>
+    <form autoComplete="off" className={styles.form} onSubmit={onSubmit}>
       {message && <p className={styles.message}>{message}</p>}
 
       <label className={styles.label}>
         Confirmation code
-        <input
+        <ConfirmationInput
           className={styles.input}
           name="code"
           type="text"
           inputMode="numeric"
-          autoComplete="one-time-code"
           pattern="[0-9]{6}"
           maxLength={6}
           required

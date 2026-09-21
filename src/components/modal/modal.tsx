@@ -40,7 +40,13 @@ const Modal = ({
   onClose,
   children,
   className = '',
-}: PropsWithChildren<{ title: string; onClose: () => void; className?: string }>) => {
+  dismissible = true,
+}: PropsWithChildren<{
+  title: string;
+  onClose: () => void;
+  className?: string;
+  dismissible?: boolean;
+}>) => {
   const ref = useRef<HTMLDialogElement>(null);
   const closeTimer = useRef<number | null>(null);
   const openTimer = useRef<number | null>(null);
@@ -50,7 +56,7 @@ const Modal = ({
   const [state, setState] = useState<'opening' | 'open' | 'closing'>('opening');
 
   const requestClose = () => {
-    if (state === 'closing') return;
+    if (!dismissible || state === 'closing') return;
     setState('closing');
     closeTimer.current = window.setTimeout(onClose, CLOSE_DURATION_MS);
   };
@@ -157,6 +163,7 @@ const Modal = ({
             type="button"
             className={styles.close}
             aria-label="Close modal"
+            disabled={!dismissible}
             onClick={requestPointerClose}
           >
             ×

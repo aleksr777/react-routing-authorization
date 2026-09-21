@@ -1,3 +1,4 @@
+import ConfirmationInput from '../../components/confirmation-input/confirmation-input';
 import { type FormEvent } from 'react';
 import { formatCountdown } from '../../shared/model/countdown';
 import styles from './password-reset.module.css';
@@ -26,17 +27,16 @@ const PasswordResetConfirmForm = ({
   onUseAnotherEmail,
 }: PasswordResetConfirmFormProps) => {
   return (
-    <form className={styles.form} onSubmit={onSubmit}>
+    <form autoComplete="off" className={styles.form} onSubmit={onSubmit}>
       {message && <p className={styles.message}>{message}</p>}
 
       <label className={styles.label}>
         Reset code
-        <input
+        <ConfirmationInput
           className={styles.input}
           name="code"
           type="text"
           inputMode="numeric"
-          autoComplete="one-time-code"
           pattern="[0-9]{6}"
           maxLength={6}
           required
@@ -58,11 +58,10 @@ const PasswordResetConfirmForm = ({
 
       <label className={styles.label}>
         Repeat new password
-        <input
+        <ConfirmationInput
           className={styles.input}
           name="newPasswordConfirm"
           type="password"
-          autoComplete="new-password"
           minLength={12}
           maxLength={100}
           required

@@ -22,19 +22,25 @@ Companion backend: [nestjs-routing-authorization](https://github.com/aleksr777/n
 - request timeouts and controlled authentication retry behavior;
 - pull-request CI and validated GitHub Pages deployment.
 
-Multi-factor authentication is intentionally not part of this base template. Add the MFA mechanism and recovery policy appropriate to each application separately.
+Administrator password login requires an additional email code before authentication. The pending challenge remains only in memory; reload or returning to the credentials step starts a new login. The UI supports code expiry, resend cooldowns and attempt limits enforced by the companion backend.
 
 ## Modal authentication routes
 
 Public authentication keeps normal deep-link URLs while rendering the workflow in the reusable native `<dialog>` component over the Home page:
 
-- `/auth/login` — email/password login;
+- `/auth/login` — email/password login and administrator email confirmation;
 - `/auth/registration` — registration request and six-digit confirmation code;
 - `/auth/password-reset` — reset request, confirmation code, new password, and password confirmation.
 
 The modal template lives under `src/components/modal`. It includes 0.4-second open/close transitions, background scroll locking without removing the visible scrollbar, nested-dialog support, focus restoration, and delayed pointer dismissal for the close button/backdrop during the opening animation.
 
 Closing an auth modal returns to `/`. Protected-route redirects can still pass the original location to `/auth/login`, and a successful login returns to that protected location.
+
+## Account confirmation dialogs
+
+Blocking, unblocking, administrator deletion and self-account deletion use the shared modal component. Blocking/unblocking asks for confirmation without an administrator password. Deletion still requires the current password and backend verification. In-flight account actions disable duplicate submission and modal dismissal; closing a dialog clears its input state.
+
+Confirmation forms request `autocomplete="off"`; password confirmation fields use `autocomplete="new-password"` with password-manager ignore hints. Code fields no longer request `one-time-code` autofill. Ordinary login retains normal saved-credential support. Typing and intentional pasting remain available. These are best-effort hints: browser settings and extensions can override them, so the site cannot guarantee a universal autofill prohibition.
 
 ## Authentication model
 
