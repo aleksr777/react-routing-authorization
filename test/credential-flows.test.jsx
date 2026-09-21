@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import { getAccessToken } from '../src/shared/api/tokens';
 import { fill, startApp, submit } from './auth-flow-fixture';
 
-test('registration confirms the code, signs in, and opens the protected profile', async () => {
+test('registration confirms the code, signs in, and returns to Home without a source route', async () => {
   const { router, calls } = startApp('/auth/registration');
   const dialog = await screen.findByRole('dialog', { name: 'Registration' });
   expect(screen.getByRole('heading', { name: 'Home page' })).toBeTruthy();
@@ -16,8 +16,8 @@ test('registration confirms the code, signs in, and opens the protected profile'
   fill('Confirmation code', '123456');
   submit('Confirm registration');
 
-  await screen.findByRole('heading', { name: 'My profile' });
-  expect(router.state.location.pathname).toBe('/users/me');
+  await screen.findByRole('heading', { name: 'Home page' });
+  expect(router.state.location.pathname).toBe('/');
   expect(getAccessToken()).toBe('new-access-token');
   expect(calls.find((call) => call.endpoint === '/auth/registration/confirm').body).toEqual({
     code: '123456',
@@ -25,13 +25,13 @@ test('registration confirms the code, signs in, and opens the protected profile'
   });
 });
 
-test('the registration page also redirects an authenticated user to the profile', async () => {
+test('the registration page returns an authenticated user to Home without a source route', async () => {
   const { router } = startApp('/auth/registration', { signedIn: true });
-  await screen.findByRole('heading', { name: 'My profile' });
-  expect(router.state.location.pathname).toBe('/users/me');
+  await screen.findByRole('heading', { name: 'Home page' });
+  expect(router.state.location.pathname).toBe('/');
 });
 
-test('password recovery installs the new credentials before opening the profile', async () => {
+test('password recovery installs the new credentials before returning to Home', async () => {
   const { router, calls } = startApp('/auth/password-reset');
   await screen.findByRole('dialog', { name: 'Password recovery' });
   fill('Email', 'user@example.com');
@@ -42,15 +42,10 @@ test('password recovery installs the new credentials before opening the profile'
   fill('Repeat new password', 'new-password123');
   submit('Reset password');
 
-  await screen.findByRole('heading', { name: 'My profile' });
-  expect(router.state.location.pathname).toBe('/users/me');
+  await screen.findByRole('heading', { name: 'Home page' });
+  expect(router.state.location.pathname).toBe('/');
   expect(getAccessToken()).toBe('new-access-token');
-  expect(calls.filter((call) => call.endpoint === '/auth/session')).toEqual([
-    expect.objectContaining({
-      headers: expect.objectContaining({ Authorization: 'Bearer new-access-token' }),
-      credentials: 'include',
-    }),
-  ]);
+  expect(calls.filter((call) => call.endpoint === '/auth/session')).toHaveLength(0);
 });
 
 test('a rejected recovery code does not authenticate or redirect the user', async () => {

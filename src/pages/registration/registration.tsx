@@ -1,11 +1,18 @@
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import AuthModalShell from '../auth-modal/auth-modal-shell';
+import {
+  createAuthReturnState,
+  getAuthReturnTo,
+} from '../../features/auth/model/auth-return-location';
 import RegistrationConfirmForm from './registration-confirm-form';
 import RegistrationRequestForm from './registration-request-form';
 import { useRegistration } from './use-registration';
 import styles from './registration.module.css';
 
 const Registration = () => {
+  const location = useLocation();
+  const returnTo = getAuthReturnTo(location.state);
+  const authLinkState = createAuthReturnState(location);
   const {
     isAuth,
     isInitializing,
@@ -17,10 +24,10 @@ const Registration = () => {
     handleRegistrationConfirm,
     handleResend,
     handleUseAnotherEmail,
-  } = useRegistration();
+  } = useRegistration(returnTo);
 
   if (isInitializing) return <p>Loading...</p>;
-  if (isAuth) return <Navigate to="/users/me" replace />;
+  if (isAuth) return <Navigate to={returnTo} replace />;
 
   return (
     <AuthModalShell title={isCodeStep ? 'Confirm registration' : 'Registration'}>
@@ -46,10 +53,10 @@ const Registration = () => {
             onSubmit={handleRegistrationRequest}
           />
         )}
-        <Link className={styles.link} to="/auth/password-reset">
+        <Link className={styles.link} to="/auth/password-reset" state={authLinkState}>
           Forgot password?
         </Link>
-        <Link className={styles.link} to="/auth/login">
+        <Link className={styles.link} to="/auth/login" state={authLinkState}>
           Login
         </Link>
       </section>

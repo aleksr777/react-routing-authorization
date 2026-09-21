@@ -34,7 +34,7 @@ Public authentication keeps normal deep-link URLs while rendering the workflow i
 
 The modal template lives under `src/components/modal`. It includes 0.4-second open/close transitions, background scroll locking without removing the visible scrollbar, nested-dialog support, focus restoration, and delayed pointer dismissal for the close button/backdrop during the opening animation.
 
-Closing an auth modal returns to `/`. Protected-route redirects can still pass the original location to `/auth/login`, and a successful login returns to that protected location.
+Opening an auth modal from a public page records that page as the return location. Closing the modal and a successful login, registration, or password recovery return there, preserving query parameters and anchors. Protected-route redirects carry the originally requested protected location through all auth flows, so a successful login returns to that exact URL; closing an auth modal opened by such a redirect returns to Home instead of reopening the same protected route.
 
 ## Account confirmation dialogs
 
@@ -56,7 +56,7 @@ Protected requests use the Bearer access token. The API client refreshes proacti
 
 Backend JWT/session/role guards are the security boundary. Frontend route guards only control presentation/navigation.
 
-Explicit logout and successful self-account deletion clear the local session and redirect to Home without opening Login. The protected-route guard retains this redirect intent until Home is shown; later visits to protected pages still open Login normally.
+Explicit logout, successful self-account deletion, an invalidated server session, failed refresh of an active session, and cross-tab session clearing all redirect to Home without opening Login. The protected-route guard retains this redirect intent until Home is shown; later visits to protected pages still open Login normally. An initially unauthenticated visitor who opens a protected URL is still taken to Login and, after success, returned to that URL.
 
 ## Server-session validation
 

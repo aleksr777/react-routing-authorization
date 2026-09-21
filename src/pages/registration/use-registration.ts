@@ -4,7 +4,7 @@ import { useAuth } from '../../features/auth/model/use-auth';
 import { getAttemptsRemaining, isVerificationLocked } from '../../shared/api/api-client';
 import { useVerificationRequestState } from '../../shared/model/verification-request';
 
-export const useRegistration = () => {
+export const useRegistration = (returnTo: string) => {
   const { isAuth, isInitializing, requestRegistration, resendRegistration, confirmRegistration } =
     useAuth();
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ export const useRegistration = () => {
       setError(null);
       setIsSubmitting(true);
       await confirmRegistration(code, pendingEmail);
-      navigate('/users/me', { replace: true });
+      navigate(returnTo, { replace: true });
     } catch (err: unknown) {
       verification.applyAttemptError(err);
       verification.applyRetryError(err);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type PropsWithChildren } from 'react';
+import { useCallback, useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { refreshAuthTokens } from '../../../shared/api/api-client';
 import { clearAuthTokens, subscribeAuthTokensCleared } from '../../../shared/api/tokens';
@@ -20,26 +20,56 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const [isAuth, setIsAuth] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isEndingSession, setIsEndingSession] = useState(false);
+  const isAuthenticatedRef = useRef(false);
+  const isEndingSessionRef = useRef(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Retain the redirect intent until Home has committed, then allow normal protected links.
-    if (isEndingSession && !isAuth && pathname === '/') setIsEndingSession(false);
-  }, [isAuth, isEndingSession, pathname]);
+  const setAuthenticated = useCallback(() => {
+    isAuthenticatedRef.current = true;
+    setIsAuth(true);
+  }, []);
+
+  const setUnauthenticated = useCallback(() => {
+    isAuthenticatedRef.current = false;
+    setIsAuth(false);
+  }, []);
 
   useEffect(() => {
-    return subscribeAuthTokensCleared(() => setIsAuth(false));
-  }, []);
+    // Retain the redirect intent until Home has committed, then allow normal protected links.
+    if (isEndingSession && !isAuth && pathname === '/') {
+      isEndingSessionRef.current = false;
+      setIsEndingSession(false);
+    }
+  }, [isAuth, isEndingSession, pathname]);
+
+  const endSession = useCallback(() => {
+    if (isEndingSessionRef.current) return;
+    isEndingSessionRef.current = true;
+    setIsEndingSession(true);
+    setUnauthenticated();
+    clearAuthTokens();
+    navigate('/', { replace: true });
+  }, [navigate, setUnauthenticated]);
+
+  useEffect(() => {
+    return subscribeAuthTokensCleared(() => {
+      if (isAuthenticatedRef.current) {
+        endSession();
+        return;
+      }
+      setUnauthenticated();
+    });
+  }, [endSession, setUnauthenticated]);
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         await refreshAuthTokens();
-        setIsAuth(true);
+        setAuthenticated();
       } catch {
         clearAuthTokens(false);
-        setIsAuth(false);
+        setUnauthenticated();
       } finally {
         setIsInitializing(false);
       }
@@ -48,28 +78,34 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     void initializeAuth();
   }, []);
 
-  const login = useCallback(async (email: string, password: string): Promise<LoginOutcome> => {
-    const result = await loginRequest({ email, password });
-    if (isBlockedAccountInfo(result)) {
-      clearAuthTokens();
-      setIsAuth(false);
-      return { status: 'blocked', info: result };
-    }
+  const login = useCallback(
+    async (email: string, password: string): Promise<LoginOutcome> => {
+      const result = await loginRequest({ email, password });
+      if (isBlockedAccountInfo(result)) {
+        clearAuthTokens();
+        setUnauthenticated();
+        return { status: 'blocked', info: result };
+      }
 
-    if (isAdminLoginChallenge(result)) {
-      clearAuthTokens();
-      setIsAuth(false);
-      return { status: 'admin-confirmation', challenge: result };
-    }
+      if (isAdminLoginChallenge(result)) {
+        clearAuthTokens();
+        setUnauthenticated();
+        return { status: 'admin-confirmation', challenge: result };
+      }
 
-    setIsAuth(true);
-    return { status: 'authenticated' };
-  }, []);
+      setAuthenticated();
+      return { status: 'authenticated' };
+    },
+    [setAuthenticated, setUnauthenticated],
+  );
 
-  const confirmAdminLogin = useCallback(async (challengeId: string, code: string) => {
-    await confirmAdminLoginRequest(challengeId, code);
-    setIsAuth(true);
-  }, []);
+  const confirmAdminLogin = useCallback(
+    async (challengeId: string, code: string) => {
+      await confirmAdminLoginRequest(challengeId, code);
+      setAuthenticated();
+    },
+    [setAuthenticated],
+  );
 
   const requestRegistration = useCallback(async (email: string, password: string) => {
     return registrationRequest({ email, password });
@@ -79,10 +115,13 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     return registrationResendRequest({ email });
   }, []);
 
-  const confirmRegistration = useCallback(async (code: string, email: string) => {
-    await registrationConfirmRequest({ code, email });
-    setIsAuth(true);
-  }, []);
+  const confirmRegistration = useCallback(
+    async (code: string, email: string) => {
+      await registrationConfirmRequest({ code, email });
+      setAuthenticated();
+    },
+    [setAuthenticated],
+  );
 
   const requestPasswordReset = useCallback(async (email: string) => {
     return passwordResetRequest({ email });
@@ -91,25 +130,14 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const confirmPasswordReset = useCallback(
     async (code: string, newPassword: string, email: string) => {
       await passwordResetConfirmRequest({ code, email, new_password: newPassword });
-      setIsAuth(true);
+      setAuthenticated();
     },
-    [],
+    [setAuthenticated],
   );
 
-  const clearSession = useCallback(() => {
-    clearAuthTokens();
-    setIsAuth(false);
-  }, []);
-
-  const endSession = useCallback(() => {
-    setIsEndingSession(true);
-    clearAuthTokens();
-    setIsAuth(false);
-    navigate('/', { replace: true });
-  }, [navigate]);
+  const clearSession = endSession;
 
   const logout = useCallback(async () => {
-    setIsEndingSession(true);
     try {
       await logoutRequest();
     } finally {

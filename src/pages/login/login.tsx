@@ -1,6 +1,10 @@
 import { FormEvent, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/model/use-auth';
+import {
+  createAuthReturnState,
+  getAuthReturnTo,
+} from '../../features/auth/model/auth-return-location';
 import AuthModalShell from '../auth-modal/auth-modal-shell';
 import { CredentialsForm } from './login-forms';
 import styles from './login.module.css';
@@ -23,7 +27,8 @@ const Login = () => {
   const [challenge, setChallenge] = useState<AdminLoginChallenge | null>(null);
 
   const state = location.state as LocationState | null;
-  const redirectTo = state?.from?.pathname ?? '/';
+  const redirectTo = getAuthReturnTo(location.state);
+  const authLinkState = createAuthReturnState(location);
 
   const handleCredentials = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,7 +61,7 @@ const Login = () => {
   };
 
   if (isInitializing) return <p>Loading...</p>;
-  if (isAuth) return <Navigate to="/users/me" replace />;
+  if (isAuth) return <Navigate to={redirectTo} replace />;
 
   if (challenge)
     return (
@@ -79,10 +84,10 @@ const Login = () => {
       <section className={styles.wrapper}>
         {state?.message && <p>{state.message}</p>}
         <CredentialsForm error={error} isSubmitting={isSubmitting} onSubmit={handleCredentials} />
-        <Link className={styles.link} to="/auth/password-reset">
+        <Link className={styles.link} to="/auth/password-reset" state={authLinkState}>
           Forgot password?
         </Link>
-        <Link className={styles.link} to="/auth/registration">
+        <Link className={styles.link} to="/auth/registration" state={authLinkState}>
           Registration
         </Link>
       </section>

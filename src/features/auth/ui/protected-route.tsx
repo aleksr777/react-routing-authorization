@@ -70,7 +70,7 @@ const ProtectedRoute = () => {
     return (
       <Navigate
         to={isEndingSession ? '/' : '/auth/login'}
-        state={isEndingSession ? null : { from: location }}
+        state={isEndingSession ? null : { from: location, fromProtectedRoute: true }}
         replace
       />
     );

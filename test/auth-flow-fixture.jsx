@@ -12,7 +12,13 @@ const json = (body, status = 200) =>
 
 export const startApp = (
   path,
-  { signedIn = false, rejectCode = false, adminLogin = false, logoutStatus = 200 } = {},
+  {
+    signedIn = false,
+    rejectCode = false,
+    adminLogin = false,
+    logoutStatus = 200,
+    sessionStatus = 204,
+  } = {},
 ) => {
   let accessToken = 'existing-access-token';
   let email = 'user@example.com';
@@ -80,7 +86,11 @@ export const startApp = (
         signedIn = false;
         return json({ message: 'Account deleted' });
       }
-      if (endpoint === '/auth/session') return new Response(null, { status: 204 });
+      if (endpoint === '/auth/session') {
+        return sessionStatus === 204
+          ? new Response(null, { status: 204 })
+          : json({ message: 'Session ended' }, sessionStatus);
+      }
       if (endpoint === '/users/me') {
         return json({
           id: 7,
