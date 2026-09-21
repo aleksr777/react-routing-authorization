@@ -10,6 +10,7 @@ import {
 import type { AuthSession } from '../../features/auth/api/session-api';
 import styles from '../my-profile/active-sessions.module.css';
 import UserManagementSessionCard from './user-management-session-card';
+import UserManagementSessionsHeader from './user-management-sessions-header';
 
 const UserManagementSessions = () => {
   const userId = Number(useParams().id);
@@ -84,20 +85,13 @@ const UserManagementSessions = () => {
 
   return (
     <section className={styles.section}>
-      <div className={styles.header}>
-        <div>
-          <h2 className={styles.title}>Active sessions</h2>
-          {user && <p>User: {user.email}</p>}
-        </div>
-        <button
-          className={styles.terminateAllButton}
-          type="button"
-          onClick={() => void handleRevokeAll()}
-          disabled={isRevokingAll || revokingIds.size > 0 || sessions.length === 0}
-        >
-          {isRevokingAll ? 'Terminating...' : 'Terminate all sessions'}
-        </button>
-      </div>
+      <UserManagementSessionsHeader
+        user={user}
+        isRevokingAll={isRevokingAll}
+        revokingCount={revokingIds.size}
+        sessionCount={sessions.length}
+        onRevokeAll={() => void handleRevokeAll()}
+      />
 
       {error && <p className={styles.error}>{error}</p>}
 
