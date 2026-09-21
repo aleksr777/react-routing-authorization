@@ -59,7 +59,11 @@ export const useScrollbarState = () => {
 
     const mutationObserver =
       typeof MutationObserver === 'undefined' ? null : new MutationObserver(scheduleUpdate);
-    mutationObserver?.observe(document.body, { childList: true, subtree: true, characterData: true });
+    mutationObserver?.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
 
     return () => {
       if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
