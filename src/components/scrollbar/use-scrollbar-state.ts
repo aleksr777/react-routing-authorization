@@ -56,6 +56,8 @@ export const useScrollbarState = () => {
     resizeObserver?.observe(document.documentElement);
     resizeObserver?.observe(document.body);
     if (trackRef.current) resizeObserver?.observe(trackRef.current);
+    const main = document.querySelector('main, [class*="main__content"], [class*="main_"]');
+    if (main) resizeObserver?.observe(main);
 
     const mutationObserver =
       typeof MutationObserver === 'undefined' ? null : new MutationObserver(scheduleUpdate);
@@ -66,7 +68,10 @@ export const useScrollbarState = () => {
     });
 
     return () => {
-      if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
+      if (frameRef.current !== null) {
+        window.cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
+      }
       window.clearTimeout(delayedUpdate);
       window.removeEventListener('scroll', scheduleUpdate);
       window.removeEventListener('resize', scheduleUpdate);
